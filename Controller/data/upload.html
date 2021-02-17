@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="WebSocket.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#Header').load("Header.html");
+
+        });
+    </script>
+</head>
+
+<body>
+
+    <div id="Header"></div>
+    <div id="Home">
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="name">
+            <input class="button" type="submit" value="Upload">
+        </form>
+    </div>
+</body>
+
+</html>
