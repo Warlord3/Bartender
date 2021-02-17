@@ -45,3 +45,4 @@ lib/generated_plugin_registrant.dart
 
 # vscode
 ./vscode/
+.vscode/spellright.dict
