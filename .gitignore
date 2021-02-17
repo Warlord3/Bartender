@@ -42,3 +42,6 @@ lib/generated_plugin_registrant.dart
 ./Controller/vscode/c_cpp_properties.json
 ./Controller/vscode/launch.json
 ./Controller/vscode/ipch
+
+# vscode
+./vscode/
