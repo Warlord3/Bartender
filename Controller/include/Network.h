@@ -1,7 +1,7 @@
 #pragma once
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include <WebSocketsServer.h>
+#include <ESP8266mDNS.h>
 #include "Enum.h"
 #include "Debug.h"
 #include "LittleFS.h"
@@ -14,24 +14,19 @@ class Network
 private:
     /* data */
     bool initComplete = false;
-    const char *WiFiName = WIFI_NAME;
-    const char *WiFiPassword = WIFI_PASSWORD;
-    const char *AccessPointName = AP_NAME;
-    const char *AccessPointPassword = AP_PASSWORD;
 
-    const char *MqttName = MQTT_NAME;
-    const char *MqttPassword = MQTT_PASSWORD;
     String ipAddress = "";
     String macAddress = "";
 
-    String MqttBroker;
-    int MqttPort;
+    bool MqttConnected = false;
+    bool WiFiConncted = false;
     WiFiClient wifiMqtt;
-    unsigned long MqttTimeout;
-    unsigned long WiFiTimout;
+    const unsigned long WiFiTimeout = 5000;
+    const unsigned long MqttTimeout = 5000;
+    unsigned long PrevMillis_WiFiTimeout;
+    unsigned long PrevMillis_MqttTimeout;
 
     ESP8266WebServer server;
-    WebSocketsServer webSocket;
     enOperationMode operationMode = enOperationMode::homeMode;
 
     enWiFiState WiFiState = enWiFiState::startWiFi;
@@ -43,12 +38,18 @@ private:
     void handleWiFi(void);
     void handleMqtt(void);
 
-    void switchMode(void);
+    void setMachineMode(enOperationMode newMode);
 
     void resetWiFi(void);
     void startWebserver(void);
     bool handleFileRead(String path);
+
     void handleFileUpload(void);
+    void handleConfig(void);
+
+    void sendFileUploadPage(void);
+    void sendConfigPage(void);
+
     void mqttCallback(char *topic, byte *payload, unsigned int length);
     String formatBytes(size_t bytes);
     String getContentType(String filename);
