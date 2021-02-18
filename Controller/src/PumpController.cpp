@@ -27,25 +27,37 @@ void PumpController::run()
 {
     DEBUG_PRINTLN("Called from Interrupt");
 }
+byte PumpController::countBoards(void)
+{
+    return this->_numberAddresses;
+}
 
 void PumpController::startInterupt(void)
 {
     if (!interuptStarted)
     {
         DEBUG_PRINTLN("Start Interrupt Timer");
-        timer1_attachInterrupt(updatePumps); // Add ISR Function
+        timer1_attachInterrupt(interruptCallback); // Add ISR Function
         timer1_enable(TIM_DIV256, TIM_EDGE, TIM_LOOP);
         timer1_write(62500); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval
     }
 }
-void ICACHE_RAM_ATTR updatePumps()
+void ICACHE_RAM_ATTR interruptCallback()
 {
     if (globalController)
     {
-        globalController->run();
+        globalController->updatePumps();
     }
     //timer1_write(2500000); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval
 }
+void PumpController::updatePumps(void)
+{
+    for (int i = 0; i < globalController->_numberAddresses; i++)
+    {
+        this->_boards[i].updatePumps();
+    }
+}
+
 void PumpController::startCleaning()
 {
 }

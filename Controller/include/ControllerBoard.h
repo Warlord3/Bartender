@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include "Debug.h"
 
+#define PUMP_NUM 8
 class ControllerBoard
 {
 
@@ -35,6 +36,7 @@ public:
     void setMlPerMinute(float mlPerMinute, uint8_t pumpID);
     void setBeverageID(int beverageID, uint8_t pumpID);
     void setRemainingMl(float remainingMl, uint8_t pumpID);
+    void updatePumps(void);
 
     void startPump(enPumpState direction, uint8_t pumpID);
     void stopPump(uint8_t pumpID);

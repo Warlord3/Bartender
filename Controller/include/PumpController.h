@@ -29,6 +29,9 @@ public:
     void startCleaning();
     void stopCleaning();
 
+    byte countBoards(void);
+    void updatePumps(void);
+
     void stop(uint8_t pumpID);
     void stopAll();
     void forward(uint8_t pumpID);
@@ -37,4 +40,4 @@ public:
     void status(uint8_t pumpID);
 };
 extern PumpController *globalController;
-void ICACHE_RAM_ATTR updatePumps();
+void ICACHE_RAM_ATTR interruptCallback();
