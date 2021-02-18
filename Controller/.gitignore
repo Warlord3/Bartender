@@ -3,3 +3,7 @@
 .clang_complete
 .gcc-flags.json
 .pio
+.browse.c_cpp.db*
+.c_cpp_properties.json
+.launch.json
+.ipch
