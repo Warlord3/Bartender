@@ -62,7 +62,7 @@ class _BeveragePageState extends State<BeveragePage> {
                                     icon: Icon(Icons.delete),
                                     onPressed: () {},
                                     iconSize: 30,
-                                    tooltip: "Delete this Drink",
+                                    tooltip: "Delete this Beverage",
                                     padding: EdgeInsets.all(0),
                                   ),
                                 ],
