@@ -1,10 +1,10 @@
 
 #include "Arduino.h"
-#include "include/PumpController.h"
-#include "include/Enum.h"
-#include "include/Network.h"
-#include "include/LocalStorage.h"
-#include "include/Debug.h"
+#include "PumpController.h"
+#include "Enum.h"
+#include "Network.h"
+#include "LocalStorage.h"
+#include "Debug.h"
 //Uncomment to enable Standalone Mode
 #define STANDALONE
 
@@ -43,7 +43,7 @@ void loop()
     break;
 
   case enMachineState::runningState:
-    controller.run();
+    //controller.run();
     network.run();
 
     break;

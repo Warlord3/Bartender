@@ -19,25 +19,20 @@ enum class enMachineState
 enum class enOperationMode
 {
     configMode,
-    homeMode,
+    normalMode,
     standaloneMode //TODO implement
 };
+
 enum class enConfigState
 {
     startAP,
     waitForData,
     switchMode
 };
+
 enum class enWiFiState
 {
     startWiFi,
     monitorWiFi,
     disconnectWiFi
-};
-
-enum class enMqttState
-{
-    startMqtt,
-    monitorMqtt,
-    disconnectMqtt
 };

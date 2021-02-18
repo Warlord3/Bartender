@@ -1,46 +1,51 @@
 #pragma once
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include <WebSocketsServer.h>
+#include <ESP8266mDNS.h>
 #include "Enum.h"
 #include "Debug.h"
 #include "LittleFS.h"
 #include "MyPassword.h"
 #include "Arduino.h"
 #include "LocalStorage.h"
+
 class Network
 {
 private:
     /* data */
     bool initComplete = false;
-    const char *WiFiName = WIFI_NAME;
-    const char *WiFiPassword = WIFI_PASSWORD;
-    const char *AccessPointName = AP_NAME;
-    const char *AccessPointPassword = AP_PASSWORD;
 
     String ipAddress = "";
     String macAddress = "";
 
-     unsigned long WiFiTimout;
+    bool WiFiConncted = false;
+    const unsigned long WiFiTimeout = 5000;
+    const unsigned long MqttTimeout = 5000;
+    unsigned long PrevMillis_WiFiTimeout;
+    unsigned long PrevMillis_MqttTimeout;
 
     ESP8266WebServer server;
-    WebSocketsServer webSocket;
-    enOperationMode operationMode = enOperationMode::homeMode;
+    enOperationMode operationMode = enOperationMode::normalMode;
 
     enWiFiState WiFiState = enWiFiState::startWiFi;
-    enMqttState MqttState = enMqttState::startMqtt;
     enConfigState ConfigState = enConfigState::startAP;
 
     StorageData *storage;
 
     void handleWiFi(void);
 
-    void switchMode(void);
+    void setMachineMode(enOperationMode newMode);
 
     void resetWiFi(void);
     void startWebserver(void);
     bool handleFileRead(String path);
+
     void handleFileUpload(void);
+    void handleConfig(void);
+
+    void sendFileUploadPage(void);
+    void sendConfigPage(void);
+
     String formatBytes(size_t bytes);
     String getContentType(String filename);
 

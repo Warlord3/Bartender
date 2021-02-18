@@ -1,0 +1,12 @@
+{
+    "OperationMode": 0,
+    "Pumpcount": 16,
+    "AP_Name": "Bartender",
+    "AP_Password": "MyDrinks123",
+    "STA_Name": "Breimill21",
+    "STA_Password": "Druckereiesel265",
+    "MqttBroker": "192.168.178.47",
+    "MqttPort": 1883,
+    "MqttUser": "homeServer",
+    "MqttPassword": "halter25!"
+}
