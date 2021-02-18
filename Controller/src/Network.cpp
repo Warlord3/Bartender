@@ -24,11 +24,6 @@ void Network::init(void)
         DEBUG_PRINT("MqttBrokerPort: ");
         DEBUG_PRINTLN(storage->networkData.MqttPort);
 
-        mqttClient.setClient(wifiMqtt);
-        mqttClient.setServer(storage->networkData.MqttBroker.c_str(),
-                             (uint16_t)storage->networkData.MqttPort);
-        mqttClient.setCallback([this](char *topic, byte *payload, unsigned int length) { this->mqttCallback(topic, payload, length); });
-
         break;
     case enOperationMode::standaloneMode:
 
@@ -49,7 +44,6 @@ void Network::run(void)
 {
 
     handleWiFi();
-    handleMqtt();
     if (storage->machineData.OperationMode == enOperationMode::configMode)
         server.handleClient();
 }
@@ -189,67 +183,6 @@ void Network::handleWiFi(void)
     default:
         break;
     }
-}
-
-void Network::handleMqtt(void)
-{
-    mqttClient.loop();
-
-    switch (MqttState)
-    {
-    case enMqttState::startMqtt:
-        if (WiFiConncted)
-        {
-            DEBUG_PRINTLN("Connect MqttClient");
-            DEBUG_PRINT("Username: ");
-            DEBUG_PRINTLN(storage->networkData.MqttBroker);
-            DEBUG_PRINT("Password: ");
-            DEBUG_PRINTLN(storage->networkData.MqttPassword);
-            if (mqttClient.connect("asdre", storage->networkData.MqttBroker.c_str(), storage->networkData.MqttPassword.c_str()))
-            {
-                DEBUG_PRINTLN("MqttClient started");
-                //TODO set Topcis
-                mqttClient.publish("/home/data", "Started");
-
-                mqttClient.subscribe("Home/Devices/Bartender/Settings");
-
-                MqttState = enMqttState::monitorMqtt; // Check if dc occurred
-                MqttConnected = true;
-            }
-        }
-        break;
-    case enMqttState::monitorMqtt:
-        if (!mqttClient.connected() || !WiFiConncted)
-        {
-            unsigned long CurMillis_MQTTTimeout = millis();
-            if (CurMillis_MQTTTimeout - PrevMillis_WiFiTimeout >= MqttTimeout)
-            {
-                MqttState = enMqttState::disconnectMqtt;        // Check if dc occurred
-                PrevMillis_WiFiTimeout = CurMillis_MQTTTimeout; // Set time for WiFi timeout check
-            }
-        }
-        break;
-    case enMqttState::disconnectMqtt:
-        if (!mqttClient.connected())
-        {
-            // Wait for timeout. After timeout restart WiFi
-            MqttConnected = false;
-            mqttClient.disconnect(); // Disconnect MQTT and start new connection
-            MqttState = enMqttState::startMqtt;
-        }
-        else
-        {
-            MqttState = enMqttState::startMqtt;
-        }
-        break;
-
-    default:
-        break;
-    }
-}
-
-void Network::mqttCallback(char *topic, byte *payload, unsigned int length)
-{
 }
 
 void Network::setMachineMode(enOperationMode newMode)

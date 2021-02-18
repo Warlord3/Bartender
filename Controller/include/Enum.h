@@ -22,22 +22,17 @@ enum class enOperationMode
     homeMode,
     standaloneMode //TODO implement
 };
+
 enum class enConfigState
 {
     startAP,
     waitForData,
     switchMode
 };
+
 enum class enWiFiState
 {
     startWiFi,
     monitorWiFi,
     disconnectWiFi
-};
-
-enum class enMqttState
-{
-    startMqtt,
-    monitorMqtt,
-    disconnectMqtt
 };

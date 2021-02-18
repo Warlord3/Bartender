@@ -12,11 +12,15 @@ ControllerBoard::ControllerBoard(uint8_t address)
         _pumps[i].state = enPumpState::stop;
     }
 }
+
 ControllerBoard::ControllerBoard()
 {
+    
 }
+
 ControllerBoard::~ControllerBoard()
 {
+
 }
 
 uint8_t ControllerBoard::getDirection(enPumpState direction)
