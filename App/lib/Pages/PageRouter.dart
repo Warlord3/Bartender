@@ -20,7 +20,12 @@ class _PageRouterState extends State<PageRouter> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("Drinks"),
+        title: Row(
+          children: [
+            Icon(Icons.local_bar),
+            Text("Bartender"),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Navigator(
@@ -35,7 +40,7 @@ class _PageRouterState extends State<PageRouter> {
               case "/Drinks":
                 page = DrinksPage();
                 break;
-              case "/Ingredients":
+              case "/Beverages":
                 page = BeveragePage();
                 break;
               case "/Settings":
@@ -74,10 +79,10 @@ class _PageRouterState extends State<PageRouter> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.terrain,
+              Icons.liquor,
               color: Colors.blue,
             ),
-            title: Text("Ingredients"),
+            title: Text("Beverages"),
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -111,7 +116,7 @@ class _PageRouterState extends State<PageRouter> {
 
             break;
           case 2:
-            _navigatorKey.currentState.pushNamed("/Ingredients");
+            _navigatorKey.currentState.pushNamed("/Beverages");
             break;
           case 3:
             _navigatorKey.currentState.pushNamed("/Settings");
