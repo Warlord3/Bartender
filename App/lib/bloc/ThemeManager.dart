@@ -6,13 +6,27 @@ class ThemeChangerProvider with ChangeNotifier {
 
   ThemeChangerProvider(this._themeMode);
   getTheme() => _themeMode;
-  setDarkTheme(ThemeMode mode) {
-    this._themeMode = mode;
+  isDarkTheme() {
+    if (_themeMode == ThemeMode.dark) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  toggleTheme() {
+    if (_themeMode == ThemeMode.light) {
+      _themeMode = ThemeMode.dark;
+    } else {
+      _themeMode = ThemeMode.light;
+    }
     notifyListeners();
   }
 }
 
 class Themes {
+  /*
+    Data for light theme
+  */
   static final lightTheme = ThemeData(
     brightness: Brightness.light,
     primarySwatch: Colors.red,
@@ -24,6 +38,9 @@ class Themes {
     ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
+  /*
+    Data for dark theme
+  */
   static final darkTheme = ThemeData(
       brightness: Brightness.dark,
       primarySwatch: Colors.blue,
@@ -33,7 +50,8 @@ class Themes {
       buttonColor: Color(0XFFF8D320),
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: TextStyle(fontSize: 18, color: Colors.blue),
-        errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+        errorBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
         enabledBorder: OutlineInputBorder(),
         focusedBorder: OutlineInputBorder(),
         border: OutlineInputBorder(),
