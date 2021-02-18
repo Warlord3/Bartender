@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../bloc/ThemeManager.dart';
+import 'package:bartender/bloc/ThemeManager.dart';
 
 class SettingsPage extends StatefulWidget {
   @override

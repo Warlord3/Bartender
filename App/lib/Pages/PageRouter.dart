@@ -1,11 +1,10 @@
-import 'package:bartender/Pages/DrinkEdit/PageDrinkEdit.dart';
+import 'package:bartender/Pages/Drinks/PageDrinks.dart';
+import 'package:bartender/Pages/Drinks/SubPage/DrinkEdit/PageDrinkEdit.dart';
 import 'package:bartender/Pages/Favorite/PageFavorite.dart';
-import 'package:bartender/Pages/Ingredients/PageIngredients.dart';
-import 'package:bartender/Pages/PageSettings.dart';
+import 'package:bartender/Pages/Beverage/PageBeverage.dart';
+import 'package:bartender/Pages/Beverage/SubPage/BeverageEdit/PageBeverageEdit.dart';
+import 'package:bartender/Pages/Settings.dart/PageSettings.dart';
 import 'package:flutter/material.dart';
-import 'package:bartender/Pages/PageDrinks.dart';
-
-import 'BeverageEdit/PageBeverageEdit.dart';
 
 class PageRouter extends StatefulWidget {
   @override
@@ -37,7 +36,7 @@ class _PageRouterState extends State<PageRouter> {
                 page = DrinksPage();
                 break;
               case "/Ingredients":
-                page = IngredientsPage();
+                page = BeveragePage();
                 break;
               case "/Settings":
                 page = SettingsPage();
@@ -45,7 +44,9 @@ class _PageRouterState extends State<PageRouter> {
             }
             return PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) => page,
-              transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(
                 opacity: animation,
                 child: child,
               ),

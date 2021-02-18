@@ -1,4 +1,4 @@
-import 'package:bartender/Pages/DrinkEdit/PageDrinkEdit.dart';
+import 'package:bartender/Pages/Drinks/SubPage/DrinkEdit/PageDrinkEdit.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';

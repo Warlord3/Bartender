@@ -1,15 +1,14 @@
-import 'package:bartender/Pages/BeverageEdit/PageBeverageEdit.dart';
-import 'package:bartender/Resources/Style.dart';
+import 'package:bartender/Pages/Beverage/SubPage/BeverageEdit/PageBeverageEdit.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class IngredientsPage extends StatefulWidget {
+class BeveragePage extends StatefulWidget {
   @override
-  _IngredientsPageState createState() => _IngredientsPageState();
+  _BeveragePageState createState() => _BeveragePageState();
 }
 
-class _IngredientsPageState extends State<IngredientsPage> {
+class _BeveragePageState extends State<BeveragePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<MainData>(
@@ -51,7 +50,8 @@ class _IngredientsPageState extends State<IngredientsPage> {
                                   Expanded(
                                     child: Text(
                                       mainData.beverages[index].name,
-                                      style: Theme.of(context).textTheme.overline,
+                                      style:
+                                          Theme.of(context).textTheme.overline,
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
@@ -77,17 +77,23 @@ class _IngredientsPageState extends State<IngredientsPage> {
                                   Flexible(
                                     fit: FlexFit.tight,
                                     child: Text(
-                                      mainData.beverages[index].kcal.toStringAsFixed(1) + " Kcal",
+                                      mainData.beverages[index].kcal
+                                              .toStringAsFixed(1) +
+                                          " Kcal",
                                       textAlign: TextAlign.center,
-                                      style: Theme.of(context).textTheme.bodyText1,
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
                                     ),
                                   ),
                                   Flexible(
                                     fit: FlexFit.tight,
                                     child: Text(
-                                      mainData.beverages[index].percent.toStringAsFixed(1) + " %",
+                                      mainData.beverages[index].percent
+                                              .toStringAsFixed(1) +
+                                          " %",
                                       textAlign: TextAlign.center,
-                                      style: Theme.of(context).textTheme.bodyText1,
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
                                     ),
                                   ),
                                 ],
