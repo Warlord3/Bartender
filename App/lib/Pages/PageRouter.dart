@@ -122,10 +122,14 @@ class _PageRouterState extends State<PageRouter> {
     });
   }
 
+  /*
+    We only show the Floating action button on the following pages:
+      - Drinks
+      - Beverages
+  */
   Widget showFloatingButton() {
     Widget page;
     switch (_selectedPage) {
-      case 0:
       case 1:
         page = DrinkEditPage();
         break;
