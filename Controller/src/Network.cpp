@@ -16,7 +16,7 @@ void Network::init(void)
         startWebserver();
 
         break;
-    case enOperationMode::homeMode:
+    case enOperationMode::normalMode:
         DEBUG_PRINTLN("HomeMode");
         DEBUG_PRINTLN("Setup mqttClient");
         DEBUG_PRINT("MqttBrokerIP: ");
@@ -97,7 +97,7 @@ void Network::handleWiFi(void)
         }
 
         break;
-    case enOperationMode::homeMode:
+    case enOperationMode::normalMode:
         switch (WiFiState)
         {
         case enWiFiState::startWiFi:
@@ -197,7 +197,7 @@ void Network::setMachineMode(enOperationMode newMode)
     case enOperationMode::configMode:
         DEBUG_PRINT("ConfigMode");
         break;
-    case enOperationMode::homeMode:
+    case enOperationMode::normalMode:
         DEBUG_PRINT("HomeMode");
         break;
     case enOperationMode::standaloneMode:

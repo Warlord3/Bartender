@@ -19,7 +19,7 @@ enum class enMachineState
 enum class enOperationMode
 {
     configMode,
-    homeMode,
+    normalMode,
     standaloneMode //TODO implement
 };
 

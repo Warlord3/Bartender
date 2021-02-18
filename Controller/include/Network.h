@@ -25,7 +25,7 @@ private:
     unsigned long PrevMillis_MqttTimeout;
 
     ESP8266WebServer server;
-    enOperationMode operationMode = enOperationMode::homeMode;
+    enOperationMode operationMode = enOperationMode::normalMode;
 
     enWiFiState WiFiState = enWiFiState::startWiFi;
     enConfigState ConfigState = enConfigState::startAP;
