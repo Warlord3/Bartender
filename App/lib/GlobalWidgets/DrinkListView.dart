@@ -55,9 +55,12 @@ class _ListTileState extends State<ListTile> {
       key: Key(widget.index.toString()),
       sizeFactor: widget.animation,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 5,
+        ),
         child: Card(
-          elevation: 10,
+          elevation: 3,
           child: InkWell(
             onTap: () {},
             onLongPress: () {
