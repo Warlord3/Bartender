@@ -3,7 +3,7 @@ import 'package:bartender/Pages/Drinks/SubPage/DrinkEdit/PageDrinkEdit.dart';
 import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
 import 'package:bartender/Pages/Beverage/SubPage/BeverageEdit/PageBeverageEdit.dart';
-import 'package:bartender/Pages/Settings.dart/PageSettings.dart';
+import 'package:bartender/Pages/Settings/PageSettings.dart';
 import 'package:flutter/material.dart';
 
 class PageRouter extends StatefulWidget {
@@ -109,11 +109,9 @@ class _PageRouterState extends State<PageRouter> {
         switch (value) {
           case 0:
             _navigatorKey.currentState.pushNamed("/");
-
             break;
           case 1:
             _navigatorKey.currentState.pushNamed("/Drinks");
-
             break;
           case 2:
             _navigatorKey.currentState.pushNamed("/Beverages");
