@@ -13,6 +13,7 @@ class ThemeChangerProvider with ChangeNotifier {
       return false;
     }
   }
+
   toggleTheme() {
     if (_themeMode == ThemeMode.light) {
       _themeMode = ThemeMode.dark;
@@ -34,7 +35,9 @@ class Themes {
     backgroundColor: Colors.white,
     buttonTheme: ButtonThemeData(
       textTheme: ButtonTextTheme.accent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
     ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
@@ -71,5 +74,5 @@ class Themes {
         textTheme: ButtonTextTheme.normal,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      backgroundColor: Color(0xff424242));
+      backgroundColor: Color(0xff000000));
 }

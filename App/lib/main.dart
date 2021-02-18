@@ -1,5 +1,5 @@
 import 'package:bartender/Pages/PageStart.dart';
-import 'package:bartender/bloc/LocalStorage.dart';
+import 'package:bartender/bloc/LocalStorageManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,7 @@ void main() => runApp(MultiProvider(
           create: (context) => ThemeChangerProvider(ThemeMode.system),
         ),
         ChangeNotifierProvider<MainData>(
-          create: (context) => LocalStorage.getDrinkData(),
+          create: (context) => LocalStorageManager.getDrinkData(),
         ),
         ChangeNotifierProvider<PageStateManager>(
           create: (context) => PageStateManager(),
@@ -49,7 +49,7 @@ class MainPage extends StatelessWidget {
   }
 
   Future<bool> getSharedPreferences() async {
-    await LocalStorage.init();
+    await LocalStorageManager.init();
     return true;
   }
 }

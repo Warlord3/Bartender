@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bartender/bloc/LocalStorage.dart';
+import 'package:bartender/bloc/LocalStorageManager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +36,7 @@ class MainData with ChangeNotifier {
   }
 
   void init() {
-    String data = LocalStorage.storage.getString("DrinkData");
+    String data = LocalStorageManager.storage.getString("DrinkData");
     if (data != null) {
       DrinkSaveData saveData = DrinkSaveData.fromJson(json.decode(data));
       this.allDrinks = saveData.drinks;
@@ -53,7 +53,7 @@ class MainData with ChangeNotifier {
     DrinkSaveData save = DrinkSaveData(drinks: this.allDrinks, beverages: this.beverages, recently: temp);
     var json = save.toJson();
     String drinkData = jsonEncode(json);
-    LocalStorage.storage.setString("DrinkData", drinkData);
+    LocalStorageManager.storage.setString("DrinkData", drinkData);
   }
 
   Map<String, dynamic> toJson() => {

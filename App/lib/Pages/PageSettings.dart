@@ -4,9 +4,6 @@ import 'package:provider/provider.dart';
 import '../bloc/ThemeManager.dart';
 
 class SettingsPage extends StatefulWidget {
-  ThemeMode currentTheme;
-  bool isDarkTheme;
-
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -19,8 +16,6 @@ class _SettingsPageState extends State<SettingsPage> {
     print("rebuild list Settings");
     // Get current theme
     themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
-    widget.currentTheme = themeChangeProvider.getTheme();
-    widget.isDarkTheme = themeChangeProvider.isDarkTheme();
     return Container(
         /*
         Table with settings page content
@@ -38,16 +33,15 @@ class _SettingsPageState extends State<SettingsPage> {
             verticalAlignment: TableCellVerticalAlignment.middle,
           ),
           TableCell(
-              child: Center(
-                  child: Switch(
-                      value: widget.isDarkTheme,
-                      onChanged: (value) {
-                        setState(() {
-                          themeChangeProvider.toggleTheme();
-                          widget.isDarkTheme =
-                              themeChangeProvider.isDarkTheme();
-                        });
-                      })))
+            child: Center(
+              child: Switch(
+                value: themeChangeProvider.isDarkTheme(),
+                onChanged: (value) {
+                  themeChangeProvider.toggleTheme();
+                },
+              ),
+            ),
+          )
         ])
       ],
     ));

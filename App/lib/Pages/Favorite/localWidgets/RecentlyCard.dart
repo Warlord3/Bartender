@@ -1,8 +1,8 @@
 import 'package:bartender/Pages/Favorite/localWidgets/RotationIcon.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
-import 'package:bartender/widgets/DrinkListView.dart';
-import 'package:bartender/widgets/ExpandWidget.dart';
+import 'package:bartender/GlobalWidgets/DrinkListView.dart';
+import 'package:bartender/GlobalWidgets/ExpandWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +11,8 @@ class RecentlyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var maindata = Provider.of<MainData>(context, listen: false);
     var pageState = Provider.of<PageStateManager>(context);
-    pageState.keyRecently = GlobalKey<AnimatedListState>(debugLabel: "Recently");
+    pageState.keyRecently =
+        GlobalKey<AnimatedListState>(debugLabel: "Recently");
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Material(
@@ -29,7 +30,8 @@ class RecentlyCard extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
                     child: Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

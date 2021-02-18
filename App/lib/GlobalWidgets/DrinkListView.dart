@@ -42,7 +42,8 @@ class ListTile extends StatefulWidget {
   DrinkType drinkType;
   Animation<double> animation;
 
-  ListTile({this.key, this.drink, this.index, this.drinkType, this.animation}) : super(key: key);
+  ListTile({this.key, this.drink, this.index, this.drinkType, this.animation})
+      : super(key: key);
   @override
   _ListTileState createState() => _ListTileState();
 }
@@ -93,8 +94,11 @@ class _ListTileState extends State<ListTile> {
                         child: IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () {
-                            var mainData = Provider.of<MainData>(context, listen: false);
-                            var pageManager = Provider.of<PageStateManager>(context, listen: false);
+                            var mainData =
+                                Provider.of<MainData>(context, listen: false);
+                            var pageManager = Provider.of<PageStateManager>(
+                                context,
+                                listen: false);
 
                             switch (widget.drinkType) {
                               case DrinkType.AllDrinks:
@@ -105,31 +109,39 @@ class _ListTileState extends State<ListTile> {
                                           index: widget.index,
                                           animation: animation,
                                         ),
-                                    duration: const Duration(milliseconds: 400));
+                                    duration:
+                                        const Duration(milliseconds: 400));
                                 break;
                               case DrinkType.FavoriteDrinks:
                               case DrinkType.RecentlyDrinks:
-                                int index = mainData.recentlyCreatedDrinks.indexWhere((drink) => drink.id == widget.drink.id);
+                                int index = mainData.recentlyCreatedDrinks
+                                    .indexWhere(
+                                        (drink) => drink.id == widget.drink.id);
                                 if (index != -1) {
-                                  pageManager.keyRecently.currentState.removeItem(
-                                      index,
-                                      (_, animation) => ListTile(
-                                            drink: widget.drink,
-                                            index: index,
-                                            animation: animation,
-                                          ),
-                                      duration: const Duration(milliseconds: 400));
+                                  pageManager.keyRecently.currentState
+                                      .removeItem(
+                                          index,
+                                          (_, animation) => ListTile(
+                                                drink: widget.drink,
+                                                index: index,
+                                                animation: animation,
+                                              ),
+                                          duration: const Duration(
+                                              milliseconds: 400));
                                 }
-                                index = mainData.favoriteDrinks.indexWhere((drink) => drink.id == widget.drink.id);
+                                index = mainData.favoriteDrinks.indexWhere(
+                                    (drink) => drink.id == widget.drink.id);
                                 if (index != -1) {
-                                  pageManager.keyFavorite.currentState.removeItem(
-                                      index,
-                                      (_, animation) => ListTile(
-                                            drink: widget.drink,
-                                            index: index,
-                                            animation: animation,
-                                          ),
-                                      duration: const Duration(milliseconds: 400));
+                                  pageManager.keyFavorite.currentState
+                                      .removeItem(
+                                          index,
+                                          (_, animation) => ListTile(
+                                                drink: widget.drink,
+                                                index: index,
+                                                animation: animation,
+                                              ),
+                                          duration: const Duration(
+                                              milliseconds: 400));
                                 }
 
                                 break;
@@ -148,38 +160,52 @@ class _ListTileState extends State<ListTile> {
                         child: Transform.scale(
                           scale: 0.8,
                           child: IconButton(
-                            icon: widget.drink.favorite ? Image.asset('assets/favorite_red.png') : Image.asset('assets/favorite.png'),
+                            icon: Icon(
+                              Icons.favorite,
+                              size: 40,
+                              color: Colors.red,
+                            ),
                             onPressed: () {
-                              var pageManager = Provider.of<PageStateManager>(context, listen: false);
-                              var mainData = Provider.of<MainData>(context, listen: false);
+                              var pageManager = Provider.of<PageStateManager>(
+                                  context,
+                                  listen: false);
+                              var mainData =
+                                  Provider.of<MainData>(context, listen: false);
 
                               switch (widget.drinkType) {
                                 case DrinkType.AllDrinks:
                                   break;
                                 case DrinkType.FavoriteDrinks:
-                                  pageManager.keyFavorite.currentState.removeItem(
-                                      widget.index,
-                                      (_, animation) => ListTile(
-                                            drink: widget.drink,
-                                            index: widget.index,
-                                            animation: animation,
-                                          ),
-                                      duration: const Duration(milliseconds: 400));
+                                  pageManager.keyFavorite.currentState
+                                      .removeItem(
+                                          widget.index,
+                                          (_, animation) => ListTile(
+                                                drink: widget.drink,
+                                                index: widget.index,
+                                                animation: animation,
+                                              ),
+                                          duration: const Duration(
+                                              milliseconds: 400));
 
                                   break;
                                 case DrinkType.RecentlyDrinks:
                                   if (widget.drink.favorite) {
-                                    int index = mainData.favoriteDrinks.indexWhere((drink) => drink.id == widget.drink.id);
-                                    pageManager.keyFavorite.currentState.removeItem(
-                                        index,
-                                        (_, animation) => ListTile(
-                                              drink: widget.drink,
-                                              index: index,
-                                              animation: animation,
-                                            ),
-                                        duration: const Duration(milliseconds: 400));
+                                    int index = mainData.favoriteDrinks
+                                        .indexWhere((drink) =>
+                                            drink.id == widget.drink.id);
+                                    pageManager.keyFavorite.currentState
+                                        .removeItem(
+                                            index,
+                                            (_, animation) => ListTile(
+                                                  drink: widget.drink,
+                                                  index: index,
+                                                  animation: animation,
+                                                ),
+                                            duration: const Duration(
+                                                milliseconds: 400));
                                   } else {
-                                    pageManager.keyFavorite.currentState.insertItem(0);
+                                    pageManager.keyFavorite.currentState
+                                        .insertItem(0);
                                   }
 
                                   break;
@@ -200,20 +226,22 @@ class _ListTileState extends State<ListTile> {
                   SizedBox(
                     height: 10,
                   ),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                    Text(
-                      "${widget.drink.amount.toStringAsFixed(1)}ml",
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    Text(
-                      "${widget.drink.percent.toStringAsFixed(1)}%",
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    Text(
-                      "${widget.drink.kcal.toStringAsFixed(1)}kcal",
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                  ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          "${widget.drink.amount.toStringAsFixed(1)}ml",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Text(
+                          "${widget.drink.percent.toStringAsFixed(1)}%",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Text(
+                          "${widget.drink.kcal.toStringAsFixed(1)}kcal",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      ]),
                   SizedBox(
                     height: 10,
                   ),
@@ -250,64 +278,68 @@ class _ListTileState extends State<ListTile> {
   List<Row> buildIngredient(Drink drink) {
     List<Row> rows = List<Row>();
     rows.add(
-      Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Flexible(
-          fit: FlexFit.tight,
-          flex: 1,
-          child: Text(
-            "Beverage",
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+      Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 1,
+              child: Text(
+                "Beverage",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Flexible(
-          fit: FlexFit.tight,
-          flex: 1,
-          child: Text(
-            "ml",
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 1,
+              child: Text(
+                "ml",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Flexible(
-          fit: FlexFit.tight,
-          flex: 1,
-          child: Text(
-            "%",
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 1,
+              child: Text(
+                "%",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Flexible(
-          fit: FlexFit.tight,
-          flex: 1,
-          child: Text(
-            "kcal",
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 1,
+              child: Text(
+                "kcal",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ]),
+          ]),
     );
 
     rows.addAll(drink.ingredients.map(
-      (ingredient) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      (ingredient) =>
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Flexible(
           fit: FlexFit.tight,
           flex: 1,
