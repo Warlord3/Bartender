@@ -12,7 +12,7 @@ import 'models/Drinks.dart';
 void main() => runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<ThemeChangerProvider>(
-          create: (context) => ThemeChangerProvider(ThemeMode.system),
+          create: (context) => ThemeChangerProvider(),
         ),
         ChangeNotifierProvider<MainData>(
           create: (context) => LocalStorageManager.getDrinkData(),
