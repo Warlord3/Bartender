@@ -16,21 +16,9 @@ class LanguageManager with ChangeNotifier {
   }
 
   getData(String indetifier) {
-    String data = "";
-    for (LanguageEntry item in languageEntrys) {
-      if (item.identifer == indetifier.toLowerCase()) {
-        switch (language) {
-          case Language.English:
-            data = item.english;
-            break;
-          case Language.German:
-            data = item.german;
-            break;
-        }
-        break;
-      }
-    }
-    return data;
+    return languageEntrys
+        .firstWhere((element) => element.identifer == indetifier)
+        .data[this.language.index];
   }
 
   /*
@@ -56,11 +44,10 @@ enum Language {
 
 class LanguageEntry {
   String identifer = "";
-  String english = "";
-  String german = "";
+  List<String> data = ["", ""];
   LanguageEntry(String identifer, String english, String german) {
     this.identifer = identifer;
-    this.english = english;
-    this.german = german;
+    this.data[Language.German.index] = german;
+    this.data[Language.English.index] = english;
   }
 }
