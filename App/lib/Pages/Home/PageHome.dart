@@ -16,7 +16,18 @@ class _HOmePageState extends State<HomePage> {
     // Get current theme
     themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
     return Container(
-      child: Text("Home"),
+      child: Center(
+        child: Column(
+          children: [
+            Card(
+              elevation: 3,
+              child: InkWell(
+                child: Text("Recent"),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

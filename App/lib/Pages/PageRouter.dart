@@ -24,14 +24,6 @@ class _PageRouterState extends State<PageRouter> {
     languageManager = Provider.of<LanguageManager>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(Icons.local_bar),
-            Text("Bartender"),
-          ],
-        ),
-      ),
       body: SafeArea(
         child: Navigator(
           key: _navigatorKey,
@@ -76,41 +68,41 @@ class _PageRouterState extends State<PageRouter> {
               Icons.home,
               color: Colors.orange,
             ),
-            title: Text(languageManager.getData("home")),
+            label: languageManager.getData("home"),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.favorite,
               color: Colors.red,
             ),
-            title: Text(languageManager.getData("favorite")),
+            label: languageManager.getData("favorite"),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.local_drink,
               color: Colors.greenAccent[400],
             ),
-            title: Text(languageManager.getData("drinks")),
+            label: languageManager.getData("drinks"),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.liquor,
               color: Colors.blue,
             ),
-            title: Text(languageManager.getData("beverages")),
+            label: languageManager.getData("beverages"),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.settings,
               color: Colors.grey[800],
             ),
-            title: Text(languageManager.getData("settings")),
+            label: languageManager.getData("settings"),
           )
         ],
         onTap: _pageSelect,
         currentIndex: _selectedPage,
         selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.transparent,
         type: BottomNavigationBarType.shifting,
         selectedLabelStyle: TextStyle(fontSize: 15),
       ),

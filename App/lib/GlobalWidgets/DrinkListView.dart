@@ -3,6 +3,7 @@ import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui';
 
 import 'ExpandWidget.dart';
 
@@ -62,7 +63,85 @@ class _ListTileState extends State<ListTile> {
         child: Card(
           elevation: 3,
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              showGeneralDialog(
+                barrierDismissible: true,
+                barrierLabel: '',
+                transitionDuration: Duration(milliseconds: 200),
+                pageBuilder: (ctx, anim1, anim2) => Dialog(
+                  insetPadding: EdgeInsets.symmetric(
+                    horizontal: 100,
+                    vertical: 340,
+                  ),
+                  backgroundColor: Colors.transparent,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Mix it",
+                          style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RawMaterialButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              disabledElevation: 1,
+                              shape: CircleBorder(),
+                              elevation: 0,
+                              padding: EdgeInsets.all(15.0),
+                              onPressed: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                              },
+                              fillColor: Colors.green.withOpacity(0.2),
+                              child: Icon(
+                                Icons.done,
+                                color: Colors.green,
+                              ),
+                            ),
+                            RawMaterialButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              disabledElevation: 1,
+                              shape: CircleBorder(),
+                              elevation: 0,
+                              padding: EdgeInsets.all(15.0),
+                              onPressed: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                              },
+                              fillColor: Colors.red.withOpacity(0.2),
+                              child: Icon(
+                                Icons.clear,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: FadeTransition(
+                    child: child,
+                    opacity: anim1,
+                  ),
+                ),
+                context: context,
+              );
+            },
             onLongPress: () {
               showDialog(
                 context: context,
@@ -245,30 +324,6 @@ class _ListTileState extends State<ListTile> {
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ]),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ExpandWidget(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(children: buildIngredient(widget.drink)),
-                    ),
-                    expand: false,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 3),
-                    child: Divider(
-                      color: Colors.grey[900],
-                      height: 10,
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    child: RaisedButton(
-                      child: Text("Mix it!"),
-                      onPressed: () {},
-                    ),
-                  )
                 ],
               ),
             ),

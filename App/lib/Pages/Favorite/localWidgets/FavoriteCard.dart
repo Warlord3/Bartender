@@ -16,35 +16,11 @@ class FavoriteCard extends StatelessWidget {
       padding: const EdgeInsets.all(4.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border.all(color: Colors.red),
-            borderRadius: BorderRadius.circular(10)),
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-              child: Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 40,
-                    ),
-                    Icon(
-                      Icons.favorite,
-                      color: Colors.red,
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "Favorite Drinks",
-                      style: TextStyle(fontSize: 25),
-                    )
-                  ],
-                ),
-              ),
-            ),
             DrinkListview(
               drinks: maindata.favoriteDrinks,
               drinkType: DrinkType.FavoriteDrinks,

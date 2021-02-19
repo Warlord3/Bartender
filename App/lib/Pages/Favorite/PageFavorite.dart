@@ -18,13 +18,10 @@ class FavoritePage extends StatelessWidget {
           }
         },
         child: SingleChildScrollView(
-          controller: ScrollController(initialScrollOffset: pageState.scrollPositionFavoritePage),
+          controller: ScrollController(
+              initialScrollOffset: pageState.scrollPositionFavoritePage),
           child: Column(
             children: [
-              RecentlyCard(),
-              SizedBox(
-                height: 10,
-              ),
               FavoriteCard(),
             ],
           ),
