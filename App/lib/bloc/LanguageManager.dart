@@ -17,7 +17,8 @@ class LanguageManager with ChangeNotifier {
 
   getData(String indetifier) {
     return languageEntrys
-        .firstWhere((element) => element.identifer == indetifier)
+        .firstWhere((element) => element.identifer == indetifier,
+            orElse: () => LanguageEntry("", indetifier, indetifier))
         .data[this.language.index];
   }
 
