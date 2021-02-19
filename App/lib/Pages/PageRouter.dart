@@ -4,7 +4,10 @@ import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
 import 'package:bartender/Pages/Beverage/SubPage/BeverageEdit/PageBeverageEdit.dart';
 import 'package:bartender/Pages/Settings/PageSettings.dart';
+import 'package:bartender/Pages/Home/PageHome.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:bartender/bloc/LanguageManager.dart';
 
 class PageRouter extends StatefulWidget {
   @override
@@ -14,9 +17,11 @@ class PageRouter extends StatefulWidget {
 class _PageRouterState extends State<PageRouter> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   int _selectedPage = 0;
+  LanguageManager languageManager;
 
   @override
   Widget build(BuildContext context) {
+    languageManager = Provider.of<LanguageManager>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -30,11 +35,14 @@ class _PageRouterState extends State<PageRouter> {
       body: SafeArea(
         child: Navigator(
           key: _navigatorKey,
-          initialRoute: "/",
+          initialRoute: "/Home",
           onGenerateRoute: (RouteSettings settings) {
             Widget page;
             switch (settings.name) {
-              case "/":
+              case "/Home":
+                page = HomePage();
+                break;
+              case "/Favorite":
                 page = FavoritePage();
                 break;
               case "/Drinks":
@@ -65,31 +73,38 @@ class _PageRouterState extends State<PageRouter> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(
+              Icons.home,
+              color: Colors.orange,
+            ),
+            title: Text(languageManager.getData("home")),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
               Icons.favorite,
               color: Colors.red,
             ),
-            title: Text("Favorite"),
+            title: Text(languageManager.getData("favorite")),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.local_drink,
               color: Colors.greenAccent[400],
             ),
-            title: Text("Drinks"),
+            title: Text(languageManager.getData("drinks")),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.liquor,
               color: Colors.blue,
             ),
-            title: Text("Beverages"),
+            title: Text(languageManager.getData("beverages")),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.settings,
               color: Colors.grey[800],
             ),
-            title: Text("Settings"),
+            title: Text(languageManager.getData("settings")),
           )
         ],
         onTap: _pageSelect,
@@ -108,15 +123,18 @@ class _PageRouterState extends State<PageRouter> {
       if (_selectedPage != value) {
         switch (value) {
           case 0:
-            _navigatorKey.currentState.pushNamed("/");
+            _navigatorKey.currentState.pushNamed("/Home");
             break;
           case 1:
-            _navigatorKey.currentState.pushNamed("/Drinks");
+            _navigatorKey.currentState.pushNamed("/Favorite");
             break;
           case 2:
-            _navigatorKey.currentState.pushNamed("/Beverages");
+            _navigatorKey.currentState.pushNamed("/Drinks");
             break;
           case 3:
+            _navigatorKey.currentState.pushNamed("/Beverages");
+            break;
+          case 4:
             _navigatorKey.currentState.pushNamed("/Settings");
             break;
         }

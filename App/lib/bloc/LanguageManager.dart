@@ -40,6 +40,12 @@ class LanguageManager with ChangeNotifier {
     languageEntrys.add(new LanguageEntry("langauge", "Language", "Sprache"));
     languageEntrys
         .add(new LanguageEntry("dark_theme", "Dark Theme", "Dunkles Design"));
+    languageEntrys.add(new LanguageEntry("favorite", "Favorite", "Favoriten"));
+    languageEntrys.add(new LanguageEntry("home", "Home", "Home"));
+    languageEntrys.add(new LanguageEntry("drinks", "Drinks", "Drinks"));
+    languageEntrys.add(new LanguageEntry("beverages", "Beverages", "Getränke"));
+    languageEntrys
+        .add(new LanguageEntry("settings", "Settings", "Einstellungen"));
   }
 }
 
