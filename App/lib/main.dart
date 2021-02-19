@@ -1,5 +1,6 @@
 import 'package:bartender/Pages/Start/PageStart.dart';
 import 'package:bartender/bloc/LocalStorageManager.dart';
+import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,9 @@ void main() => runApp(MultiProvider(
         ChangeNotifierProvider<PageStateManager>(
           create: (context) => PageStateManager(),
         ),
+        ChangeNotifierProvider<LanguageManager>(
+          create: (context) => LanguageManager(),
+        )
       ],
       child: MainPage(),
     ));
