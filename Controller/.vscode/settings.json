@@ -4,6 +4,15 @@
         "xstring": "cpp",
         "xutility": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "*.tcc": "cpp",
+        "limits": "cpp",
+        "functional": "cpp",
+        "array": "cpp",
+        "memory": "cpp",
+        "istream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "typeinfo": "cpp"
     }
 }

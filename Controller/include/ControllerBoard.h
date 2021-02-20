@@ -2,21 +2,13 @@
 
 #include <Wire.h>
 #include "Enum.h"
+#include "Structs.h"
 #include <Arduino.h>
 #include "Debug.h"
 
 #define PUMP_NUM 8
 class ControllerBoard
 {
-
-    struct PumpInfo
-    {
-        uint8_t ID;
-        float mlPerMinute;
-        int beverageID;
-        float remainingMl;
-        enPumpState state;
-    };
 
 private:
     PumpInfo _pumps[8];
@@ -28,7 +20,6 @@ private:
     uint8_t getDirection(enPumpState direction);
 
 public:
-    ControllerBoard();
     ControllerBoard(uint8_t address);
     ~ControllerBoard();
 

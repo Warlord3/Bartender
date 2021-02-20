@@ -3,23 +3,17 @@
 #include "PumpController.h"
 #include "Enum.h"
 #include "Network.h"
-#include "LocalStorage.h"
+#include "StorageController.h"
+#include "StateController.h"
+#include "CommunicationController.h"
 #include "Debug.h"
-//Uncomment to enable Standalone Mode
-#define STANDALONE
 
-#define CTRL_BOARDS_NUM 2
+StateController stateController = StateController();
+StorageController storageController = StorageController(&stateController);
+CommunicationController communicationController = CommunicationController();
+Network networkController(&stateController, &storageController);
+PumpController pumpController(&communicationController, &stateController);
 
-int addresses[CTRL_BOARDS_NUM] = {0x20, 0x21};
-String MQTT_BROKER_IP = "192.168.178.47";
-int MQTT_BROKER_PORT = 1883;
-
-StorageData storageData;
-
-Network network(&storageData);
-PumpController controller(CTRL_BOARDS_NUM, addresses);
-
-enMachineState machineState = enMachineState::idleState;
 void setup()
 {
   Serial.begin(112500);
@@ -29,34 +23,43 @@ void setup()
 
 void loop()
 {
-  switch (machineState)
+  switch (stateController.machineState)
   {
-  case enMachineState::idleState:
-    machineState = enMachineState::initState;
+  case enMachineState::boot:
+    stateController.init();
+    stateController.machineState = enMachineState::init;
     break;
 
-  case enMachineState::initState:
-    storageData.init();
-    controller.init();
-    network.init();
-    machineState = enMachineState::runningState;
+  case enMachineState::init:
+    storageController.init();
+    networkController.init();
+    communicationController.init();
+    pumpController.init();
+    stateController.machineState = enMachineState::idle;
     break;
 
-  case enMachineState::runningState:
-    //controller.run();
-    network.run();
-
+  case enMachineState::idle:
     break;
-
-  case enMachineState::cleaningState:
+  case enMachineState::running:
 
     break;
 
-  case enMachineState::testingState:
+  case enMachineState::cleaning:
+
+    break;
+
+  case enMachineState::testing:
 
     break;
 
   default:
     break;
+  }
+  if (stateController.machineState > enMachineState::init)
+  {
+    communicationController.run();
+    pumpController.run();
+    networkController.run();
+    stateController.run();
   }
 }

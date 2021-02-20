@@ -13,10 +13,6 @@ ControllerBoard::ControllerBoard(uint8_t address)
     }
 }
 
-ControllerBoard::ControllerBoard()
-{
-}
-
 ControllerBoard::~ControllerBoard()
 {
 }

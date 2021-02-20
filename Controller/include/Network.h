@@ -7,7 +7,8 @@
 #include "LittleFS.h"
 #include "MyPassword.h"
 #include "Arduino.h"
-#include "LocalStorage.h"
+#include "StateController.h"
+#include "StorageController.h"
 
 class Network
 {
@@ -15,22 +16,14 @@ private:
     /* data */
     bool initComplete = false;
 
-    String ipAddress = "";
-    String macAddress = "";
-
-    bool WiFiConncted = false;
-    const unsigned long WiFiTimeout = 5000;
-    const unsigned long MqttTimeout = 5000;
+    //Timeout after Controller switches back to Configuration Mode
+    const unsigned long WiFiTimeout = 30000;
     unsigned long PrevMillis_WiFiTimeout;
-    unsigned long PrevMillis_MqttTimeout;
 
     ESP8266WebServer server;
-    enOperationMode operationMode = enOperationMode::normalMode;
 
-    enWiFiState WiFiState = enWiFiState::startWiFi;
-    enConfigState ConfigState = enConfigState::startAP;
-
-    StorageData *storage;
+    StateController *state;
+    StorageController *storage;
 
     void handleWiFi(void);
 
@@ -43,16 +36,11 @@ private:
     void handleFileUpload(void);
     void handleConfig(void);
 
-    void sendFileUploadPage(void);
-    void sendConfigPage(void);
-
     String formatBytes(size_t bytes);
     String getContentType(String filename);
 
 public:
-    Network(StorageData *data);
-
-    void setWiFiMode(enOperationMode WiFiMode);
+    Network(StateController *state, StorageController *storage);
 
     void init(void);
     void run(void);

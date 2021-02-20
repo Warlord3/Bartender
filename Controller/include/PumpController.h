@@ -5,31 +5,33 @@
 #include "Arduino.h"
 #include "Debug.h"
 #include "Network.h"
-#include <Ticker.h>
+#include "CommunicationController.h"
+#include "StateController.h"
 
 #define PUMPS_PER_CONTROLLER 8
+#define NUM_CONTROLLERS 2
 
+#define BOARD_ADR_BOT 0x20
+#define BOARD_ADR_TOP 0x21
 class PumpController
 {
 private:
-    bool interuptStarted = false;
-    ControllerBoard *_boards;
+    bool _interuptStarted = false;
+    ControllerBoard _boards[2] = {ControllerBoard(BOARD_ADR_BOT), ControllerBoard(BOARD_ADR_TOP)};
 
-    uint8_t _numberAddresses;
-    volatile Network *network;
+    CommunicationController *_communication;
+    StateController *_state;
     uint8_t getBoardID(uint8_t pumpID);
     void startInterupt(void);
 
 public:
-    PumpController(uint8_t numberAddresses, int *_addresses);
-    enMachineState machineState = enMachineState::idleState;
+    PumpController(CommunicationController *communication, StateController *_state);
 
     void init();
     void run();
     void startCleaning();
     void stopCleaning();
 
-    byte countBoards(void);
     void updatePumps(void);
 
     void stop(uint8_t pumpID);

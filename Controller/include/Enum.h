@@ -9,11 +9,12 @@ enum class enPumpState
 
 enum class enMachineState
 {
-    idleState,
-    initState,
-    runningState,
-    cleaningState,
-    testingState
+    boot,
+    init,
+    idle,
+    running,
+    cleaning,
+    testing
 };
 
 enum class enOperationMode
@@ -23,16 +24,12 @@ enum class enOperationMode
     standaloneMode //TODO implement
 };
 
-enum class enConfigState
-{
-    startAP,
-    waitForData,
-    switchMode
-};
-
 enum class enWiFiState
 {
     startWiFi,
     monitorWiFi,
-    disconnectWiFi
+    disconnectWiFi,
+    startAccessPoint,
+    monitorAccessPoint,
+    disconnectAccessPoint
 };

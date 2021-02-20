@@ -11,11 +11,18 @@
     {                                       \
         DEBUG_PRINTER.println(__VA_ARGS__); \
     }
+#define DEBUG_PRINTF(...)                  \
+    {                                      \
+        DEBUG_PRINTER.printf(__VA_ARGS__); \
+    }
 #else
 #define DEBUG_PRINT(...) \
     {                    \
     }
 #define DEBUG_PRINTLN(...) \
     {                      \
+    }
+#define DEBUG_PRINTF(...) \
+    {                     \
     }
 #endif

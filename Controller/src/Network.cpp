@@ -1,8 +1,11 @@
-#include "../include/Network.h"
+#include "Network.h"
 
-Network::Network(StorageData *data) : server(80)
+Network::Network(StateController *state, StorageController *storage) : server(80)
 {
-    storage = data;
+    this->state = state;
+    DEBUG_PRINTLN("Create Network");
+
+    this->storage = storage;
 }
 
 void Network::init(void)
@@ -10,27 +13,6 @@ void Network::init(void)
 
     DEBUG_PRINTLN("Init Network");
     resetWiFi();
-    switch (storage->machineData.OperationMode)
-    {
-    case enOperationMode::configMode:
-        startWebserver();
-
-        break;
-    case enOperationMode::normalMode:
-        DEBUG_PRINTLN("HomeMode");
-        DEBUG_PRINTLN("Setup mqttClient");
-        DEBUG_PRINT("MqttBrokerIP: ");
-        DEBUG_PRINTLN(storage->networkData.MqttBroker);
-        DEBUG_PRINT("MqttBrokerPort: ");
-        DEBUG_PRINTLN(storage->networkData.MqttPort);
-
-        break;
-    case enOperationMode::standaloneMode:
-
-        break;
-    default:
-        break;
-    }
 }
 
 void Network::resetWiFi(void)
@@ -42,140 +24,126 @@ void Network::resetWiFi(void)
 
 void Network::run(void)
 {
-
     handleWiFi();
-    if (storage->machineData.OperationMode == enOperationMode::configMode)
+    switch (state->operationMode)
+    {
+    case enOperationMode::configMode:
         server.handleClient();
-}
+        break;
+    case enOperationMode::normalMode:
 
-void Network::setWiFiMode(enOperationMode WiFiMode)
-{
-    resetWiFi();
-    delay(10);
-    storage->machineData.OperationMode = WiFiMode;
+        break;
+    case enOperationMode::standaloneMode:
+        break;
+
+    default:
+        break;
+    }
 }
 
 void Network::handleWiFi(void)
 {
-    switch (storage->machineData.OperationMode)
+    switch (state->wifiState)
     {
-    case enOperationMode::configMode:
-        switch (ConfigState)
+    case enWiFiState::startWiFi:
+        DEBUG_PRINT("Start WiFi in ");
+
+        DEBUG_PRINTLN("Normal Mode");
+
+        PrevMillis_WiFiTimeout = millis();
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(state->wifiSSID, state->wifiPassword);
+        delay(1); // Call delay(1) for the WiFi stack
+
+        while (WiFi.status() != WL_CONNECTED)
         {
-        case enConfigState::startAP:
+            delay(500);
+            DEBUG_PRINT(".");
+            if (millis() - PrevMillis_WiFiTimeout > WiFiTimeout)
+            {
+                state->wifiState = enWiFiState::startAccessPoint;
+                state->operationMode = enOperationMode::configMode;
+                return;
+            }
+        }
+        DEBUG_PRINTLN(F("\n-- Wifi Connected --"));
+        DEBUG_PRINT(F("  IP Address  : "));
+        state->ipAddress = WiFi.localIP().toString().c_str();
+        DEBUG_PRINTLN(state->ipAddress);
+        DEBUG_PRINT(F("  Subnetmask  : "));
+        DEBUG_PRINTLN(WiFi.subnetMask());
+        DEBUG_PRINT(F("  MAC Address : "));
+        state->macAddress = WiFi.macAddress();
+        DEBUG_PRINTLN(state->macAddress);
+        DEBUG_PRINT(F("  Gateway     : "));
+        DEBUG_PRINTLN(WiFi.gatewayIP());
+        state->wifiState = enWiFiState::monitorWiFi;
+        state->WiFiConncted = true;
+        break;
+    case enWiFiState::monitorWiFi:
+        if (WiFi.status() != WL_CONNECTED)
+        {
+            if (millis() - PrevMillis_WiFiTimeout > 5000)
+            {
+                state->wifiState = enWiFiState::disconnectWiFi;
+            }
+        }
+        break;
+    case enWiFiState::disconnectWiFi:
+        if (WiFi.status() != WL_CONNECTED)
+        {
+            state->WiFiConncted = false;
+            WiFi.disconnect();
+            state->wifiState = enWiFiState::startWiFi;
+        }
+        else
+        {
+
+            state->wifiState = enWiFiState::monitorWiFi;
+        }
+        break;
+    case enWiFiState::startAccessPoint:
+        if (state->operationMode == enOperationMode::configMode)
+        {
+
             DEBUG_PRINTLN("Start Access Point for Config Mode");
 
             WiFi.mode(WIFI_AP);
             delay(1);
-            PrevMillis_WiFiTimeout = millis();
 
             DEBUG_PRINTLN("Start Access Point without Password");
             DEBUG_PRINT("WiFI SSID:");
             DEBUG_PRINTLN("MyBartender");
 
+            PrevMillis_WiFiTimeout = millis();
             while (!WiFi.softAP("MyBartender"))
             {
                 //After 30 seconds restart in Config Mode
                 if (millis() - PrevMillis_WiFiTimeout >= 30000)
                 {
-                    storage->machineData.OperationMode = enOperationMode::configMode;
-                    storage->saveConfig();
                     delay(500);
                     ESP.restart();
                 }
                 DEBUG_PRINT(".");
                 delay(500);
             }
-            ConfigState = enConfigState::waitForData;
-            break;
-        case enConfigState::waitForData:
-            break;
-        case enConfigState::switchMode:
-            break;
-        default:
-            break;
+            startWebserver();
         }
-
+        state->wifiState = enWiFiState::monitorAccessPoint;
         break;
-    case enOperationMode::normalMode:
-        switch (WiFiState)
+    case enWiFiState::monitorAccessPoint:
+        break;
+    case enWiFiState::disconnectAccessPoint:
+        server.close();
+        server.stop();
+        resetWiFi();
+        if (state->operationMode == enOperationMode::normalMode)
         {
-        case enWiFiState::startWiFi:
-            DEBUG_PRINT("Start WiFi in ");
-
-            DEBUG_PRINTLN("HomeMode");
-
-            PrevMillis_WiFiTimeout = millis();
-            //WiFi.disconnect();
-            WiFi.mode(WIFI_STA);
-            WiFi.begin(storage->networkData.STA_Name,
-                       storage->networkData.STA_Password);
-            delay(1); // Call delay(1) for the WiFi stack
-
-            while (WiFi.status() != WL_CONNECTED)
-            {
-                delay(500);
-                DEBUG_PRINT(".");
-                if (millis() - PrevMillis_WiFiTimeout > 30000)
-                {
-                    WiFiState = enWiFiState::disconnectWiFi;
-                    return;
-                }
-            }
-            DEBUG_PRINTLN(F("\n-- Wifi Connected --"));
-            DEBUG_PRINT(F("  IP Address  : "));
-            ipAddress = WiFi.localIP().toString().c_str();
-            DEBUG_PRINTLN(ipAddress);
-            DEBUG_PRINT(F("  Subnetmask  : "));
-            DEBUG_PRINTLN(WiFi.subnetMask());
-            DEBUG_PRINT(F("  MAC Address : "));
-            macAddress = WiFi.macAddress();
-            DEBUG_PRINTLN(macAddress);
-            DEBUG_PRINT(F("  Gateway     : "));
-            DEBUG_PRINTLN(WiFi.gatewayIP());
-            WiFiState = enWiFiState::monitorWiFi;
-            WiFiConncted = true;
-
-            break;
-
-            break;
-        case enWiFiState::monitorWiFi:
-            if (WiFi.status() != WL_CONNECTED)
-            {
-                if (millis() - PrevMillis_WiFiTimeout > 5000)
-                {
-                    WiFiState = enWiFiState::disconnectWiFi;
-                }
-            }
-
-            break;
-        case enWiFiState::disconnectWiFi:
-            if (WiFi.status() != WL_CONNECTED)
-            {
-                WiFiConncted = false;
-
-                WiFi.disconnect();
-                WiFiState = enWiFiState::startWiFi;
-            }
-            else
-            {
-
-                WiFiState = enWiFiState::monitorWiFi;
-            }
-            break;
-
-        default:
-            break;
+            state->wifiState = enWiFiState::startWiFi;
         }
-        break;
-    case enOperationMode::standaloneMode:
-        DEBUG_PRINTLN("Standalone Mode");
-
-        PrevMillis_WiFiTimeout = millis();
-        while (!WiFi.softAP(storage->networkData.AP_Name, storage->networkData.AP_Password))
+        else
         {
-            DEBUG_PRINT(".");
-            delay(500);
+            state->wifiState = enWiFiState::startAccessPoint;
         }
 
         break;
@@ -187,27 +155,6 @@ void Network::handleWiFi(void)
 
 void Network::setMachineMode(enOperationMode newMode)
 {
-    if (storage->machineData.OperationMode == newMode)
-    {
-        return;
-    }
-    DEBUG_PRINT("Switch WiFi Mode to ");
-    switch (newMode)
-    {
-    case enOperationMode::configMode:
-        DEBUG_PRINT("ConfigMode");
-        break;
-    case enOperationMode::normalMode:
-        DEBUG_PRINT("HomeMode");
-        break;
-    case enOperationMode::standaloneMode:
-        DEBUG_PRINT("StandaloneMode");
-        break;
-
-    default:
-        DEBUG_PRINT("Error Mode not found");
-        break;
-    }
 }
 
 void Network::startWebserver(void)
@@ -230,58 +177,28 @@ void Network::startWebserver(void)
     DEBUG_PRINTLN("HTTP server started.");
 }
 
-void Network::sendFileUploadPage(void)
-{
-    server.send(200, "text/html", "<!DOCTYPE html><html><body> <div id='Header'></div> <div id='Home'> <form method='post' enctype='multipart/form-data'> <input type='file' name='name'> <input class='button' type='submit' value='Upload'> </form> </div></body></html>");
-}
-
-void Network::sendConfigPage(void)
-{
-    server.send(200, "text/html", "<!DOCTYPE html><html><body> <div id='Header'></div> <div id='Home'> <form method='post' enctype='multipart/form-data'> <input type='file' name='name'> <input class='button' type='submit' value='Upload'> </form> </div></body></html>");
-}
-
 void Network::handleConfig(void)
 {
     handleFileRead("/success.html");
     delay(100);
+    stConfig newConfig = stConfig();
     if (server.hasArg("wifiSSID"))
     {
-        storage->networkData.STA_Name = server.arg("wifiSSID");
+        newConfig.wifiSSID = server.arg("wifiSSID");
     }
     if (server.hasArg("wifiPassword"))
     {
-        storage->networkData.STA_Password = server.arg("wifiPassword");
-    }
-    if (server.hasArg("apSSID"))
-    {
-        storage->networkData.AP_Name = server.arg("apSSID");
-    }
-    if (server.hasArg("apPassword"))
-    {
-        storage->networkData.AP_Password = server.arg("apPassword");
-    }
-    if (server.hasArg("mqttBrokerIpAddress"))
-    {
-        storage->networkData.MqttBroker = server.arg("mqttBrokerIpAddress");
-    }
-    if (server.hasArg("mqttBrokerUsername"))
-    {
-        storage->networkData.MqttUser = server.arg("mqttBrokerUsername");
-    }
-    if (server.hasArg("mqttBrokerPassword"))
-    {
-        storage->networkData.MqttPassword = server.arg("mqttBrokerPassword");
-    }
-    if (server.hasArg("mqttBrokerPort"))
-    {
-        storage->networkData.MqttPort = strtol(server.arg("mqttBrokerPort").c_str(), NULL, 0);
+        newConfig.wifiPassword = server.arg("wifiPassword");
     }
     if (server.hasArg("operationMode"))
     {
-        storage->machineData.OperationMode = (enOperationMode)strtol(server.arg("operationMode").c_str(), NULL, 0);
+        newConfig.operationMode = (enOperationMode)strtol(server.arg("operationMode").c_str(), NULL, 0);
     }
-    storage->saveConfig();
-    ESP.restart();
+    storage->saveConfig(newConfig);
+    state->wifiState = enWiFiState::disconnectAccessPoint;
+    state->operationMode = newConfig.operationMode;
+    state->wifiSSID = newConfig.wifiSSID;
+    state->wifiPassword = newConfig.wifiPassword;
 }
 
 void Network::handleFileUpload(void)

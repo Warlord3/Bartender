@@ -2,14 +2,10 @@
 
 PumpController *globalController;
 
-PumpController::PumpController(uint8_t numberAddresses, int *_addresses)
+PumpController::PumpController(CommunicationController *communication, StateController *state)
 {
-    _boards = new ControllerBoard[numberAddresses];
-    for (int i = 0; i < numberAddresses; i++)
-    {
-        this->_boards[i] = ControllerBoard(_addresses[i]);
-    }
-    this->_numberAddresses = numberAddresses;
+    this->_communication = communication;
+    this->_state = state;
 }
 
 uint8_t PumpController::getBoardID(uint8_t pumpID)
@@ -25,16 +21,11 @@ void PumpController::init()
 }
 void PumpController::run()
 {
-    DEBUG_PRINTLN("Called from Interrupt");
-}
-byte PumpController::countBoards(void)
-{
-    return this->_numberAddresses;
 }
 
 void PumpController::startInterupt(void)
 {
-    if (!interuptStarted)
+    if (!_interuptStarted)
     {
         DEBUG_PRINTLN("Start Interrupt Timer");
         timer1_attachInterrupt(interruptCallback); // Add ISR Function
@@ -48,11 +39,10 @@ void ICACHE_RAM_ATTR interruptCallback()
     {
         globalController->updatePumps();
     }
-    //timer1_write(2500000); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval
 }
 void PumpController::updatePumps(void)
 {
-    for (int i = 0; i < globalController->_numberAddresses; i++)
+    for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         this->_boards[i].updatePumps();
     }
