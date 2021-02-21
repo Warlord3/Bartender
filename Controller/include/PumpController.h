@@ -13,22 +13,34 @@
 
 #define BOARD_ADR_BOT 0x20
 #define BOARD_ADR_TOP 0x21
+
+class CommunicationController;
 class PumpController
 {
 private:
     bool _interuptStarted = false;
     ControllerBoard _boards[2] = {ControllerBoard(BOARD_ADR_BOT), ControllerBoard(BOARD_ADR_TOP)};
 
-    CommunicationController *_communication;
     StateController *_state;
+    CommunicationController *_communication;
     uint8_t getBoardID(uint8_t pumpID);
+    stDrink currentDrink;
+
+    int getPumpID(uint beverageID);
     void startInterupt(void);
 
 public:
-    PumpController(CommunicationController *communication, StateController *_state);
+    PumpController();
+    ~PumpController();
+
+    void setReferences(CommunicationController *communication, StateController *state);
 
     void init();
     void run();
+
+    void setConfiguration(char *newConfig);
+    bool setDrink(char *newDrink);
+
     void startCleaning();
     void stopCleaning();
 

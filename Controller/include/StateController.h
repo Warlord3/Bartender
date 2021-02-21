@@ -1,7 +1,7 @@
 #pragma once
 #include "Enum.h"
 #include "Arduino.h"
-
+#include "Structs.h"
 class StateController
 {
 private:
@@ -16,7 +16,7 @@ public:
     String ipAddress = "";
     String macAddress = "";
 
-    int pumpCount = 0;
+    bool newDrinkPossible = true;
 
     bool pumpsRunning = false;
     bool drinkFinished = false;

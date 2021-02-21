@@ -1,7 +1,6 @@
 #pragma once
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
 #include "Enum.h"
 #include "Debug.h"
 #include "LittleFS.h"
@@ -20,7 +19,7 @@ private:
     const unsigned long WiFiTimeout = 30000;
     unsigned long PrevMillis_WiFiTimeout;
 
-    ESP8266WebServer server;
+    ESP8266WebServer _server;
 
     StateController *state;
     StorageController *storage;
@@ -40,7 +39,10 @@ private:
     String getContentType(String filename);
 
 public:
-    Network(StateController *state, StorageController *storage);
+    Network();
+    ~Network();
+
+    void setReferences(StateController *state, StorageController *storage);
 
     void init(void);
     void run(void);

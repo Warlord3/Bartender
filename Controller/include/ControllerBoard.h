@@ -11,7 +11,7 @@ class ControllerBoard
 {
 
 private:
-    PumpInfo _pumps[8];
+    stPumpInfo _pumps[8];
     uint8_t _address;
     TwoWire *_wire;
     uint16_t _dataRegister;
@@ -23,6 +23,9 @@ public:
     ControllerBoard(uint8_t address);
     ~ControllerBoard();
 
+    int getPumpID(uint beverageID);
+
+    void status(void);
     void update(bool force);
     void setMlPerMinute(float mlPerMinute, uint8_t pumpID);
     void setBeverageID(int beverageID, uint8_t pumpID);

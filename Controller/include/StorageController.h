@@ -19,9 +19,10 @@ private:
     StateController *state;
 
 public:
-    StorageController(StateController *state);
+    StorageController();
     ~StorageController();
 
+    void setReferences(StateController *state);
     File fsUploadFile;
 
     void init();

@@ -1,6 +1,12 @@
 #include "Network.h"
 
-Network::Network(StateController *state, StorageController *storage) : server(80)
+Network::Network() : _server(81)
+{
+}
+Network::~Network()
+{
+}
+void Network::setReferences(StateController *state, StorageController *storage)
 {
     this->state = state;
     DEBUG_PRINTLN("Create Network");
@@ -28,7 +34,7 @@ void Network::run(void)
     switch (state->operationMode)
     {
     case enOperationMode::configMode:
-        server.handleClient();
+        _server.handleClient();
         break;
     case enOperationMode::normalMode:
 
@@ -134,8 +140,8 @@ void Network::handleWiFi(void)
     case enWiFiState::monitorAccessPoint:
         break;
     case enWiFiState::disconnectAccessPoint:
-        server.close();
-        server.stop();
+        _server.close();
+        _server.stop();
         resetWiFi();
         if (state->operationMode == enOperationMode::normalMode)
         {
@@ -159,21 +165,21 @@ void Network::setMachineMode(enOperationMode newMode)
 
 void Network::startWebserver(void)
 {
-    server.onNotFound([this]() {
-        if (!handleFileRead(server.uri()))                    // send it if it exists
-            server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
+    _server.onNotFound([this]() {
+        if (!handleFileRead(_server.uri()))                    // send it if it exists
+            _server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
     });
-    server.on("/", HTTP_GET, [this]() { 
-                server.sendHeader("Location", "/config.html", true);
-                server.send(302,"text/plane",""); });
-    server.on(
+    _server.on("/", HTTP_GET, [this]() { 
+                _server.sendHeader("Location", "/config.html", true);
+                _server.send(302,"text/plane",""); });
+    _server.on(
         "/upload", HTTP_POST, // if the client posts to the upload page
         [this]() {
-            server.send(200);
+            _server.send(200);
         }, // Send status 200 (OK) to tell the client we are ready to receive
         [this]() { this->handleFileUpload(); });
-    server.on("/success", HTTP_POST, [this]() { DEBUG_PRINTLN("TEst"); handleConfig(); });
-    server.begin(); // start the HTTP server
+    _server.on("/success", HTTP_POST, [this]() { DEBUG_PRINTLN("TEst"); handleConfig(); });
+    _server.begin(); // start the HTTP server
     DEBUG_PRINTLN("HTTP server started.");
 }
 
@@ -182,17 +188,17 @@ void Network::handleConfig(void)
     handleFileRead("/success.html");
     delay(100);
     stConfig newConfig = stConfig();
-    if (server.hasArg("wifiSSID"))
+    if (_server.hasArg("wifiSSID"))
     {
-        newConfig.wifiSSID = server.arg("wifiSSID");
+        newConfig.wifiSSID = _server.arg("wifiSSID");
     }
-    if (server.hasArg("wifiPassword"))
+    if (_server.hasArg("wifiPassword"))
     {
-        newConfig.wifiPassword = server.arg("wifiPassword");
+        newConfig.wifiPassword = _server.arg("wifiPassword");
     }
-    if (server.hasArg("operationMode"))
+    if (_server.hasArg("operationMode"))
     {
-        newConfig.operationMode = (enOperationMode)strtol(server.arg("operationMode").c_str(), NULL, 0);
+        newConfig.operationMode = (enOperationMode)strtol(_server.arg("operationMode").c_str(), NULL, 0);
     }
     storage->saveConfig(newConfig);
     state->wifiState = enWiFiState::disconnectAccessPoint;
@@ -203,7 +209,7 @@ void Network::handleConfig(void)
 
 void Network::handleFileUpload(void)
 {
-    HTTPUpload &upload = server.upload();
+    HTTPUpload &upload = _server.upload();
     if (upload.status == UPLOAD_FILE_START)
     {
         String filename = upload.filename;
@@ -226,12 +232,12 @@ void Network::handleFileUpload(void)
             storage->fsUploadFile.close(); // Close the file again
             DEBUG_PRINT("handleFileUpload Size: ");
             DEBUG_PRINTLN(upload.totalSize);
-            server.sendHeader("Location", "/success.html"); // Redirect the client to the success page
-            server.send(303);
+            _server.sendHeader("Location", "/success.html"); // Redirect the client to the success page
+            _server.send(303);
         }
         else
         {
-            server.send(500, "text/plain", "500: couldn't create file");
+            _server.send(500, "text/plain", "500: couldn't create file");
         }
     }
 }
@@ -244,12 +250,12 @@ bool Network::handleFileRead(String path)
     String contentType = getContentType(path); // Get the MIME type
     String pathWithGz = path + ".gz";
     if (LittleFS.exists(pathWithGz) || LittleFS.exists(path))
-    {                                                       // If the file exists, either as a compressed archive, or normal
-        if (LittleFS.exists(pathWithGz))                    // If there's a compressed version available
-            path += ".gz";                                  // Use the compressed version
-        File file = LittleFS.open(path, "r");               // Open the file
-        size_t sent = server.streamFile(file, contentType); // Send it to the client
-        file.close();                                       // Close the file again
+    {                                                        // If the file exists, either as a compressed archive, or normal
+        if (LittleFS.exists(pathWithGz))                     // If there's a compressed version available
+            path += ".gz";                                   // Use the compressed version
+        File file = LittleFS.open(path, "r");                // Open the file
+        size_t sent = _server.streamFile(file, contentType); // Send it to the client
+        file.close();                                        // Close the file again
         DEBUG_PRINTLN(String("\tSent file: ") + path);
         return true;
     }

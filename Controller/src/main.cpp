@@ -8,17 +8,21 @@
 #include "CommunicationController.h"
 #include "Debug.h"
 
-StateController stateController = StateController();
-StorageController storageController = StorageController(&stateController);
-CommunicationController communicationController = CommunicationController();
-Network networkController(&stateController, &storageController);
-PumpController pumpController(&communicationController, &stateController);
+Network networkController;
+StateController stateController;
+StorageController storageController;
+PumpController pumpController;
+CommunicationController communicationController;
 
 void setup()
 {
   Serial.begin(112500);
   Serial.println("tst");
   DEBUG_PRINTLN("Bartender gestartet");
+  pumpController.setReferences(&communicationController, &stateController);
+  communicationController.setReferences(&stateController, &pumpController);
+  storageController.setReferences(&stateController);
+  networkController.setReferences(&stateController, &storageController);
 }
 
 void loop()

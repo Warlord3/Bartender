@@ -4,7 +4,7 @@ ControllerBoard::ControllerBoard(uint8_t address)
     _address = address;
     for (int i = 0; i < PUMP_NUM; i++)
     {
-        _pumps[i] = PumpInfo();
+        _pumps[i] = stPumpInfo();
         _pumps[i].ID = i;
         _pumps[i].beverageID = -1;
         _pumps[i].remainingMl = 0.0;
@@ -50,6 +50,17 @@ void ControllerBoard::updatePumps(void)
     }
 }
 
+int ControllerBoard::getPumpID(uint beverageID)
+{
+    for (int i = 0; i < PUMP_NUM; i++)
+    {
+        if (_pumps[i].beverageID == beverageID)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
 void ControllerBoard::update(bool force = false)
 {
     unsigned long currentMillis = millis();
@@ -83,7 +94,7 @@ void ControllerBoard::startPump(enPumpState direction, uint8_t pumpID)
         stopPump(pumpID);
         return;
     }
-    PumpInfo *info = &_pumps[pumpID & 0x0F];
+    stPumpInfo *info = &_pumps[pumpID & 0x0F];
     if (info->state != direction)
     {
         info->state = direction;

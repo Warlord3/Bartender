@@ -10,7 +10,10 @@ bool StorageController::backupExits(void)
     return false;
 }
 
-StorageController::StorageController(StateController *state)
+StorageController::StorageController()
+{
+}
+void StorageController::setReferences(StateController *state)
 {
     this->state = state;
 }

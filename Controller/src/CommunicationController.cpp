@@ -1,11 +1,17 @@
 #include "CommunicationController.h"
-CommunicationController::CommunicationController(/* args */) : webSocket(WEBSOCKET_PORT)
+CommunicationController::CommunicationController() : webSocket{81}
 {
-    this->clientConnected = false;
-    this->cliendID = -1;
 }
 CommunicationController::~CommunicationController()
 {
+}
+void CommunicationController::setReferences(StateController *state, PumpController *controller)
+{
+
+    this->_state = state;
+    this->_controller = controller;
+    this->clientConnected = false;
+    this->cliendID = -1;
 }
 
 bool CommunicationController::sendData(String data)
@@ -39,9 +45,30 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
     }
     break;
     case WStype_TEXT:
+    {
         DEBUG_PRINTF("[%u] get Text: %s\n", num, payload);
-
-        break;
+        char *_payload = (char *)payload;
+        char *rest;
+        String command;
+        char *data;
+        command = strtok_r(_payload, "$", &rest);
+        data = strtok_r(NULL, "$", &rest);
+        String response_msg = "";
+        if (command == "new_drink")
+        {
+            this->_controller->setDrink(data);
+        }
+        else if (command == "pump_config")
+        {
+            this->_controller->setConfiguration(data);
+        }
+        else
+        {
+            //TODO send Error msg
+            webSocket.sendTXT(cliendID, "");
+        }
+    }
+    break;
     case WStype_ERROR:
         break;
     default:
