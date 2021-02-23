@@ -39,6 +39,12 @@ class LanguageManager with ChangeNotifier {
         "Controller Configuration", "Controller Konfiguration"));
     languageEntrys.add(new LanguageEntry("beverage_configuration",
         "Bverage Configuration", "Getränke Konfiguration"));
+    languageEntrys.add(
+        new LanguageEntry("recent_drinks", "Recent Drinks", "Letzte Drinks"));
+    languageEntrys.add(new LanguageEntry(
+        "bartender_info", "Bartender Info", "Bartender Information"));
+    languageEntrys
+        .add(new LanguageEntry("connected", "Connected", "Verbunden"));
   }
 }
 
