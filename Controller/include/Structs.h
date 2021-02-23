@@ -41,3 +41,9 @@ struct stDrink
         amount[16] = {0};
     }
 };
+
+struct stPumpStatus
+{
+    int numberPumpsRunning = 0;
+    float remainingPumpTime = 0.0;
+};

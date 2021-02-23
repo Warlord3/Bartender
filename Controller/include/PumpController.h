@@ -24,7 +24,6 @@ private:
     StateController *_state;
     CommunicationController *_communication;
     uint8_t getBoardID(uint8_t pumpID);
-    stDrink currentDrink;
 
     int getPumpID(uint beverageID);
     void startInterupt(void);
@@ -39,15 +38,18 @@ public:
     void run();
 
     void setConfiguration(char *newConfig);
+    String getConfiguration(void);
     bool setDrink(char *newDrink);
 
-    void startCleaning();
-    void stopCleaning();
+    void startCleaning(void);
+    void stopCleaning(void);
+
+    bool pumpsRunning(void);
 
     void updatePumps(void);
 
     void stop(uint8_t pumpID);
-    void stopAll();
+    void stopAll(void);
     void forward(uint8_t pumpID);
     void backward(uint8_t pumpID);
 

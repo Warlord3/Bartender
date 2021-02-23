@@ -10,7 +10,6 @@
             "includePath": [
                 "d:/Projekte/Bartender/Controller/include",
                 "d:/Projekte/Bartender/Controller/src",
-                "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/LittleFS/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
                 "d:/Projekte/Bartender/Controller/.pio/libdeps/nodemcuv2/WebSockets/src",
@@ -37,6 +36,7 @@
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SdFat/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src",
+                "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/SD/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/SDFS/src",
@@ -53,7 +53,6 @@
                 "path": [
                     "d:/Projekte/Bartender/Controller/include",
                     "d:/Projekte/Bartender/Controller/src",
-                    "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/LittleFS/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
                     "d:/Projekte/Bartender/Controller/.pio/libdeps/nodemcuv2/WebSockets/src",
@@ -80,6 +79,7 @@
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SdFat/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src",
+                    "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/SD/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/SDFS/src",
