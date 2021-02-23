@@ -17,6 +17,7 @@ public:
     String macAddress = "";
 
     bool newDrinkPossible = true;
+    stDrink currentDrink;
 
     bool pumpsRunning = false;
     bool drinkFinished = false;

@@ -58,6 +58,11 @@ void ICACHE_RAM_ATTR interruptCallback()
         globalController->updatePumps();
     }
 }
+
+bool PumpController::pumpsRunning(void)
+{
+    return _boards[0].pumpStatus.numberPumpsRunning + _boards[1].pumpStatus.numberPumpsRunning != 0;
+}
 void PumpController::updatePumps(void)
 {
     for (int i = 0; i < NUM_CONTROLLERS; i++)
@@ -85,10 +90,30 @@ void PumpController::setConfiguration(char *newConfig)
     }
 }
 
+String PumpController::getConfiguration(void)
+{
+    String result = "pump_config";
+    for (int i = 0; i < NUM_CONTROLLERS; i++)
+    {
+        for (int j = 0; j < PUMP_NUM; j++)
+        {
+            stPumpInfo info = _boards[i].pumpInfo(j);
+            result += info.ID;
+            result += ":";
+            result += info.beverageID;
+            result += ":";
+            result += info.mlPerMinute;
+            result += ";";
+        }
+    }
+    return result;
+}
+
 bool PumpController::setDrink(char *newDrink)
 {
     if (_state->newDrinkPossible)
     {
+        _state->newDrinkPossible = false;
         DEBUG_PRINTLN("Set new Drink");
         stDrink drink = stDrink();
         char *ptr;
@@ -103,7 +128,14 @@ bool PumpController::setDrink(char *newDrink)
             drink.amount[index] = amount;
             ptr = strtok_r(NULL, ";", &rest);
         }
-        this->currentDrink = drink;
+        _state->currentDrink = drink;
+        for (int i = 0; i < NUM_CONTROLLERS; i++)
+        {
+            for (int j = 0; j < PUMPS_PER_CONTROLLER; j++)
+            {
+                _boards[i].setRemainingMl(drink.amount[j + PUMPS_PER_CONTROLLER * i], j);
+            }
+        }
         return true;
     }
     DEBUG_PRINTLN("New Drink was declined");

@@ -17,6 +17,11 @@ ControllerBoard::~ControllerBoard()
 {
 }
 
+stPumpInfo ControllerBoard::pumpInfo(uint8_t pumpID)
+{
+    return _pumps[pumpID & 0x0F];
+}
+
 uint8_t ControllerBoard::getDirection(enPumpState direction)
 {
     switch (direction)
@@ -41,7 +46,12 @@ void ControllerBoard::updatePumps(void)
 {
     for (int i = 0; i < PUMP_NUM; i++)
     {
-        _pumps[i].remainingMl -= _pumps[i & 0x0F].mlPerMinute * 100 / (60 * 1000);
+        if (_pumps[i].remainingMl <= 0 || _pumps[i].mlPerMinute <= 0)
+        {
+            stopPump(i);
+            continue;
+        }
+        _pumps[i].remainingMl -= _pumps[i].mlPerMinute * 100 / (60 * 1000);
         if (_pumps[i].remainingMl <= 0)
         {
             _pumps[i].remainingMl = 0;
@@ -94,6 +104,8 @@ void ControllerBoard::startPump(enPumpState direction, uint8_t pumpID)
         stopPump(pumpID);
         return;
     }
+    pumpStatus.numberPumpsRunning += 1;
+
     stPumpInfo *info = &_pumps[pumpID & 0x0F];
     if (info->state != direction)
     {
@@ -103,11 +115,15 @@ void ControllerBoard::startPump(enPumpState direction, uint8_t pumpID)
 
 void ControllerBoard::stopPump(uint8_t pumpID)
 {
+    pumpStatus.numberPumpsRunning -= 1;
+
     _pumps[pumpID & 0x0F].state = enPumpState::stop;
 }
 
 void ControllerBoard::startAllPumps(enPumpState direction)
 {
+    pumpStatus.numberPumpsRunning = PUMP_NUM;
+
     for (int i = 0; i < PUMP_NUM; i++)
     {
         _pumps[i].state = direction;
@@ -116,6 +132,8 @@ void ControllerBoard::startAllPumps(enPumpState direction)
 
 void ControllerBoard::stopAllPumps(bool force = false)
 {
+    pumpStatus.numberPumpsRunning = 0;
+
     for (int i = 0; i < PUMP_NUM; i++)
     {
         _pumps[i].state = enPumpState::stop;
@@ -128,13 +146,18 @@ void ControllerBoard::stopAllPumps(bool force = false)
 
 void ControllerBoard::setMlPerMinute(float mlPerMinute, uint8_t pumpID)
 {
+    DEBUG_PRINTF("Set ml/min: %i for Pump: %i", mlPerMinute, pumpID);
+
     _pumps[pumpID & 0x0F].mlPerMinute = mlPerMinute;
 }
 void ControllerBoard::setBeverageID(int beverageID, uint8_t pumpID)
 {
+    DEBUG_PRINTF("Set BeverageID: %i for Pump: %i", beverageID, pumpID);
     _pumps[pumpID & 0x0F].beverageID = beverageID;
 }
 void ControllerBoard::setRemainingMl(float remainingMl, uint8_t pumpID)
 {
+    DEBUG_PRINTF("Set Remaining ml: %i for Pump: %i", remainingMl, pumpID);
+
     _pumps[pumpID & 0x0F].remainingMl = remainingMl;
 }
