@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 
+import 'Start/PageStart.dart';
+
 final _navigatorKey = GlobalKey<NavigatorState>();
 int _selectedPage = 0;
 
@@ -31,7 +33,7 @@ class _PageRouterState extends State<PageRouter> {
           key: _navigatorKey,
           initialRoute: "/Home",
           onGenerateRoute: (RouteSettings settings) {
-            Widget page;
+            Widget page = Container();
             switch (settings.name) {
               case "/Home":
                 page = HomePage();
@@ -47,6 +49,9 @@ class _PageRouterState extends State<PageRouter> {
                 break;
               case "/Settings":
                 page = SettingsPage();
+                break;
+              default:
+                page = StartPage();
                 break;
             }
             return PageRouteBuilder(
@@ -130,6 +135,9 @@ class _PageRouterState extends State<PageRouter> {
             break;
           case 4:
             _navigatorKey.currentState.pushNamed("/Settings");
+            break;
+          default:
+            _navigatorKey.currentState.pushNamed("/Home");
             break;
         }
       }
