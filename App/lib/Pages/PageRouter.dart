@@ -22,6 +22,7 @@ class _PageRouterState extends State<PageRouter> {
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(

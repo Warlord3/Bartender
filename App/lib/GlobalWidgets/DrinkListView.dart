@@ -1,3 +1,4 @@
+import 'package:bartender/GlobalWidgets/MixDrinkWidget.dart';
 import 'package:bartender/Pages/Drinks/SubPage/DrinkEdit/PageDrinkEdit.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
@@ -67,73 +68,14 @@ class _ListTileState extends State<ListTile> {
               showGeneralDialog(
                 barrierDismissible: true,
                 barrierLabel: '',
+                barrierColor: Colors.black38,
                 transitionDuration: Duration(milliseconds: 200),
-                pageBuilder: (ctx, anim1, anim2) => Dialog(
-                  insetPadding: EdgeInsets.symmetric(
-                    horizontal: 100,
-                    vertical: 340,
-                  ),
-                  backgroundColor: Colors.transparent,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Mix it",
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            RawMaterialButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              disabledElevation: 1,
-                              shape: CircleBorder(),
-                              elevation: 0,
-                              padding: EdgeInsets.all(15.0),
-                              onPressed: () {
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop();
-                              },
-                              fillColor: Colors.green.withOpacity(0.2),
-                              child: Icon(
-                                Icons.done,
-                                color: Colors.green,
-                              ),
-                            ),
-                            RawMaterialButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              disabledElevation: 1,
-                              shape: CircleBorder(),
-                              elevation: 0,
-                              padding: EdgeInsets.all(15.0),
-                              onPressed: () {
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop();
-                              },
-                              fillColor: Colors.red.withOpacity(0.2),
-                              child: Icon(
-                                Icons.clear,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                pageBuilder: (ctx, anim1, anim2) => MixDringWidget(),
                 transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  filter: ImageFilter.blur(
+                    sigmaX: anim1.value * 3,
+                    sigmaY: anim1.value * 3,
+                  ),
                   child: FadeTransition(
                     child: child,
                     opacity: anim1,
