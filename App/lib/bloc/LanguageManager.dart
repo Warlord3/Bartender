@@ -45,6 +45,8 @@ class LanguageManager with ChangeNotifier {
         "bartender_info", "Bartender Info", "Bartender Information"));
     languageEntrys
         .add(new LanguageEntry("connected", "Connected", "Verbunden"));
+    languageEntrys.add(new LanguageEntry("problems", "Problems", "Probleme"));
+    languageEntrys.add(new LanguageEntry("status", "Status", "Status"));
   }
 }
 

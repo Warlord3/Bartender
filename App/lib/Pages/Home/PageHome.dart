@@ -66,6 +66,7 @@ class _HOmePageState extends State<HomePage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
+                      // ? Maybe consider using a table or grid for better displayment
                       child: Column(
                         children: [
                           Row(
@@ -75,7 +76,32 @@ class _HOmePageState extends State<HomePage> {
                               ),
                               Icon(Icons.done),
                               // ToDo add check for connected or not
+                              // ? Maybe use text instead of icons for better displayment in grid / table
                               //Icon(Icons.Icons.clear)
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                languageManager.getData("status") + ":",
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5),
+                                child: Text("Mixing Drink"),
+                              ),
+                              // ToDo add bartender status
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                languageManager.getData("problems") + ":",
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5),
+                                child: Text("None"),
+                              ),
+                              // ToDo add bartender error
                             ],
                           )
                         ],
