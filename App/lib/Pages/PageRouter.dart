@@ -9,14 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 
+final _navigatorKey = GlobalKey<NavigatorState>();
+int _selectedPage = 0;
+
 class PageRouter extends StatefulWidget {
   @override
   _PageRouterState createState() => _PageRouterState();
 }
 
 class _PageRouterState extends State<PageRouter> {
-  final _navigatorKey = GlobalKey<NavigatorState>();
-  int _selectedPage = 0;
   LanguageManager languageManager;
 
   @override
