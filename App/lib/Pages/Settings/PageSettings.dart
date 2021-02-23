@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bartender/Pages/Settings/LocalWidgets/BeverageConfiguration.dart';
 import 'package:bartender/Pages/Settings/LocalWidgets/ControllerConfiguration.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -130,7 +131,50 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
           ],
-        )
+        ),
+        /*
+          Beverage Confgiuration
+        */
+        TableRow(
+          children: [
+            TableCell(
+                child: Center(
+                  child: Text(
+                    languageManager.getData("beverage_configuration"),
+                  ),
+                ),
+                verticalAlignment: TableCellVerticalAlignment.middle),
+            TableCell(
+              child: Center(
+                child: IconButton(
+                  icon: Icon(Icons.local_gas_station),
+                  onPressed: () {
+                    showGeneralDialog(
+                      barrierDismissible: true,
+                      barrierLabel: '',
+                      barrierColor: Colors.black38,
+                      transitionDuration: Duration(milliseconds: 200),
+                      pageBuilder: (ctx, anim1, anim2) =>
+                          BeverageConfiguration(),
+                      transitionBuilder: (ctx, anim1, anim2, child) =>
+                          BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: anim1.value * 3,
+                          sigmaY: anim1.value * 3,
+                        ),
+                        child: FadeTransition(
+                          child: child,
+                          opacity: anim1,
+                        ),
+                      ),
+                      context: context,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     ));
   }

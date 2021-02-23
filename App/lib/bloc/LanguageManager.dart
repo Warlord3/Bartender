@@ -37,6 +37,8 @@ class LanguageManager with ChangeNotifier {
         .add(new LanguageEntry("settings", "Settings", "Einstellungen"));
     languageEntrys.add(new LanguageEntry("controller_configuration",
         "Controller Configuration", "Controller Konfiguration"));
+    languageEntrys.add(new LanguageEntry("beverage_configuration",
+        "Bverage Configuration", "Getränke Konfiguration"));
   }
 }
 
