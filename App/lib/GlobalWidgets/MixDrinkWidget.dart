@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MixDringWidget extends StatelessWidget {
+  final String drinkName;
+  MixDringWidget({this.drinkName});
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -17,18 +19,24 @@ class MixDringWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 30),
                 child: Column(
                   children: [
-                    Text(
-                      "Mix",
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.white,
+                    Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        "Mix",
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    Text(
-                      "{Name of the Drink} ?",
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.white,
+                    Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        drinkName,
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
