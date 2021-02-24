@@ -5,6 +5,7 @@ import 'package:bartender/Pages/Beverage/PageBeverage.dart';
 import 'package:bartender/Pages/Beverage/SubPage/BeverageEdit/PageBeverageEdit.dart';
 import 'package:bartender/Pages/Settings/PageSettings.dart';
 import 'package:bartender/Pages/Home/PageHome.dart';
+import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
@@ -21,10 +22,12 @@ class PageRouter extends StatefulWidget {
 
 class _PageRouterState extends State<PageRouter> {
   LanguageManager languageManager;
+  PageStateManager pageState;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
+    pageState = Provider.of<PageStateManager>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -107,7 +110,7 @@ class _PageRouterState extends State<PageRouter> {
           )
         ],
         onTap: _pageSelect,
-        currentIndex: _selectedPage,
+        currentIndex: pageState.lastPageIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.transparent,
         type: BottomNavigationBarType.shifting,
@@ -119,7 +122,7 @@ class _PageRouterState extends State<PageRouter> {
 
   void _pageSelect(int value) {
     setState(() {
-      if (_selectedPage != value) {
+      if (pageState.lastPageIndex != value) {
         switch (value) {
           case 0:
             _navigatorKey.currentState.pushNamed("/Home");
@@ -141,7 +144,7 @@ class _PageRouterState extends State<PageRouter> {
             break;
         }
       }
-      _selectedPage = value;
+      pageState.lastPageIndex = value;
     });
   }
 
@@ -152,7 +155,7 @@ class _PageRouterState extends State<PageRouter> {
   */
   Widget showFloatingButton() {
     Widget page;
-    switch (_selectedPage) {
+    switch (pageState.lastPageIndex) {
       case 1:
         page = DrinkEditPage();
         break;
@@ -166,7 +169,7 @@ class _PageRouterState extends State<PageRouter> {
       elevation: 10,
       backgroundColor: Colors.red,
       shape: CircleBorder(),
-      heroTag: "FloatingButton$_selectedPage",
+      heroTag: "FloatingButton$pageState.lastPageIndex",
       onPressed: () {
         showDialog(
           context: context,
