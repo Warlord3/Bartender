@@ -1,7 +1,9 @@
-import 'package:bartender/Pages/Beverage/SubPage/BeverageEdit/PageBeverageEdit.dart';
+
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'LocalWidgets/PageBeverageEdit.dart';
 
 class BeveragePage extends StatefulWidget {
   @override

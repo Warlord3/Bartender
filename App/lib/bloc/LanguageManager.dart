@@ -49,6 +49,12 @@ class LanguageManager with ChangeNotifier {
         .add(new LanguageEntry("connected", "Connected", "Verbunden"));
     languageEntrys.add(new LanguageEntry("problems", "Problems", "Probleme"));
     languageEntrys.add(new LanguageEntry("status", "Status", "Status"));
+    languageEntrys.add(
+        new LanguageEntry("saved_drink", "Saved Drink", "Drink gespeichert"));
+    languageEntrys
+        .add(new LanguageEntry("drinkname", "Drinkname", "Drinkname"));
+    languageEntrys.add(new LanguageEntry("drinkname_cant_be_empty",
+        "Drinkname can't be empty", "Drinkname kann nicht leer sein"));
   }
 }
 

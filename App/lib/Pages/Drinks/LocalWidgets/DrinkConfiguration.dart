@@ -1,26 +1,29 @@
+import 'dart:developer';
+
 import 'package:bartender/Resources/Style.dart';
+import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 
-class DrinkEditPage extends StatefulWidget {
+class DrinkConfiguration extends StatefulWidget {
   Drink newDrink;
   MainData mainData;
-  DrinkEditPage({this.newDrink}) {
+  DrinkConfiguration({this.newDrink}) {
     if (this.newDrink == null) {
       this.newDrink = Drink.newDrink();
     }
   }
-
   @override
-  _DrinkEditPageState createState() => _DrinkEditPageState();
+  _DrinkConfigurationState createState() => _DrinkConfigurationState();
 }
 
-class _DrinkEditPageState extends State<DrinkEditPage> {
+class _DrinkConfigurationState extends State<DrinkConfiguration> {
   List<TextEditingController> _controllers;
   TextEditingController _nameController;
+  LanguageManager languageManager;
 
   @override
   void initState() {
@@ -45,33 +48,46 @@ class _DrinkEditPageState extends State<DrinkEditPage> {
   @override
   Widget build(BuildContext context) {
     widget.mainData = Provider.of<MainData>(context);
+    languageManager = Provider.of<LanguageManager>(context);
 
-    return Column(
-      children: [
-        Flexible(
-          fit: FlexFit.tight,
-          child: SingleChildScrollView(
+    return Material(
+      color: Colors.transparent,
+      // First GestureDetector is used to check for pop of Material widget which takes up the whole page
+      // For more information read second comment below
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).pop();
+        },
+        child: SingleChildScrollView(
+          // Second GestureDetector is to disable pop of dialog when pressing sub components of first GestureDetector
+          // This is needed to repilcate the normal feel of a dialog because we need to use a Material root widget in
+          // order to use the TextField component
+          // ? mayebe add more gesture detector for better feeling when trying to close dialog
+          child: GestureDetector(
+            onTap: () {},
             child: Container(
-              margin: EdgeInsets.all(8),
-              color: Colors.white,
+              color: Colors.transparent,
               child: Column(
                 children: [
-                  InputTextfield(
-                    shadow: Style.shadow,
-                    textController: _nameController,
-                    labelText: "Drinkname",
-                    errorMsg: "Drinkname can't be empty",
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      style: TextStyle(fontSize: 30),
+                      decoration: InputDecoration(
+                        fillColor: Colors.transparent,
+                        hintText: languageManager.getData("drinkname"),
+                      ),
+                    ),
                   ),
                   SizedBox(
                     height: 15,
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      boxShadow: [Style.shadow],
-                    ),
+                    color: Colors.transparent,
                     child: Column(
                       children: [
                         Text(
@@ -100,14 +116,17 @@ class _DrinkEditPageState extends State<DrinkEditPage> {
                               .toList(),
                         ),
                         Container(
+                          color: Colors.transparent,
                           width: double.infinity,
                           child: Tooltip(
                             message: "Add Ingredients to Drink",
                             child: RaisedButton(
                               onPressed: () {
                                 setState(() {
-                                  widget.newDrink.ingredients.add(Ingredient.empty());
-                                  _controllers.add(TextEditingController(text: "0.0"));
+                                  widget.newDrink.ingredients
+                                      .add(Ingredient.empty());
+                                  _controllers
+                                      .add(TextEditingController(text: "0.0"));
                                 });
                               },
                               child: Text("Add Ingredient"),
@@ -121,108 +140,109 @@ class _DrinkEditPageState extends State<DrinkEditPage> {
                     height: 15,
                   ),
                   Container(
-                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        boxShadow: [Style.shadow],
-                      ),
-                      width: double.infinity,
-                      child: Column(
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                    color: Colors.transparent,
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        DrinkInfoText(
+                          infoText: "Ingredients",
+                          value: widget.newDrink.ingredients.length
+                              .toStringAsFixed(0),
+                        ),
+                        DrinkInfoText(
+                          infoText: "ml",
+                          value: widget.newDrink.amount.toStringAsFixed(0),
+                        ),
+                        DrinkInfoText(
+                          infoText: "%",
+                          value: widget.newDrink.percent.toStringAsFixed(1),
+                        ),
+                        DrinkInfoText(
+                          infoText: "Kcal",
+                          value: widget.newDrink.kcal.toStringAsFixed(1),
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          DrinkInfoText(
-                            infoText: "Ingredients",
-                            value: widget.newDrink.ingredients.length.toStringAsFixed(0),
+                          RawMaterialButton(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            disabledElevation: 1,
+                            shape: CircleBorder(),
+                            elevation: 0,
+                            padding: EdgeInsets.all(10.0),
+                            onPressed: () {
+                              widget.mainData.saveDrink(widget.newDrink);
+                              setState(() {
+                                widget.newDrink = Drink.newDrink();
+                                clearPage();
+                              });
+                              showDialog(
+                                context: context,
+                                builder: (context) => Dialog(
+                                  child: Container(
+                                    width: 100,
+                                    height: 50,
+                                    color: Colors.transparent,
+                                    child: Center(
+                                      child: Text(
+                                        languageManager.getData("saved_drink"),
+                                        style: TextStyle(fontSize: 30),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                              // Navigator.of(context, rootNavigator: true).pop();
+                            },
+                            fillColor: Colors.green.withOpacity(0.3),
+                            child: SizedBox(
+                              child: Icon(
+                                Icons.save,
+                                color: Colors.green[700],
+                                size: 40,
+                              ),
+                            ),
                           ),
-                          DrinkInfoText(
-                            infoText: "ml",
-                            value: widget.newDrink.amount.toStringAsFixed(0),
+                          RawMaterialButton(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            disabledElevation: 1,
+                            shape: CircleBorder(),
+                            elevation: 0,
+                            padding: EdgeInsets.all(10.0),
+                            onPressed: () {
+                              Navigator.of(context, rootNavigator: true).pop();
+                            },
+                            fillColor: Colors.red.withOpacity(0.3),
+                            child: Icon(
+                              Icons.clear,
+                              color: Colors.red,
+                              size: 40,
+                            ),
                           ),
-                          DrinkInfoText(
-                            infoText: "%",
-                            value: widget.newDrink.percent.toStringAsFixed(1),
-                          ),
-                          DrinkInfoText(
-                            infoText: "Kcal",
-                            value: widget.newDrink.kcal.toStringAsFixed(1),
-                          )
                         ],
-                      )),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
           ),
         ),
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-          margin: EdgeInsets.only(top: 4, right: 8, left: 8, bottom: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            boxShadow: [Style.shadow],
-          ),
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: RaisedButton(
-                      onPressed: () {
-                        widget.mainData.saveDrink(widget.newDrink);
-                        setState(() {
-                          widget.newDrink = Drink.newDrink();
-                          clearPage();
-                        });
-                      },
-                      child: Text("Save and New"),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Expanded(
-                    child: RaisedButton(
-                      onPressed: () {
-                        if (widget.newDrink.valid()) {
-                          widget.mainData.saveDrink(widget.newDrink);
-                          Navigator.of(context).pop();
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text("Missing Fields"),
-                              content: Text("Please fill and select all Fields"),
-                              actions: [
-                                FlatButton(
-                                  child: Text("OK"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      },
-                      child: Text("Save"),
-                    ),
-                  ),
-                ],
-              ),
-              RaisedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Cancel"),
-              ),
-            ],
-          ),
-        )
-      ],
+      ),
     );
   }
 
@@ -233,13 +253,16 @@ class _DrinkEditPageState extends State<DrinkEditPage> {
 
   void initControllers() {
     _controllers = List<TextEditingController>.generate(
-        widget.newDrink.ingredients.length, (index) => TextEditingController(text: widget.newDrink.ingredients[index].amount.toString()));
+        widget.newDrink.ingredients.length,
+        (index) => TextEditingController(
+            text: widget.newDrink.ingredients[index].amount.toString()));
   }
 
   void update() {
     widget.newDrink.name = _nameController.text;
     for (int i = 0; i < _controllers.length; i++) {
-      widget.newDrink.ingredients[i].amount = double.parse(_controllers[i].text);
+      widget.newDrink.ingredients[i].amount =
+          double.parse(_controllers[i].text);
     }
     setState(() {
       widget.newDrink.updateStats();
@@ -256,7 +279,12 @@ class _DrinkEditPageState extends State<DrinkEditPage> {
 }
 
 class IngredientsEditor extends StatefulWidget {
-  IngredientsEditor({this.ingredient, this.index, this.refresh, this.delete, this.controller});
+  IngredientsEditor(
+      {this.ingredient,
+      this.index,
+      this.refresh,
+      this.delete,
+      this.controller});
   Function refresh;
   Function(int) delete;
   Ingredient ingredient;
@@ -281,8 +309,13 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
               color: Colors.black,
             ),
             children: [
-              TextSpan(text: "${widget.index + 1}. ", style: TextStyle(fontWeight: FontWeight.bold)),
-              TextSpan(text: widget.ingredient.beverage.name == "" ? "Choose Beverage" : widget.ingredient.beverage.name),
+              TextSpan(
+                  text: "${widget.index + 1}. ",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(
+                  text: widget.ingredient.beverage.name == ""
+                      ? "Choose Beverage"
+                      : widget.ingredient.beverage.name),
             ],
           ),
         ),
@@ -304,7 +337,8 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () async {
-                        var result = await chooseBeverageDialog(context, beverages);
+                        var result =
+                            await chooseBeverageDialog(context, beverages);
                         if (result != null) {
                           setState(() {
                             widget.ingredient.beverage.update(result);
@@ -315,7 +349,9 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                       child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Text(
-                          widget.ingredient.beverage.name == "" ? "Select Beverage" : "Change Beverage",
+                          widget.ingredient.beverage.name == ""
+                              ? "Select Beverage"
+                              : "Change Beverage",
                           style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
@@ -339,13 +375,18 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                     labelStyle: TextStyle(color: Colors.red, fontSize: 17),
                     enabledBorder: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(),
-                    errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+                    errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red)),
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.all(12),
                   ),
-                  inputFormatters: [FilteringTextInputFormatter(RegExp("[0-9|\.]"), allow: true)],
+                  inputFormatters: [
+                    FilteringTextInputFormatter(RegExp("[0-9|\.]"), allow: true)
+                  ],
                   onSubmitted: (value) => widget.refresh(),
-                  onTap: () => widget.controller.selection = TextSelection(baseOffset: 0, extentOffset: widget.controller.value.text.length),
+                  onTap: () => widget.controller.selection = TextSelection(
+                      baseOffset: 0,
+                      extentOffset: widget.controller.value.text.length),
                   style: TextStyle(fontSize: 15),
                 ),
               ),
@@ -395,7 +436,8 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
           }
 
           return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             insetPadding: EdgeInsets.all(15),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -458,7 +500,8 @@ class BeverageList extends StatelessWidget {
               },
               child: Container(
                 alignment: Alignment.centerLeft,
-                child: Text(beverages[index].name, style: TextStyle(fontSize: 15)),
+                child:
+                    Text(beverages[index].name, style: TextStyle(fontSize: 15)),
                 width: double.infinity,
                 height: 40,
               ),
@@ -471,7 +514,8 @@ class BeverageList extends StatelessWidget {
 }
 
 class InputTextfield extends StatefulWidget {
-  InputTextfield({this.labelText, this.errorMsg, this.shadow, this.textController});
+  InputTextfield(
+      {this.labelText, this.errorMsg, this.shadow, this.textController});
 
   final BoxShadow shadow;
   final TextEditingController textController;
@@ -518,7 +562,8 @@ class _InputTextfieldState extends State<InputTextfield> {
             labelStyle: TextStyle(color: Colors.red),
             enabledBorder: OutlineInputBorder(),
             focusedBorder: OutlineInputBorder(),
-            errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+            errorBorder:
+                OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.all(20),
           ),
@@ -553,7 +598,8 @@ class DrinkInfoText extends StatelessWidget {
             color: Colors.black,
           ),
           children: [
-            TextSpan(text: "$value ", style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(
+                text: "$value ", style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: infoText),
           ],
         ),
