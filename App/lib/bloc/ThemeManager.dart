@@ -2,24 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ThemeChangerProvider with ChangeNotifier {
-  ThemeMode themeMode = ThemeMode.light;
+  ThemeMode _themeMode = ThemeMode.system;
 
   ThemeChangerProvider();
-  getTheme() => themeMode;
-  isDarkTheme() {
-    if (themeMode == ThemeMode.dark) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  toggleTheme() {
-    if (themeMode == ThemeMode.light) {
-      themeMode = ThemeMode.dark;
-    } else {
-      themeMode = ThemeMode.light;
-    }
+  getTheme() => _themeMode;
+  setTheme(ThemeMode themeMode) {
+    _themeMode = themeMode;
     notifyListeners();
   }
 }

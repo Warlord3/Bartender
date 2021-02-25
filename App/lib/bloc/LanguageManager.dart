@@ -27,8 +27,10 @@ class LanguageManager with ChangeNotifier {
   */
   init() {
     languageEntrys.add(new LanguageEntry("langauge", "Language", "Sprache"));
-    languageEntrys
-        .add(new LanguageEntry("dark_theme", "Dark Theme", "Dunkles Design"));
+    languageEntrys.add(new LanguageEntry("theme", "Theme", "Design"));
+    languageEntrys.add(new LanguageEntry("light", "Light", "Hell"));
+    languageEntrys.add(new LanguageEntry("dark", "Dark", "Dunkel"));
+    languageEntrys.add(new LanguageEntry("system", "System", "System"));
     languageEntrys.add(new LanguageEntry("favorite", "Favorite", "Favoriten"));
     languageEntrys.add(new LanguageEntry("home", "Home", "Home"));
     languageEntrys.add(new LanguageEntry("drinks", "Drinks", "Drinks"));
