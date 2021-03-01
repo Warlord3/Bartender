@@ -16,7 +16,7 @@ void Network::setReferences(StateController *state, StorageController *storage)
 
 void Network::init(void)
 {
-
+    wifi_set_sleep_type(NONE_SLEEP_T);
     DEBUG_PRINTLN("Init Network");
     resetWiFi();
 }

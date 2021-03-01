@@ -1,5 +1,5 @@
 #include "CommunicationController.h"
-CommunicationController::CommunicationController() : webSocket{81}
+CommunicationController::CommunicationController() : webSocket(81)
 {
 }
 CommunicationController::~CommunicationController()
@@ -80,7 +80,7 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
         else
         {
             //TODO send Error msg
-            webSocket.sendTXT(cliendID, "");
+            //webSocket.sendTXT(cliendID, "");
         }
     }
     break;
@@ -92,6 +92,7 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
 }
 void CommunicationController::init(void)
 {
+    //webSocket.enableHeartbeat(15000, 3000, 2);
     webSocket.begin();
     //Use Lambda to call Class member function
     webSocket.onEvent([this](uint8_t num, WStype_t type, uint8_t *payload, size_t length) { webSocketEvent(num, type, payload, length); });

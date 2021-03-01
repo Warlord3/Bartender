@@ -1,4 +1,5 @@
 import 'package:bartender/Pages/Start/PageStart.dart';
+import 'package:bartender/bloc/ConnectionManager.dart';
 import 'package:bartender/bloc/LocalStorageManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,9 @@ void main() => runApp(MultiProvider(
         ),
         ChangeNotifierProvider<LanguageManager>(
           create: (context) => LanguageManager(),
+        ),
+        ChangeNotifierProvider<ConnectionManager>(
+          create: (context) => ConnectionManager(),
         )
       ],
       child: MainPage(),
