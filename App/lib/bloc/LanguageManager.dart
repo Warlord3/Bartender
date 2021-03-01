@@ -27,8 +27,10 @@ class LanguageManager with ChangeNotifier {
   */
   init() {
     languageEntrys.add(new LanguageEntry("langauge", "Language", "Sprache"));
-    languageEntrys
-        .add(new LanguageEntry("dark_theme", "Dark Theme", "Dunkles Design"));
+    languageEntrys.add(new LanguageEntry("theme", "Theme", "Design"));
+    languageEntrys.add(new LanguageEntry("light", "Light", "Hell"));
+    languageEntrys.add(new LanguageEntry("dark", "Dark", "Dunkel"));
+    languageEntrys.add(new LanguageEntry("system", "System", "System"));
     languageEntrys.add(new LanguageEntry("favorite", "Favorite", "Favoriten"));
     languageEntrys.add(new LanguageEntry("home", "Home", "Home"));
     languageEntrys.add(new LanguageEntry("drinks", "Drinks", "Drinks"));
@@ -47,6 +49,12 @@ class LanguageManager with ChangeNotifier {
         .add(new LanguageEntry("connected", "Connected", "Verbunden"));
     languageEntrys.add(new LanguageEntry("problems", "Problems", "Probleme"));
     languageEntrys.add(new LanguageEntry("status", "Status", "Status"));
+    languageEntrys.add(
+        new LanguageEntry("saved_drink", "Saved Drink", "Drink gespeichert"));
+    languageEntrys
+        .add(new LanguageEntry("drinkname", "Drinkname", "Drinkname"));
+    languageEntrys.add(new LanguageEntry("drinkname_cant_be_empty",
+        "Drinkname can't be empty", "Drinkname kann nicht leer sein"));
   }
 }
 

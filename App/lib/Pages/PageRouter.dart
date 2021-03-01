@@ -1,8 +1,8 @@
+import 'dart:ui';
+
 import 'package:bartender/Pages/Drinks/PageDrinks.dart';
-import 'package:bartender/Pages/Drinks/SubPage/DrinkEdit/PageDrinkEdit.dart';
 import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
-import 'package:bartender/Pages/Beverage/SubPage/BeverageEdit/PageBeverageEdit.dart';
 import 'package:bartender/Pages/Settings/PageSettings.dart';
 import 'package:bartender/Pages/Home/PageHome.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 
+import 'Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'Start/PageStart.dart';
 
 final _navigatorKey = GlobalKey<NavigatorState>();
@@ -154,13 +155,10 @@ class _PageRouterState extends State<PageRouter> {
       - Beverages
   */
   Widget showFloatingButton() {
-    Widget page;
+    Widget widget;
     switch (pageState.lastPageIndex) {
-      case 1:
-        page = DrinkEditPage();
-        break;
       case 2:
-        page = BeverageEditPage();
+        widget = DrinkConfiguration();
         break;
       default:
         return null;
@@ -171,12 +169,23 @@ class _PageRouterState extends State<PageRouter> {
       shape: CircleBorder(),
       heroTag: "FloatingButton$pageState.lastPageIndex",
       onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) => Dialog(
-            insetPadding: EdgeInsets.all(15),
-            child: page,
+        showGeneralDialog(
+          barrierDismissible: true,
+          barrierLabel: '',
+          barrierColor: Colors.black38,
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (ctx, anim1, anim2) => widget,
+          transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: anim1.value * 3,
+              sigmaY: anim1.value * 3,
+            ),
+            child: FadeTransition(
+              child: child,
+              opacity: anim1,
+            ),
           ),
+          context: context,
         );
       },
       child: Icon(
