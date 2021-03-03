@@ -1,5 +1,5 @@
 import 'package:bartender/GlobalWidgets/MixDrinkWidget.dart';
-import 'package:bartender/Pages/Drinks/SubPage/DrinkEdit/PageDrinkEdit.dart';
+import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,7 @@ class _ListTileState extends State<ListTile> {
                 context: context,
                 builder: (context) => Dialog(
                   insetPadding: EdgeInsets.all(15),
-                  child: DrinkEditPage(
+                  child: DrinkConfiguration(
                     newDrink: widget.drink,
                   ),
                 ),
