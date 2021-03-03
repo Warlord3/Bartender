@@ -7,8 +7,10 @@ class ThemeChangerProvider with ChangeNotifier {
   ThemeChangerProvider();
   getTheme() => _themeMode;
   setTheme(ThemeMode themeMode) {
-    _themeMode = themeMode;
-    notifyListeners();
+    if (themeMode != this._themeMode) {
+      _themeMode = themeMode;
+      notifyListeners();
+    }
   }
 }
 
