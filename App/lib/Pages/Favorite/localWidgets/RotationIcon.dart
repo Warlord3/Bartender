@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class ReflectIcon extends StatefulWidget {
   final String toolTipNormal;
   final String toolTipTurned;

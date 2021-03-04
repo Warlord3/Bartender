@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class ExpandWidget extends StatefulWidget {
   final Widget child;
   bool expand;

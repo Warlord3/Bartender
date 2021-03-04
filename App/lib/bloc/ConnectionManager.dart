@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -61,6 +60,7 @@ class ConnectionManager with ChangeNotifier {
     notifyListeners();
   }
 
+  // ignore: unused_element
   _state() {
     switch (_webSocket.readyState) {
       case WebSocket.connecting:

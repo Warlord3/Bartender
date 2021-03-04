@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
 
-import 'ExpandWidget.dart';
-
 class DrinkListview extends StatelessWidget {
   final List<Drink> drinks;
   final DrinkType drinkType;
@@ -37,6 +35,7 @@ class DrinkListview extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class ListTile extends StatefulWidget {
   Key key;
   Drink drink;
@@ -277,7 +276,7 @@ class _ListTileState extends State<ListTile> {
   }
 
   List<Row> buildIngredient(Drink drink) {
-    List<Row> rows = List<Row>();
+    List<Row> rows = [];
     rows.add(
       Row(
           mainAxisSize: MainAxisSize.max,
