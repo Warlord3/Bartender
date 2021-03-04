@@ -13,18 +13,34 @@ class MainData with ChangeNotifier {
   MainData({allDrinks, favoriteDrinks, recentlyCreatedDrinks, beverages});
   void testData() {
     this.allDrinks = new List<Drink>.generate(
-        40,
-        (i) => Drink(
-            name: "Drink" + i.toString(),
-            favorite: i % 2 == 0,
-            id: i,
-            ingredients: List<Ingredient>.generate(
-                10,
-                (index) => Ingredient(
-                    amount: index.toDouble(),
-                    beverage: Beverage(name: "Colaasdddddddddddddddddddddd", addition: "Coca-Cola", percent: 0.0, kcal: 5)))));
+      40,
+      (i) => Drink(
+        name: "Drink" + i.toString(),
+        favorite: i % 2 == 0,
+        id: i,
+        ingredients: List<Ingredient>.generate(
+          10,
+          (index) => Ingredient(
+            amount: index.toDouble(),
+            beverage: Beverage(
+              name: "Cola",
+              addition: "Coca-Cola",
+              percent: 0.0,
+              kcal: 5,
+            ),
+          ),
+        ),
+      ),
+    );
     this.beverages = List<Beverage>.generate(
-        this.allDrinks.length, (i) => Beverage(name: "Cola" + i.toString(), addition: "Coca-Cola", percent: i.toDouble(), kcal: i.toDouble()));
+      this.allDrinks.length,
+      (i) => Beverage(
+        name: "Cola" + i.toString(),
+        addition: "Coca-Cola",
+        percent: i.toDouble(),
+        kcal: i.toDouble(),
+      ),
+    );
     this.recentlyCreatedDrinks = getRecentlyDrinks();
   }
 
@@ -40,8 +56,12 @@ class MainData with ChangeNotifier {
     if (data != null) {
       DrinkSaveData saveData = DrinkSaveData.fromJson(json.decode(data));
       this.allDrinks = saveData.drinks;
-      this.favoriteDrinks = saveData.drinks.where((element) => element.favorite).toList();
-      this.recentlyCreatedDrinks = this.allDrinks.where((element) => saveData.recently.contains(element.id)).toList();
+      this.favoriteDrinks =
+          saveData.drinks.where((element) => element.favorite).toList();
+      this.recentlyCreatedDrinks = this
+          .allDrinks
+          .where((element) => saveData.recently.contains(element.id))
+          .toList();
       this.beverages = saveData.beverages;
     }
     testData();
@@ -50,7 +70,8 @@ class MainData with ChangeNotifier {
 
   void save() {
     var temp = this.recentlyCreatedDrinks.map((e) => e.id).toList();
-    DrinkSaveData save = DrinkSaveData(drinks: this.allDrinks, beverages: this.beverages, recently: temp);
+    DrinkSaveData save = DrinkSaveData(
+        drinks: this.allDrinks, beverages: this.beverages, recently: temp);
     var json = save.toJson();
     String drinkData = jsonEncode(json);
     LocalStorageManager.storage.setString("DrinkData", drinkData);
@@ -66,9 +87,12 @@ class MainData with ChangeNotifier {
   factory MainData.fromJson(Map<String, dynamic> parsedJson) {
     return new MainData(
       allDrinks: parsedJson['drinks'] == null ? null : parsedJson['drinks'],
-      favoriteDrinks: parsedJson['favorite'] == null ? null : parsedJson['favorite'],
-      recentlyCreatedDrinks: parsedJson['recently'] == null ? null : parsedJson['recently'],
-      beverages: parsedJson['beverages'] == null ? null : parsedJson['beverages'],
+      favoriteDrinks:
+          parsedJson['favorite'] == null ? null : parsedJson['favorite'],
+      recentlyCreatedDrinks:
+          parsedJson['recently'] == null ? null : parsedJson['recently'],
+      beverages:
+          parsedJson['beverages'] == null ? null : parsedJson['beverages'],
     );
   }
 
@@ -97,7 +121,11 @@ class MainData with ChangeNotifier {
                 10,
                 (index) => Ingredient(
                     amount: index.toDouble(),
-                    beverage: Beverage(name: "Colaasdddddddddddddddddddddd", addition: "Coca-Cola", percent: 0.0, kcal: 5)))));
+                    beverage: Beverage(
+                        name: "Colaasdddddddddddddddddddddd",
+                        addition: "Coca-Cola",
+                        percent: 0.0,
+                        kcal: 5)))));
   }
 
   void changeFavorite(Drink drink, bool notify) {
@@ -106,7 +134,10 @@ class MainData with ChangeNotifier {
     } else {
       this.favoriteDrinks.insert(0, drink);
     }
-    this.allDrinks[this.allDrinks.indexWhere((element) => element.id == drink.id)].favorite = !drink.favorite;
+    this
+        .allDrinks[
+            this.allDrinks.indexWhere((element) => element.id == drink.id)]
+        .favorite = !drink.favorite;
     notifyListeners();
   }
 
@@ -115,7 +146,8 @@ class MainData with ChangeNotifier {
       newDrink.id = _getNewDrinkID();
       allDrinks.add(newDrink);
     } else {
-      Drink oldDrink = allDrinks.firstWhere(((element) => element.id == newDrink.id));
+      Drink oldDrink =
+          allDrinks.firstWhere(((element) => element.id == newDrink.id));
       oldDrink.name = newDrink.name;
       oldDrink.amount = newDrink.amount;
       oldDrink.kcal = newDrink.kcal;
@@ -133,7 +165,8 @@ class MainData with ChangeNotifier {
       newBeverage.id = _getNewBeverageID();
       beverages.add(newBeverage);
     } else {
-      Beverage oldBeverage = beverages.firstWhere(((element) => element.id == newBeverage.id));
+      Beverage oldBeverage =
+          beverages.firstWhere(((element) => element.id == newBeverage.id));
       oldBeverage.name = newBeverage.name;
       oldBeverage.addition = newBeverage.addition;
       oldBeverage.kcal = newBeverage.kcal;
@@ -167,9 +200,19 @@ class DrinkSaveData {
 
   factory DrinkSaveData.fromJson(Map<String, dynamic> parsedJson) {
     return new DrinkSaveData(
-      drinks: parsedJson['drinks'] == null ? null : (parsedJson['drinks'] as List).map((i) => Drink.fromJson(i)).toList(),
-      recently: parsedJson['recently'] == null ? null : List<int>.from(parsedJson['recently']),
-      beverages: parsedJson['beverages'] == null ? null : (parsedJson['beverages'] as List).map((i) => Beverage.fromJson(i)).toList(),
+      drinks: parsedJson['drinks'] == null
+          ? null
+          : (parsedJson['drinks'] as List)
+              .map((i) => Drink.fromJson(i))
+              .toList(),
+      recently: parsedJson['recently'] == null
+          ? null
+          : List<int>.from(parsedJson['recently']),
+      beverages: parsedJson['beverages'] == null
+          ? null
+          : (parsedJson['beverages'] as List)
+              .map((i) => Beverage.fromJson(i))
+              .toList(),
     );
   }
 }
@@ -209,7 +252,11 @@ class Drink {
         name: json["name"] == null ? null : json["name"],
         id: json["id"] == null ? null : json["id"],
         favorite: json["favorite"] == null ? null : json["favorite"],
-        ingredients: json["ingredients"] == null ? null : (json['ingredients'] as List).map((i) => Ingredient.fromJson(i)).toList(),
+        ingredients: json["ingredients"] == null
+            ? null
+            : (json['ingredients'] as List)
+                .map((i) => Ingredient.fromJson(i))
+                .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -229,7 +276,9 @@ class Ingredient {
   double amount;
   Ingredient({this.beverage, this.amount});
   factory Ingredient.fromJson(Map<String, dynamic> json) => Ingredient(
-        beverage: json["beverage"] == null ? null : Beverage.fromJson(json["beverage"]),
+        beverage: json["beverage"] == null
+            ? null
+            : Beverage.fromJson(json["beverage"]),
         amount: json["amount"] == null ? 0 : json["amount"],
       );
 

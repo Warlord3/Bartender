@@ -6,6 +6,7 @@ import 'package:bartender/Pages/Beverage/PageBeverage.dart';
 import 'package:bartender/Pages/Settings/PageSettings.dart';
 import 'package:bartender/Pages/Home/PageHome.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/bloc/ThemeManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
@@ -23,11 +24,13 @@ class PageRouter extends StatefulWidget {
 class _PageRouterState extends State<PageRouter> {
   LanguageManager languageManager;
   PageStateManager pageState;
+  ThemeChangerProvider themeChangeProvider;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     pageState = Provider.of<PageStateManager>(context);
+    themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -75,21 +78,21 @@ class _PageRouterState extends State<PageRouter> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.home,
+              Icons.home_outlined,
               color: Colors.orange,
             ),
             label: languageManager.getData("home"),
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.favorite,
+              Icons.favorite_outline,
               color: Colors.red,
             ),
             label: languageManager.getData("favorite"),
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.local_drink,
+              Icons.local_drink_outlined,
               color: Colors.greenAccent[400],
             ),
             label: languageManager.getData("drinks"),
@@ -103,15 +106,16 @@ class _PageRouterState extends State<PageRouter> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.settings,
-              color: Colors.grey[800],
+              Icons.settings_outlined,
+              color: themeChangeProvider.getTheme() == ThemeMode.light
+                  ? Colors.grey[800]
+                  : Colors.grey[200],
             ),
             label: languageManager.getData("settings"),
           )
         ],
         onTap: _pageSelect,
         currentIndex: pageState.lastPageIndex,
-        selectedItemColor: Colors.black,
         unselectedItemColor: Colors.transparent,
         type: BottomNavigationBarType.shifting,
         selectedLabelStyle: TextStyle(fontSize: 15),
@@ -164,7 +168,6 @@ class _PageRouterState extends State<PageRouter> {
     }
     return FloatingActionButton(
       elevation: 10,
-      backgroundColor: Colors.red,
       shape: CircleBorder(),
       heroTag: "FloatingButton$pageState.lastPageIndex",
       onPressed: () {
@@ -188,8 +191,9 @@ class _PageRouterState extends State<PageRouter> {
         );
       },
       child: Icon(
-        Icons.add,
+        Icons.add_outlined,
         color: Colors.white,
+        size: 30,
       ),
     );
   }

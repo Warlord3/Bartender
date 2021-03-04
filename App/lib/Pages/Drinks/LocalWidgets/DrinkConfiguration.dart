@@ -206,7 +206,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                             fillColor: Colors.green.withOpacity(0.3),
                             child: SizedBox(
                               child: Icon(
-                                Icons.save,
+                                Icons.save_outlined,
                                 color: Colors.green[700],
                                 size: 40,
                               ),
@@ -226,7 +226,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                             },
                             fillColor: Colors.red.withOpacity(0.3),
                             child: Icon(
-                              Icons.clear,
+                              Icons.clear_outlined,
                               color: Colors.red,
                               size: 40,
                             ),
@@ -351,7 +351,6 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                           widget.ingredient.beverage.name == ""
                               ? "Select Beverage"
                               : "Change Beverage",
-                          style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -371,11 +370,14 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                     isDense: true,
                     labelText: "ml",
                     alignLabelWithHint: true,
-                    labelStyle: TextStyle(color: Colors.red, fontSize: 17),
+                    labelStyle: TextStyle(
+                      fontSize: 17,
+                    ),
                     enabledBorder: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(),
                     errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red)),
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.all(12),
                   ),
@@ -395,7 +397,7 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                 child: Material(
                   child: IconButton(
                     icon: Icon(
-                      Icons.delete,
+                      Icons.delete_outline,
                     ),
                     onPressed: () {
                       widget.delete(widget.index);

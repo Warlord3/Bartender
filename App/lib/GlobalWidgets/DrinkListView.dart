@@ -116,7 +116,9 @@ class _ListTileState extends State<ListTile> {
                         flex: 1,
                         fit: FlexFit.tight,
                         child: IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: Icon(
+                            Icons.delete_outline,
+                          ),
                           onPressed: () {
                             var mainData =
                                 Provider.of<MainData>(context, listen: false);
@@ -185,7 +187,7 @@ class _ListTileState extends State<ListTile> {
                           scale: 0.8,
                           child: IconButton(
                             icon: Icon(
-                              Icons.favorite,
+                              Icons.favorite_outline,
                               size: 40,
                               color: Colors.red,
                             ),
