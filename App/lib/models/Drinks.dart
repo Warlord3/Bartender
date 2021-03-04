@@ -5,10 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class MainData with ChangeNotifier {
-  List<Drink> allDrinks = List<Drink>();
-  List<Drink> favoriteDrinks = List<Drink>();
-  List<Drink> recentlyCreatedDrinks = List<Drink>();
-  List<Beverage> beverages = List<Beverage>();
+  List<Drink> allDrinks = [];
+  List<Drink> favoriteDrinks = [];
+  List<Drink> recentlyCreatedDrinks = [];
+  List<Beverage> beverages = [];
 
   MainData({allDrinks, favoriteDrinks, recentlyCreatedDrinks, beverages});
   void testData() {
@@ -29,10 +29,10 @@ class MainData with ChangeNotifier {
   }
 
   MainData.empty() {
-    allDrinks = List<Drink>();
-    favoriteDrinks = List<Drink>();
-    recentlyCreatedDrinks = List<Drink>();
-    beverages = List<Beverage>();
+    allDrinks = [];
+    favoriteDrinks = [];
+    recentlyCreatedDrinks = [];
+    beverages = [];
   }
 
   void init() {
@@ -153,9 +153,9 @@ enum DrinkType {
 }
 
 class DrinkSaveData {
-  List<Drink> drinks = List<Drink>();
-  List<int> recently = List<int>();
-  List<Beverage> beverages = List<Beverage>();
+  List<Drink> drinks = [];
+  List<int> recently = [];
+  List<Beverage> beverages = [];
 
   DrinkSaveData({this.drinks, this.recently, this.beverages});
 
@@ -202,7 +202,7 @@ class Drink {
   Drink.newDrink() {
     this.name = "";
     this.id = -1;
-    this.ingredients = List<Ingredient>();
+    this.ingredients = [];
     this.ingredients.add(Ingredient.empty());
   }
   factory Drink.fromJson(Map<String, dynamic> json) => Drink(

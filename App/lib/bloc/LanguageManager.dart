@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 class LanguageManager with ChangeNotifier {
   Language language = Language.English;
 
-  List<LanguageEntry> languageEntrys = List<LanguageEntry>();
+  List<LanguageEntry> languageEntrys = [];
 
   LanguageManager() {
     init();
