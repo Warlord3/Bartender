@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:bartender/Resources/Style.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class DrinkConfiguration extends StatefulWidget {
   Drink newDrink;
   MainData mainData;
@@ -120,7 +118,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                           width: double.infinity,
                           child: Tooltip(
                             message: "Add Ingredients to Drink",
-                            child: RaisedButton(
+                            child: ElevatedButton(
                               onPressed: () {
                                 setState(() {
                                   widget.newDrink.ingredients
@@ -416,7 +414,7 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
   }
 
   Future chooseBeverageDialog(BuildContext context, List<Beverage> beverages) {
-    List<Beverage> _searchResult = List<Beverage>();
+    List<Beverage> _searchResult = [];
     return showDialog(
       context: context,
       child: StatefulBuilder(
@@ -461,7 +459,7 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                                 beverages: beverages,
                               ),
                       ),
-                      RaisedButton(
+                      ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
