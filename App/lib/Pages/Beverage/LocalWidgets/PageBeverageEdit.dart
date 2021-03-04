@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class BeverageEditPage extends StatefulWidget {
   Beverage beverage;
   BeverageEditPage({this.beverage}) {
@@ -153,7 +154,7 @@ class _BeverageEditPageState extends State<BeverageEditPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: RaisedButton(
+                      child: ElevatedButton(
                         onPressed: () {
                           update();
                           if (save()) clearPage();
@@ -165,7 +166,7 @@ class _BeverageEditPageState extends State<BeverageEditPage> {
                       width: 15,
                     ),
                     Expanded(
-                      child: RaisedButton(
+                      child: ElevatedButton(
                         onPressed: () {
                           update();
                           save();
@@ -176,7 +177,7 @@ class _BeverageEditPageState extends State<BeverageEditPage> {
                     ),
                   ],
                 ),
-                RaisedButton(
+                ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -201,7 +202,7 @@ class _BeverageEditPageState extends State<BeverageEditPage> {
           title: Text("Missing Fields"),
           content: Text("Please fill and select all Fields"),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
