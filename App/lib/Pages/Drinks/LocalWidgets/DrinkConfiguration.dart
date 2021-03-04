@@ -276,6 +276,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   }
 }
 
+// ignore: must_be_immutable
 class IngredientsEditor extends StatefulWidget {
   IngredientsEditor(
       {this.ingredient,
@@ -417,62 +418,60 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
     List<Beverage> _searchResult = [];
     return showDialog(
       context: context,
-      child: StatefulBuilder(
-        builder: (context, setState) {
-          onSearchTextChanged(String text) async {
-            _searchResult.clear();
-            if (text.isEmpty) {
-              setState(() {});
-              return;
-            }
-
-            beverages.forEach((beverage) {
-              if (beverage.name.contains(text)) _searchResult.add(beverage);
-            });
-
+      builder: (dynamic) {
+        onSearchTextChanged(String text) async {
+          _searchResult.clear();
+          if (text.isEmpty) {
             setState(() {});
+            return;
           }
 
-          return Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            insetPadding: EdgeInsets.all(15),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextField(
-                        onChanged: onSearchTextChanged,
-                      ),
-                      Expanded(
-                        child: _searchResult.length != 0
-                            ? BeverageList(
-                                beverages: _searchResult,
-                              )
-                            : BeverageList(
-                                beverages: beverages,
-                              ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Cancel"),
-                      )
-                    ],
-                  ),
+          beverages.forEach((beverage) {
+            if (beverage.name.contains(text)) _searchResult.add(beverage);
+          });
+
+          setState(() {});
+        }
+
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          insetPadding: EdgeInsets.all(15),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      onChanged: onSearchTextChanged,
+                    ),
+                    Expanded(
+                      child: _searchResult.length != 0
+                          ? BeverageList(
+                              beverages: _searchResult,
+                            )
+                          : BeverageList(
+                              beverages: beverages,
+                            ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Cancel"),
+                    )
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
