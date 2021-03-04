@@ -14,7 +14,6 @@ import 'Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'Start/PageStart.dart';
 
 final _navigatorKey = GlobalKey<NavigatorState>();
-int _selectedPage = 0;
 
 class PageRouter extends StatefulWidget {
   @override
