@@ -14,6 +14,7 @@ class DrinksPage extends StatelessWidget {
         if (notification is ScrollEndNotification) {
           pageState.scrollPositionDrinksPage = notification.metrics.pixels;
         }
+        return null;
       },
       child: Consumer<MainData>(
         builder: (context, mainData, child) => SafeArea(
