@@ -46,6 +46,7 @@ class ConnectionManager with ChangeNotifier {
       _webSocket.close();
       _webSocket = null;
       print('Connection Timeout');
+      print(e);
       connect();
     }
   }
