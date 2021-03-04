@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'localWidgets/FavoriteCard.dart';
-import 'localWidgets/RecentlyCard.dart';
 
 class FavoritePage extends StatelessWidget {
   @override
@@ -16,6 +15,7 @@ class FavoritePage extends StatelessWidget {
           if (notification is ScrollEndNotification) {
             pageState.scrollPositionFavoritePage = notification.metrics.pixels;
           }
+          return null;
         },
         child: SingleChildScrollView(
           controller: ScrollController(
