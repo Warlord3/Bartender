@@ -44,17 +44,24 @@ uint8_t ControllerBoard::getDirection(enPumpState direction)
 
 void ControllerBoard::updatePumps(void)
 {
+    if (pumpStatus.numberPumpsRunning == 0)
+    {
+        return;
+    }
     for (int i = 0; i < PUMP_NUM; i++)
     {
         if (_pumps[i].remainingMl <= 0 || _pumps[i].mlPerMinute <= 0)
         {
             stopPump(i);
+            pumpStatus.numberPumpsRunning -= 1;
             continue;
         }
         _pumps[i].remainingMl -= _pumps[i].mlPerMinute * 100 / (60 * 1000);
         if (_pumps[i].remainingMl <= 0)
         {
             _pumps[i].remainingMl = 0;
+            pumpStatus.numberPumpsRunning -= 1;
+
             stopPump(i);
         }
     }
@@ -91,6 +98,12 @@ void ControllerBoard::updateRegister()
         uint8_t direction = getDirection(_pumps[i].state);
         _dataRegister |= direction >> i * 2;
     }
+    DEBUG_PRINT("Send Data Register: ");
+    for (int b = 15; b >= 0; b--)
+    {
+        DEBUG_PRINT(bitRead(_dataRegister, b));
+    }
+    DEBUG_PRINTLN("");
     _wire->beginTransmission(_address);
     _wire->write((uint8_t)_dataRegister);
     _wire->write((uint8_t)_dataRegister >> 8);
@@ -105,6 +118,7 @@ void ControllerBoard::startPump(enPumpState direction, uint8_t pumpID)
         return;
     }
     pumpStatus.numberPumpsRunning += 1;
+    DEBUG_PRINTF("Start Pump %i \n", pumpID);
 
     stPumpInfo *info = &_pumps[pumpID & 0x0F];
     if (info->state != direction)
@@ -116,13 +130,14 @@ void ControllerBoard::startPump(enPumpState direction, uint8_t pumpID)
 void ControllerBoard::stopPump(uint8_t pumpID)
 {
     pumpStatus.numberPumpsRunning -= 1;
-
+    DEBUG_PRINTF("Stop Pump %i \n", pumpID);
     _pumps[pumpID & 0x0F].state = enPumpState::stop;
 }
 
 void ControllerBoard::startAllPumps(enPumpState direction)
 {
     pumpStatus.numberPumpsRunning = PUMP_NUM;
+    DEBUG_PRINTLN("Start All Pumps");
 
     for (int i = 0; i < PUMP_NUM; i++)
     {
@@ -133,7 +148,7 @@ void ControllerBoard::startAllPumps(enPumpState direction)
 void ControllerBoard::stopAllPumps(bool force = false)
 {
     pumpStatus.numberPumpsRunning = 0;
-
+    DEBUG_PRINTLN("Stop All Pumps");
     for (int i = 0; i < PUMP_NUM; i++)
     {
         _pumps[i].state = enPumpState::stop;
@@ -146,18 +161,18 @@ void ControllerBoard::stopAllPumps(bool force = false)
 
 void ControllerBoard::setMlPerMinute(float mlPerMinute, uint8_t pumpID)
 {
-    DEBUG_PRINTF("Set ml/min: %i for Pump: %i", mlPerMinute, pumpID);
+    DEBUG_PRINTF("Set ml/min: %i for Pump: %i\n", mlPerMinute, pumpID);
 
     _pumps[pumpID & 0x0F].mlPerMinute = mlPerMinute;
 }
 void ControllerBoard::setBeverageID(int beverageID, uint8_t pumpID)
 {
-    DEBUG_PRINTF("Set BeverageID: %i for Pump: %i", beverageID, pumpID);
+    DEBUG_PRINTF("Set BeverageID: %i for Pump: %i\n", beverageID, pumpID);
     _pumps[pumpID & 0x0F].beverageID = beverageID;
 }
 void ControllerBoard::setRemainingMl(float remainingMl, uint8_t pumpID)
 {
-    DEBUG_PRINTF("Set Remaining ml: %i for Pump: %i", remainingMl, pumpID);
+    DEBUG_PRINTF("Set Remaining ml: %f for Pump: %i\n", remainingMl, pumpID);
 
     _pumps[pumpID & 0x0F].remainingMl = remainingMl;
 }

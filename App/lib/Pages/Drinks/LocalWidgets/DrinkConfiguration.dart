@@ -259,8 +259,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   void update() {
     widget.newDrink.name = _nameController.text;
     for (int i = 0; i < _controllers.length; i++) {
-      widget.newDrink.ingredients[i].amount =
-          double.parse(_controllers[i].text);
+      widget.newDrink.ingredients[i].amount = int.parse(_controllers[i].text);
     }
     setState(() {
       widget.newDrink.updateStats();
@@ -424,6 +423,19 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
         onSearchTextChanged(String text) async {
           _searchResult.clear();
           if (text.isEmpty) {
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          onSearchTextChanged(String text) async {
+            _searchResult.clear();
+            if (text.isEmpty) {
+              setState(() {});
+              return;
+            }
+
+            beverages.forEach((beverage) {
+              if (beverage.name.contains(text)) _searchResult.add(beverage);
+            });
+
             setState(() {});
             return;
           }

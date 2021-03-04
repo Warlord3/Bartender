@@ -1,6 +1,7 @@
 #pragma once
 #include "Arduino.h"
 #include "Enum.h"
+#include "debug.h"
 struct stConfig
 {
     String wifiSSID = "";
@@ -33,13 +34,8 @@ struct stPumpInfo
 
 struct stDrink
 {
-    uint ID;
-    float amount[16];
-    stDrink()
-    {
-        ID = 0;
-        amount[16] = {0};
-    }
+    uint ID = 0;
+    float amount[16] = {0.0};
 };
 
 struct stPumpStatus

@@ -5,6 +5,7 @@ import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
 import 'package:bartender/Pages/Settings/PageSettings.dart';
 import 'package:bartender/Pages/Home/PageHome.dart';
+import 'package:bartender/bloc/ConnectionManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/bloc/ThemeManager.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class _PageRouterState extends State<PageRouter> {
   LanguageManager languageManager;
   PageStateManager pageState;
   ThemeChangerProvider themeChangeProvider;
+  ConnectionManager connectionManager;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,10 @@ class _PageRouterState extends State<PageRouter> {
     pageState = Provider.of<PageStateManager>(context);
     themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
 
+    connectionManager = Provider.of<ConnectionManager>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      key: connectionManager.scafoldKey,
       body: SafeArea(
         child: Navigator(
           key: _navigatorKey,

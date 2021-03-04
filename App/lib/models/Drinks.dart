@@ -13,34 +13,29 @@ class MainData with ChangeNotifier {
   MainData({allDrinks, favoriteDrinks, recentlyCreatedDrinks, beverages});
   void testData() {
     this.allDrinks = new List<Drink>.generate(
-      40,
-      (i) => Drink(
-        name: "Drink" + i.toString(),
-        favorite: i % 2 == 0,
-        id: i,
-        ingredients: List<Ingredient>.generate(
-          10,
-          (index) => Ingredient(
-            amount: index.toDouble(),
-            beverage: Beverage(
-              name: "Cola",
-              addition: "Coca-Cola",
-              percent: 0.0,
-              kcal: 5,
-            ),
-          ),
-        ),
-      ),
-    );
+        40,
+        (i) => Drink(
+            name: "Drink" + i.toString(),
+            favorite: i % 2 == 0,
+            id: i,
+            ingredients: List<Ingredient>.generate(
+                10,
+                (index) => Ingredient(
+                    amount: index,
+                    beverage: Beverage(
+                        name: "Colaasdddddddddddddddddddddd",
+                        id: index,
+                        addition: "Coca-Cola",
+                        percent: 0.0,
+                        kcal: 5)))));
     this.beverages = List<Beverage>.generate(
-      this.allDrinks.length,
-      (i) => Beverage(
-        name: "Cola" + i.toString(),
-        addition: "Coca-Cola",
-        percent: i.toDouble(),
-        kcal: i.toDouble(),
-      ),
-    );
+        this.allDrinks.length,
+        (i) => Beverage(
+            id: i,
+            name: "Cola" + i.toString(),
+            addition: "Coca-Cola",
+            percent: i.toDouble(),
+            kcal: i.toDouble()));
     this.recentlyCreatedDrinks = getRecentlyDrinks();
   }
 
@@ -120,7 +115,7 @@ class MainData with ChangeNotifier {
             ingredients: List<Ingredient>.generate(
                 10,
                 (index) => Ingredient(
-                    amount: index.toDouble(),
+                    amount: index,
                     beverage: Beverage(
                         name: "Colaasdddddddddddddddddddddd",
                         addition: "Coca-Cola",
@@ -220,7 +215,7 @@ class DrinkSaveData {
 class Drink {
   String name = "";
   int id = -1;
-  double amount = 0.0;
+  int amount = 0;
   double percent = 0.0;
   double kcal = 0.0;
   List<Ingredient> ingredients;
@@ -273,7 +268,7 @@ class Drink {
 
 class Ingredient {
   Beverage beverage;
-  double amount;
+  int amount;
   Ingredient({this.beverage, this.amount});
   factory Ingredient.fromJson(Map<String, dynamic> json) => Ingredient(
         beverage: json["beverage"] == null
@@ -291,7 +286,7 @@ class Ingredient {
     beverage = Beverage(name: "Cola", addition: "Coca-Cola", percent: 0.0);
   }
   Ingredient.empty() {
-    this.amount = 0.0;
+    this.amount = 0;
     this.beverage = Beverage.empty();
   }
 
@@ -307,9 +302,10 @@ class Beverage {
   double percent = 0.0;
   double kcal = 0.0;
   bool get nonAlcoholic => percent == 0.0;
-  Beverage({this.name, this.addition, this.percent, this.kcal});
+  Beverage({this.id, this.name, this.addition, this.percent, this.kcal});
 
   void update(Beverage newBeverage) {
+    this.id = newBeverage.id;
     this.addition = newBeverage.addition;
     this.kcal = newBeverage.kcal;
     this.name = newBeverage.name;
@@ -323,6 +319,7 @@ class Beverage {
   }
 
   factory Beverage.fromJson(Map<String, dynamic> json) => Beverage(
+        id: json["id"] == null ? null : json["id"],
         name: json["name"] == null ? null : json["name"],
         addition: json["addition"] == null ? null : json["addition"],
         percent: json["percent"] == null ? null : json["percent"],
@@ -330,6 +327,7 @@ class Beverage {
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id == null ? null : id,
         "name": name == null ? null : name,
         "addition": addition == null ? null : addition,
         "percent": percent == null ? null : percent,

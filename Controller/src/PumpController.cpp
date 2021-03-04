@@ -119,13 +119,20 @@ bool PumpController::setDrink(char *newDrink)
         char *ptr;
         char *rest;
         drink.ID = strtol(strtok_r(newDrink, ";", &rest), NULL, 10);
-        ptr = strtok_r(newDrink, ";", &rest);
+        DEBUG_PRINTF("Drink ID:%i\n", drink.ID);
+        ptr = strtok_r(NULL, ";", &rest);
         while (ptr != NULL)
         {
             long beverageID = strtol(strtok(ptr, ":"), NULL, 10);
             long amount = strtol(strtok(NULL, ":"), NULL, 10);
             int index = getPumpID(beverageID);
-            drink.amount[index] = amount;
+            DEBUG_PRINTF("Beverage ID: %i with amount of %i\n", beverageID, amount);
+
+            DEBUG_PRINTLN(index);
+            if (index >= 0)
+            {
+                drink.amount[index] = (float)amount;
+            }
             ptr = strtok_r(NULL, ";", &rest);
         }
         _state->currentDrink = drink;
@@ -133,6 +140,7 @@ bool PumpController::setDrink(char *newDrink)
         {
             for (int j = 0; j < PUMPS_PER_CONTROLLER; j++)
             {
+                DEBUG_PRINTLN(drink.amount[j + PUMPS_PER_CONTROLLER * i]);
                 _boards[i].setRemainingMl(drink.amount[j + PUMPS_PER_CONTROLLER * i], j);
             }
         }
@@ -150,8 +158,37 @@ void PumpController::stopCleaning()
 {
 }
 
+void PumpController::start(char *data)
+{
+    char *ptr;
+    char *rest;
+    ptr = strtok_r(data, ":", &rest);
+    while (ptr != NULL)
+    {
+        forward(strtol(ptr, NULL, 10));
+        ptr = strtok_r(NULL, ":", &rest);
+    }
+}
+void PumpController::startAll(void)
+{
+    _boards[0].startAllPumps(enPumpState::forward);
+    _boards[1].startAllPumps(enPumpState::forward);
+}
+void PumpController::stop(char *data)
+{
+    char *ptr;
+    char *rest;
+    ptr = strtok_r(data, ":", &rest);
+    while (ptr != NULL)
+    {
+        stop(strtol(ptr, NULL, 10));
+        ptr = strtok_r(NULL, ":", &rest);
+    }
+}
+
 void PumpController::stop(uint8_t pumpID)
 {
+    DEBUG_PRINTF("Stop Drink %i \n", pumpID);
     _boards[getBoardID(pumpID)].stopPump(pumpID);
 }
 

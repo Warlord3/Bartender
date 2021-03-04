@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,8 +9,9 @@ import 'package:flutter/widgets.dart';
 class ConnectionManager with ChangeNotifier {
   bool connected = false;
   final String url = "ws://192.168.178.74:81";
-
+  GlobalKey<ScaffoldState> scafoldKey;
   ConnectionManager() {
+    scafoldKey = GlobalKey<ScaffoldState>();
     connect();
   }
 
@@ -42,7 +44,9 @@ class ConnectionManager with ChangeNotifier {
             });
       });
     } on TimeoutException catch (e) {
-      _webSocket.close();
+      if (_webSocket != null) {
+        _webSocket.close();
+      }
       _webSocket = null;
       print('Connection Timeout');
       print(e);
@@ -57,25 +61,42 @@ class ConnectionManager with ChangeNotifier {
 
   _disconnected() {
     connected = false;
+    scafoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text("Disconnected"),
+      duration: Duration(seconds: 2),
+    ));
     notifyListeners();
   }
 
-  // ignore: unused_element
-  _state() {
-    switch (_webSocket.readyState) {
-      case WebSocket.connecting:
-        print("Websocket connection");
-        break;
-      case WebSocket.open:
-        print("Websocket open");
-        break;
-      case WebSocket.closing:
-        print("Websocket closing");
-        break;
-      case WebSocket.closed:
-        print("Websocket closed");
-        break;
+  sendDrink(Drink drink) {
+    String message = "new_drink";
+    message += "\$";
+    message += "${drink.id}";
+    message += ";";
+    for (Ingredient ingredient in drink.ingredients) {
+      message += "${ingredient.beverage.id}";
+      message += ":";
+      message += "${ingredient.amount}";
+      message += ";";
     }
+    send(message);
+  }
+
+  startPump(List<int> ids) {
+    String message = "start_pump";
+    message += "\$";
+    for (int id in ids) {
+      message += "$id:";
+    }
+    send(message);
+  }
+
+  stopPump(int id) {
+    send("$id");
+  }
+
+  stopAllPumps() {
+    send("stop_pump_all");
   }
 
   void send(String message) {

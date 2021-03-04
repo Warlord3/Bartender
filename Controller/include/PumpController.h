@@ -48,6 +48,9 @@ public:
 
     void updatePumps(void);
 
+    void start(char *data);
+    void startAll(void);
+    void stop(char *data);
     void stop(uint8_t pumpID);
     void stopAll(void);
     void forward(uint8_t pumpID);

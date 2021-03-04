@@ -77,6 +77,26 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
             response_msg = _controller->getConfiguration();
             webSocket.broadcastTXT(response_msg);
         }
+        else if (command == "stop_pump")
+        {
+            _controller->stop(data);
+            //webSocket.broadcastTXT(response_msg);
+        }
+        else if (command == "stop_pump_all")
+        {
+            _controller->stopAll();
+            //webSocket.broadcastTXT(response_msg);
+        }
+        else if (command == "start_pump")
+        {
+            _controller->stop(data);
+            //webSocket.broadcastTXT(response_msg);
+        }
+        else if (command == "start_pump_all")
+        {
+            _controller->startAll();
+            //webSocket.broadcastTXT(response_msg);
+        }
         else
         {
             //TODO send Error msg

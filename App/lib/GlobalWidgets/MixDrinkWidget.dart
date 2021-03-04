@@ -1,8 +1,13 @@
+import 'dart:ui';
+
+import 'package:bartender/bloc/ConnectionManager.dart';
+import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MixDringWidget extends StatelessWidget {
-  final String drinkName;
-  MixDringWidget({this.drinkName});
+  final Drink drink;
+  MixDringWidget({this.drink});
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -32,7 +37,7 @@ class MixDringWidget extends StatelessWidget {
                     Material(
                       color: Colors.transparent,
                       child: Text(
-                        drinkName,
+                        drink.name,
                         style: TextStyle(
                           fontSize: 30,
                           color: Colors.white,
@@ -55,6 +60,8 @@ class MixDringWidget extends StatelessWidget {
                     elevation: 0,
                     padding: EdgeInsets.all(10.0),
                     onPressed: () {
+                      Provider.of<ConnectionManager>(context, listen: false)
+                          .sendDrink(drink);
                       Navigator.of(context, rootNavigator: true).pop();
                     },
                     fillColor: Colors.green.withOpacity(0.3),

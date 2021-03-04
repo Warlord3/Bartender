@@ -70,7 +70,7 @@ class _ListTileState extends State<ListTile> {
                 barrierColor: Colors.black38,
                 transitionDuration: Duration(milliseconds: 200),
                 pageBuilder: (ctx, anim1, anim2) =>
-                    MixDringWidget(drinkName: widget.drink.name),
+                    MixDringWidget(drink: widget.drink),
                 transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
                   filter: ImageFilter.blur(
                     sigmaX: anim1.value * 3,
