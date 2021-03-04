@@ -42,6 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
               1: FlexColumnWidth(1),
               2: FlexColumnWidth(1),
             },
+            textBaseline: TextBaseline.alphabetic,
             defaultVerticalAlignment: TableCellVerticalAlignment.baseline,
             children: [
               TableRow(children: [
@@ -91,6 +92,7 @@ class _SettingsPageState extends State<SettingsPage> {
             0: FlexColumnWidth(4),
             1: FlexColumnWidth(2),
           },
+          textBaseline: TextBaseline.alphabetic,
           children: [
             /*
               Language
@@ -134,12 +136,13 @@ class _SettingsPageState extends State<SettingsPage> {
             TableRow(
               children: [
                 TableCell(
-                    child: Center(
-                      child: Text(
-                        languageManager.getData("controller_configuration"),
-                      ),
+                  child: Center(
+                    child: Text(
+                      languageManager.getData("controller_configuration"),
                     ),
-                    verticalAlignment: TableCellVerticalAlignment.middle),
+                  ),
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                ),
                 TableCell(
                   child: Center(
                     child: IconButton(
@@ -172,17 +175,18 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             /*
-              Beverage Confgiuration
+              Beverage Configuration
             */
             TableRow(
               children: [
                 TableCell(
-                    child: Center(
-                      child: Text(
-                        languageManager.getData("beverage_configuration"),
-                      ),
+                  child: Center(
+                    child: Text(
+                      languageManager.getData("beverage_configuration"),
                     ),
-                    verticalAlignment: TableCellVerticalAlignment.middle),
+                  ),
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                ),
                 TableCell(
                   child: Center(
                     child: IconButton(
