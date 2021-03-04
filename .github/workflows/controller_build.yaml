@@ -1,15 +1,12 @@
-#   
-# Disabled until configured 
-# 
-
-# name: controller_build
-# on: [pull_request, push]
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v2
-# 
-#     - name: Build on Arduino CLI
-#       run: bash ci/build-arduino.sh
+ name: controller_build
+ on: [pull_request, push]
+ jobs:
+   build:
+     runs-on: ubuntu-latest
+     steps:
+     - name: Checkout
+       uses: actions/checkout@v2
+ 
+     - name: Build on Arduino CLI
+       working-directory: ./Controller
+       run: bash ci/build-arduino.sh
