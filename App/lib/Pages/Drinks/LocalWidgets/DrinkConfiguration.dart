@@ -423,19 +423,6 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
         onSearchTextChanged(String text) async {
           _searchResult.clear();
           if (text.isEmpty) {
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          onSearchTextChanged(String text) async {
-            _searchResult.clear();
-            if (text.isEmpty) {
-              setState(() {});
-              return;
-            }
-
-            beverages.forEach((beverage) {
-              if (beverage.name.contains(text)) _searchResult.add(beverage);
-            });
-
             setState(() {});
             return;
           }
