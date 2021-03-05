@@ -1,4 +1,4 @@
-#include "../include/PumpController.h"
+#include "PumpController.h"
 
 PumpController *globalController;
 

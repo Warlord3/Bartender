@@ -1,12 +1,11 @@
-
 #include "Arduino.h"
-#include "PumpController.h"
-#include "Enum.h"
-#include "Network.h"
-#include "StorageController.h"
-#include "StateController.h"
-#include "CommunicationController.h"
-#include "Debug.h"
+#include "include/PumpController.h"
+#include "include/Enum.h"
+#include "include/Network.h"
+#include "include/StorageController.h"
+#include "include/StateController.h"
+#include "include/CommunicationController.h"
+#include "include/Debug.h"
 
 Network networkController;
 StateController stateController;
@@ -43,7 +42,7 @@ void loop()
     break;
 
   case enMachineState::idle:
-  
+
     break;
   case enMachineState::running:
 

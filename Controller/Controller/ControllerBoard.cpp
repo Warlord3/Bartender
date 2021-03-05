@@ -1,4 +1,4 @@
-#include "../include/ControllerBoard.h"
+#include "ControllerBoard.h"
 ControllerBoard::ControllerBoard(uint8_t address)
 {
     _address = address;
