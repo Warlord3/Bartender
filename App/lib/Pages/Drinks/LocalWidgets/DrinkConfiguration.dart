@@ -1,3 +1,4 @@
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class DrinkConfiguration extends StatefulWidget {
   Drink newDrink;
-  MainData mainData;
+  DataManager mainData;
   DrinkConfiguration({this.newDrink}) {
     if (this.newDrink == null) {
       this.newDrink = Drink.newDrink();
@@ -45,7 +46,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
 
   @override
   Widget build(BuildContext context) {
-    widget.mainData = Provider.of<MainData>(context);
+    widget.mainData = Provider.of<DataManager>(context);
     languageManager = Provider.of<LanguageManager>(context);
 
     return Material(
@@ -297,7 +298,7 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
   List<Beverage> beverages;
   @override
   Widget build(BuildContext context) {
-    beverages = Provider.of<MainData>(context, listen: false).beverages;
+    beverages = Provider.of<DataManager>(context, listen: false).beverages;
     return Column(
       children: [
         RichText(

@@ -29,6 +29,7 @@ public:
     int getPumpID(uint beverageID);
 
     void status(void);
+    bool isConfigurated(void);
     stPumpInfo pumpInfo(uint8_t pumpID);
     void update(bool force);
 

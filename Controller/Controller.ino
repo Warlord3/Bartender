@@ -15,10 +15,9 @@ CommunicationController communicationController;
 
 void setup()
 {
-  Serial.begin(112500);
-  Serial.println("tst");
+  DEBUG_BEGIN(112500);
   DEBUG_PRINTLN("Bartender gestartet");
-  pumpController.setReferences(&communicationController, &stateController);
+  pumpController.setReferences(&communicationController, &stateController, &storageController);
   communicationController.setReferences(&stateController, &pumpController);
   storageController.setReferences(&stateController);
   networkController.setReferences(&stateController, &storageController);

@@ -1,5 +1,4 @@
-
-import 'package:bartender/models/Drinks.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +12,7 @@ class BeveragePage extends StatefulWidget {
 class _BeveragePageState extends State<BeveragePage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<MainData>(
+    return Consumer<DataManager>(
       builder: (context, mainData, child) => SafeArea(
         child: Container(
           color: Theme.of(context).backgroundColor,

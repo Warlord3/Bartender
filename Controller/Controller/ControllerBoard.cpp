@@ -17,6 +17,18 @@ ControllerBoard::~ControllerBoard()
 {
 }
 
+bool ControllerBoard::isConfigurated(void)
+{
+    for (int i = 0; i < PUMP_NUM; i++)
+    {
+        if (this->_pumps[i].beverageID < 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 stPumpInfo ControllerBoard::pumpInfo(uint8_t pumpID)
 {
     return _pumps[pumpID & 0x0F];

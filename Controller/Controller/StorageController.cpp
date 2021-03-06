@@ -81,7 +81,9 @@ void StorageController::loadConfig(void)
         state->wifiState = enWiFiState::startAccessPoint;
     }
 }
-
+bool StorageController::savePumpConfig()
+{
+}
 bool StorageController::saveConfig(stConfig config)
 {
     File file = LittleFS.open(CONFIG_JSON_FILENAME, "w");

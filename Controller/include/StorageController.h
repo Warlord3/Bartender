@@ -29,6 +29,7 @@ public:
 
     void loadConfig(void);
     bool saveConfig(stConfig config);
+    bool savePumpConfig(void);
 
     bool saveFile(String filename, String data);
     String loadFile(String filename);

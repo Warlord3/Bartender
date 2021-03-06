@@ -1,3 +1,4 @@
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:bartender/GlobalWidgets/DrinkListView.dart';
@@ -16,7 +17,7 @@ class DrinksPage extends StatelessWidget {
         }
         return null;
       },
-      child: Consumer<MainData>(
+      child: Consumer<DataManager>(
         builder: (context, mainData, child) => SafeArea(
           child: Container(
             color: Theme.of(context).backgroundColor,

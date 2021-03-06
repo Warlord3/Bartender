@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:bartender/bloc/ConnectionManager.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +60,7 @@ class MixDringWidget extends StatelessWidget {
                     elevation: 0,
                     padding: EdgeInsets.all(10.0),
                     onPressed: () {
-                      Provider.of<ConnectionManager>(context, listen: false)
+                      Provider.of<DataManager>(context, listen: false)
                           .sendDrink(drink);
                       Navigator.of(context, rootNavigator: true).pop();
                     },

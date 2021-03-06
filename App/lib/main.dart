@@ -1,21 +1,20 @@
 import 'package:bartender/Pages/Start/PageStart.dart';
-import 'package:bartender/bloc/ConnectionManager.dart';
 import 'package:bartender/bloc/LocalStorageManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'Pages/PageRouter.dart';
+import 'bloc/DataManager.dart';
 import 'bloc/PageStateManager.dart';
 import 'bloc/ThemeManager.dart';
-import 'models/Drinks.dart';
 
 void main() => runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<ThemeChangerProvider>(
           create: (context) => ThemeChangerProvider(),
         ),
-        ChangeNotifierProvider<MainData>(
+        ChangeNotifierProvider<DataManager>(
           create: (context) => LocalStorageManager.getDrinkData(),
         ),
         ChangeNotifierProvider<PageStateManager>(
@@ -24,9 +23,6 @@ void main() => runApp(MultiProvider(
         ChangeNotifierProvider<LanguageManager>(
           create: (context) => LanguageManager(),
         ),
-        ChangeNotifierProvider<ConnectionManager>(
-          create: (context) => ConnectionManager(),
-        )
       ],
       child: MainPage(),
     ));

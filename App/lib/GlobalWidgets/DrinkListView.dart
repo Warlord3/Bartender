@@ -1,5 +1,6 @@
 import 'package:bartender/GlobalWidgets/MixDrinkWidget.dart';
 import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
@@ -120,8 +121,8 @@ class _ListTileState extends State<ListTile> {
                             Icons.delete_outline,
                           ),
                           onPressed: () {
-                            var mainData =
-                                Provider.of<MainData>(context, listen: false);
+                            var mainData = Provider.of<DataManager>(context,
+                                listen: false);
                             var pageManager = Provider.of<PageStateManager>(
                                 context,
                                 listen: false);
@@ -195,8 +196,8 @@ class _ListTileState extends State<ListTile> {
                               var pageManager = Provider.of<PageStateManager>(
                                   context,
                                   listen: false);
-                              var mainData =
-                                  Provider.of<MainData>(context, listen: false);
+                              var mainData = Provider.of<DataManager>(context,
+                                  listen: false);
 
                               switch (widget.drinkType) {
                                 case DrinkType.AllDrinks:

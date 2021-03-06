@@ -35,6 +35,7 @@ class LanguageManager with ChangeNotifier {
     languageEntrys.add(new LanguageEntry("home", "Home", "Home"));
     languageEntrys.add(new LanguageEntry("drinks", "Drinks", "Drinks"));
     languageEntrys.add(new LanguageEntry("beverages", "Beverages", "Getränke"));
+    languageEntrys.add(new LanguageEntry("beverage", "Beverage", "Getränk"));
     languageEntrys
         .add(new LanguageEntry("settings", "Settings", "Einstellungen"));
     languageEntrys.add(new LanguageEntry("controller_configuration",
@@ -55,6 +56,7 @@ class LanguageManager with ChangeNotifier {
         .add(new LanguageEntry("drinkname", "Drinkname", "Drinkname"));
     languageEntrys.add(new LanguageEntry("drinkname_cant_be_empty",
         "Drinkname can't be empty", "Drinkname kann nicht leer sein"));
+    languageEntrys.add(new LanguageEntry("pumpID", "Pump ID", "Pumpen ID"));
   }
 }
 

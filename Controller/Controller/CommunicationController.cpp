@@ -56,14 +56,19 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
         String response_msg = "";
         if (command == "new_drink")
         {
-            if (this->_controller->setDrink(data))
+            if (!this->_controller->isConfigurated())
+            {
+                webSocket.sendTXT(cliendID, "error$no_configuration");
+            }
+            else if (this->_controller->setDrink(data))
             {
                 webSocket.broadcastTXT("new_drink_response$" + String(_state->currentDrink.ID) + "true");
             }
             else
             {
-
-                webSocket.sendTXT(cliendID, "new_drink_response$" + String(_state->currentDrink.ID) + "false");
+                webSocket.sendTXT(cliendID, "error$drink_not_possible");
+                response_msg = this->_controller->getConfiguration();
+                webSocket.sendTXT(cliendID, response_msg);
             }
         }
         else if (command == "pump_config")

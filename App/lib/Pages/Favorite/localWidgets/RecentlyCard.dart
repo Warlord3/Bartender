@@ -1,4 +1,5 @@
 import 'package:bartender/Pages/Favorite/localWidgets/RotationIcon.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:bartender/GlobalWidgets/DrinkListView.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 class RecentlyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var maindata = Provider.of<MainData>(context, listen: false);
+    var maindata = Provider.of<DataManager>(context, listen: false);
     var pageState = Provider.of<PageStateManager>(context);
     pageState.keyRecently =
         GlobalKey<AnimatedListState>(debugLabel: "Recently");

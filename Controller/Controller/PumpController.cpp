@@ -8,10 +8,11 @@ PumpController::PumpController()
 PumpController::~PumpController()
 {
 }
-void PumpController::setReferences(CommunicationController *communication, StateController *state)
+void PumpController::setReferences(CommunicationController *communication, StateController *state, StorageController *storage)
 {
     this->_communication = communication;
     this->_state = state;
+    this->_storage = storage;
 }
 
 uint8_t PumpController::getBoardID(uint8_t pumpID)
@@ -20,15 +21,16 @@ uint8_t PumpController::getBoardID(uint8_t pumpID)
 }
 int PumpController::getPumpID(uint beverageID)
 {
+    int value = -1;
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
-        int value = _boards[i].getPumpID(beverageID);
+        value = _boards[i].getPumpID(beverageID);
         if (value >= 0)
         {
             return value + i * 8;
         }
     }
-    return -1;
+    return value;
 }
 
 void PumpController::init()
@@ -71,6 +73,10 @@ void PumpController::updatePumps(void)
     }
 }
 
+bool PumpController::isConfigurated(void)
+{
+    return _boards[0].isConfigurated() and _boards[1].isConfigurated();
+}
 void PumpController::setConfiguration(char *newConfig)
 {
     //https://github.com/Warlord3/Bartender/wiki/Data-structures#pump-configuration
@@ -109,7 +115,7 @@ String PumpController::getConfiguration(void)
     return result;
 }
 
-bool PumpController::setDrink(char *newDrink)
+int8_t PumpController::setDrink(char *newDrink)
 {
     if (_state->newDrinkPossible)
     {

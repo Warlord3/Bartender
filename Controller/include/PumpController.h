@@ -23,6 +23,7 @@ private:
 
     StateController *_state;
     CommunicationController *_communication;
+    StorageController *_storage;
     uint8_t getBoardID(uint8_t pumpID);
 
     int getPumpID(uint beverageID);
@@ -32,14 +33,15 @@ public:
     PumpController();
     ~PumpController();
 
-    void setReferences(CommunicationController *communication, StateController *state);
+    void setReferences(CommunicationController *communication, StateController *state, StorageController *storage);
 
     void init();
     void run();
 
+    bool isConfigurated(void);
     void setConfiguration(char *newConfig);
     String getConfiguration(void);
-    bool setDrink(char *newDrink);
+    int8_t setDrink(char *newDrink);
 
     void startCleaning(void);
     void stopCleaning(void);

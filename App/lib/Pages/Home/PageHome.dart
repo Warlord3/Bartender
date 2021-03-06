@@ -1,7 +1,7 @@
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:bartender/bloc/ConnectionManager.dart';
 import 'package:bartender/bloc/ThemeManager.dart';
 
 class HomePage extends StatefulWidget {
@@ -78,9 +78,9 @@ class _HOmePageState extends State<HomePage> {
                             children: [
                               Row(
                                 children: [
-                                  Selector<ConnectionManager, bool>(
+                                  Selector<DataManager, bool>(
                                     selector: (_, connection) =>
-                                        connection.connected,
+                                        connection.websocket.connected,
                                     builder: (context, value, child) {
                                       return Icon(value
                                           ? Icons.wifi_outlined

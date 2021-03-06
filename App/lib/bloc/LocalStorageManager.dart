@@ -1,4 +1,4 @@
-import 'package:bartender/models/Drinks.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorageManager {
@@ -8,11 +8,11 @@ class LocalStorageManager {
     storage = await SharedPreferences.getInstance();
   }
 
-  static MainData getDrinkData() {
-    MainData data = MainData();
+  static DataManager getDrinkData() {
+    DataManager data = DataManager();
     data.init();
 
-    data ??= MainData.empty();
+    data ??= DataManager.empty();
     return data;
   }
 }

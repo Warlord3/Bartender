@@ -3,6 +3,7 @@
 
 #define DEBUG_PRINTER Serial
 #ifdef DEBUG_MSG
+#define DEBUG_BEGIN(baudrate) DEBUG_PRINTER.begin(baudrate)
 #define DEBUG_PRINT(...)                  \
     {                                     \
         DEBUG_PRINTER.print(__VA_ARGS__); \
@@ -16,6 +17,7 @@
         DEBUG_PRINTER.printf(__VA_ARGS__); \
     }
 #else
+#define DEBUG_BEGIN
 #define DEBUG_PRINT(...) \
     {                    \
     }

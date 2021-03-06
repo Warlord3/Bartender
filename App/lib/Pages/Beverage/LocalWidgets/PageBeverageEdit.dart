@@ -1,4 +1,5 @@
 import 'package:bartender/Resources/Style.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,8 @@ class _BeverageEditPageState extends State<BeverageEditPage> {
     _name = TextEditingController(text: widget.beverage.name);
     _addtion = TextEditingController(text: widget.beverage.addition);
     _kcal = TextEditingController(text: widget.beverage.kcal.toString());
-    _percent = TextEditingController(text: widget.beverage.percent.toStringAsFixed(1));
+    _percent =
+        TextEditingController(text: widget.beverage.percent.toStringAsFixed(1));
     super.initState();
   }
 
@@ -105,7 +107,9 @@ class _BeverageEditPageState extends State<BeverageEditPage> {
                                   labelText: "%",
                                 ),
                                 style: TextStyle(fontSize: 22),
-                                onTap: () => _percent.selection = TextSelection(baseOffset: 0, extentOffset: _percent.value.text.length),
+                                onTap: () => _percent.selection = TextSelection(
+                                    baseOffset: 0,
+                                    extentOffset: _percent.value.text.length),
                                 onSubmitted: (value) {
                                   setState(() {
                                     percent = double.parse(_percent.text);
@@ -193,7 +197,8 @@ class _BeverageEditPageState extends State<BeverageEditPage> {
 
   bool save() {
     if (widget.beverage.valid()) {
-      Provider.of<MainData>(context, listen: false).saveBeverage(widget.beverage);
+      Provider.of<DataManager>(context, listen: false)
+          .saveBeverage(widget.beverage);
       return true;
     } else {
       showDialog(
