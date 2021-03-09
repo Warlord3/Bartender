@@ -10,9 +10,9 @@ class MixDringWidget extends StatelessWidget {
   MixDringWidget({this.drink});
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 300),
+    return Stack(children: [
+      Positioned(
+        bottom: 100,
         child: Container(
           width: 400,
           height: 200,
@@ -68,7 +68,7 @@ class MixDringWidget extends StatelessWidget {
                     child: SizedBox(
                       child: Icon(
                         Icons.done,
-                        color: Colors.green[700],
+                        color: Colors.green[400],
                         size: 40,
                       ),
                     ),
@@ -88,7 +88,7 @@ class MixDringWidget extends StatelessWidget {
                     fillColor: Colors.red.withOpacity(0.3),
                     child: Icon(
                       Icons.clear,
-                      color: Colors.red,
+                      color: Colors.red[600],
                       size: 40,
                     ),
                   ),
@@ -98,6 +98,6 @@ class MixDringWidget extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ]);
   }
 }
