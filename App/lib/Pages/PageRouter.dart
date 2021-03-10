@@ -14,8 +14,6 @@ import 'package:bartender/bloc/LanguageManager.dart';
 import 'Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'Start/PageStart.dart';
 
-final _navigatorKey = GlobalKey<NavigatorState>();
-
 class PageRouter extends StatefulWidget {
   @override
   _PageRouterState createState() => _PageRouterState();
@@ -31,12 +29,11 @@ class _PageRouterState extends State<PageRouter> {
     languageManager = Provider.of<LanguageManager>(context);
     pageState = Provider.of<PageStateManager>(context);
     themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Navigator(
-          key: _navigatorKey,
+          key: PageStateManager.keyNavigator,
           initialRoute: "/Home",
           onGenerateRoute: (RouteSettings settings) {
             Widget page = Container();
@@ -125,26 +122,27 @@ class _PageRouterState extends State<PageRouter> {
   }
 
   void _pageSelect(int value) {
+    pageState = Provider.of(context, listen: false);
     setState(() {
       if (pageState.lastPageIndex != value) {
         switch (value) {
           case 0:
-            _navigatorKey.currentState.pushNamed("/Home");
+            PageStateManager.keyNavigator.currentState.pushNamed("/Home");
             break;
           case 1:
-            _navigatorKey.currentState.pushNamed("/Favorite");
+            PageStateManager.keyNavigator.currentState.pushNamed("/Favorite");
             break;
           case 2:
-            _navigatorKey.currentState.pushNamed("/Drinks");
+            PageStateManager.keyNavigator.currentState.pushNamed("/Drinks");
             break;
           case 3:
-            _navigatorKey.currentState.pushNamed("/Beverages");
+            PageStateManager.keyNavigator.currentState.pushNamed("/Beverages");
             break;
           case 4:
-            _navigatorKey.currentState.pushNamed("/Settings");
+            PageStateManager.keyNavigator.currentState.pushNamed("/Settings");
             break;
           default:
-            _navigatorKey.currentState.pushNamed("/Home");
+            PageStateManager.keyNavigator.currentState.pushNamed("/Home");
             break;
         }
       }
