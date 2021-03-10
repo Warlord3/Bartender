@@ -18,7 +18,7 @@ struct stConfig
 struct stPumpInfo
 {
     uint8_t ID;
-    float mlPerMinute;
+    int mlPerMinute;
     int beverageID;
     float remainingMl;
     enPumpState state;

@@ -33,7 +33,7 @@ public:
     stPumpInfo pumpInfo(uint8_t pumpID);
     void update(bool force);
 
-    void setMlPerMinute(float mlPerMinute, uint8_t pumpID);
+    void setMlPerMinute(int mlPerMinute, uint8_t pumpID);
     void setBeverageID(int beverageID, uint8_t pumpID);
     void setRemainingMl(float remainingMl, uint8_t pumpID);
     void updatePumps(void);
