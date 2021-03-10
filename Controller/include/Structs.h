@@ -28,8 +28,9 @@ struct stPumpInfo
         mlPerMinute = 0;
         beverageID = 0;
         remainingMl = 0;
-        enPumpState state = enPumpState::stop;
+        state = enPumpState::stop;
     }
+
 };
 
 struct stDrink

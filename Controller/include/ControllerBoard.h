@@ -15,10 +15,10 @@ private:
     uint8_t _address;
     TwoWire *_wire;
     uint16_t _dataRegister;
-    unsigned long lastUpdated = 0;
+    unsigned long _lastUpdated = 0;
 
-    void updateRegister(void);
-    uint8_t getDirection(enPumpState direction);
+    void _updateRegister(void);
+    uint8_t _getDirection(enPumpState direction);
 
 public:
     ControllerBoard(uint8_t address);

@@ -51,6 +51,7 @@ void PumpController::startInterupt(void)
     if (!_interuptStarted && this->_state->operationMode != enOperationMode::configMode)
     {
         DEBUG_PRINTLN("Start Interrupt Timer");
+        timer1_isr_init();
         timer1_attachInterrupt(interruptCallback); // Add ISR Function
         timer1_enable(TIM_DIV256, TIM_EDGE, TIM_LOOP);
         timer1_write(62500); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval

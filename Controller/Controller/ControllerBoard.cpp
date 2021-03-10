@@ -4,7 +4,6 @@ ControllerBoard::ControllerBoard(uint8_t address)
     _address = address;
     for (int i = 0; i < PUMP_NUM; i++)
     {
-        _pumps[i] = stPumpInfo();
         _pumps[i].ID = i;
         _pumps[i].beverageID = -1;
         _pumps[i].remainingMl = 0.0;
@@ -34,7 +33,7 @@ stPumpInfo ControllerBoard::pumpInfo(uint8_t pumpID)
     return _pumps[pumpID & 0x07];
 }
 
-uint8_t ControllerBoard::getDirection(enPumpState direction)
+uint8_t ControllerBoard::_getDirection(enPumpState direction)
 {
     switch (direction)
     {
@@ -83,7 +82,7 @@ int ControllerBoard::getPumpID(uint beverageID)
 {
     for (int i = 0; i < PUMP_NUM; i++)
     {
-        if (_pumps[i].beverageID == beverageID)
+        if (_pumps[i].beverageID == (int)beverageID)
         {
             return i;
         }
@@ -93,21 +92,21 @@ int ControllerBoard::getPumpID(uint beverageID)
 void ControllerBoard::update(bool force = false)
 {
     unsigned long currentMillis = millis();
-    if (currentMillis - lastUpdated <= 100)
+    if (currentMillis - _lastUpdated <= 100)
     {
         DEBUG_PRINTLN("Calling Update too frequently");
-        lastUpdated = currentMillis;
+        _lastUpdated = currentMillis;
     }
-    updateRegister();
+    _updateRegister();
 }
 
-void ControllerBoard::updateRegister()
+void ControllerBoard::_updateRegister()
 {
 
     _dataRegister = 0x00;
     for (int i = 0; i < PUMP_NUM; i++)
     {
-        uint8_t direction = getDirection(_pumps[i].state);
+        uint8_t direction = _getDirection(_pumps[i].state);
         _dataRegister |= direction >> i * 2;
     }
     DEBUG_PRINT("Send Data Register: ");
@@ -167,7 +166,7 @@ void ControllerBoard::stopAllPumps(bool force = false)
     }
     if (force)
     {
-        updateRegister();
+        _updateRegister();
     }
 }
 
