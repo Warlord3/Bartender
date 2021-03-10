@@ -1,6 +1,10 @@
 import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
+import 'package:bartender/models/Drinks.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ControllerConfiguration extends StatefulWidget {
@@ -10,97 +14,239 @@ class ControllerConfiguration extends StatefulWidget {
 }
 
 class _ControllerConfigurationState extends State<ControllerConfiguration> {
-  int pumpIndex = 0;
+  PageController controller;
+  int currentpage = 0;
+  @override
+  initState() {
+    super.initState();
+    controller = PageController(
+      initialPage: currentpage,
+      keepPage: false,
+      viewportFraction: 0.5,
+    );
+  }
+
+  @override
+  dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Material(
-        color: Colors.transparent,
-        child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: MediaQuery.of(context).size.height * 0.8,
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        pumpIndex > 0
-                            ? IconButton(
-                                icon: Icon(Icons.arrow_back),
-                                onPressed: () {
-                                  setState(() {
-                                    pumpIndex -= 1;
-                                  });
-                                },
-                              )
-                            : Container(),
-                        pumpIndex < 15
-                            ? IconButton(
-                                icon: Icon(Icons.arrow_forward),
-                                onPressed: () {
-                                  setState(() {
-                                    pumpIndex += 1;
-                                  });
-                                },
-                              )
-                            : Container(),
-                      ],
-                    ),
-                  ),
-                  PumpConfiguration(pumpIndex: pumpIndex),
-                ],
-              ),
-            )),
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        height: 300,
+        child: PageView.builder(
+          scrollDirection: Axis.horizontal,
+          controller: controller,
+          itemCount: 16,
+          itemBuilder: (context, index) => GestureDetector(
+            onTap: () => controller.animateToPage(index,
+                duration: Duration(milliseconds: 300), curve: Curves.easeIn),
+            child: PumpConfiguration(
+              pumpIndex: index,
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
-class PumpConfiguration extends StatelessWidget {
+class PumpConfiguration extends StatefulWidget {
   PumpConfiguration({
     Key key,
     @required this.pumpIndex,
   }) : super(key: key);
 
   final int pumpIndex;
+  DataManager dataManager;
+  LanguageManager languageManager;
+  @override
+  _PumpConfigurationState createState() => _PumpConfigurationState();
+}
+
+class _PumpConfigurationState extends State<PumpConfiguration> {
+  TextEditingController controller;
+  String beverageName;
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
-    LanguageManager languageManager = Provider.of<LanguageManager>(context);
-    return Table(
-      textBaseline: TextBaseline.alphabetic,
-      defaultVerticalAlignment: TableCellVerticalAlignment.baseline,
-      columnWidths: {
-        0: FlexColumnWidth(4),
-        1: FlexColumnWidth(1),
+    widget.languageManager =
+        Provider.of<LanguageManager>(context, listen: false);
+    widget.dataManager = Provider.of<DataManager>(context, listen: false);
+    beverageName = widget.dataManager
+            .getBeverageByID(widget
+                .dataManager.pumpConfiguration.beverageIDs[widget.pumpIndex])
+            ?.name ??
+        "Select Beverage";
+    controller.text =
+        "${widget.dataManager.pumpConfiguration.mlPerMinute[widget.pumpIndex]}";
+    return Material(
+      color: Colors.transparent,
+      child: Center(
+        child: Container(
+            margin: EdgeInsets.all(15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Pump: ${widget.pumpIndex}",
+                  style: TextStyle(
+                    fontSize: 30,
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Divider(
+                  color: Colors.blueAccent,
+                ),
+                Text("Choose Beverage"),
+                SizedBox(
+                  height: 15,
+                ),
+                ElevatedButton(
+                  child: Text(beverageName),
+                  onPressed: () async {
+                    Beverage result = await chooseBeverageDialog(context);
+                    if (result != null) {
+                      setState(() {
+                        widget.dataManager.pumpConfiguration
+                            .setBeverageID(widget.pumpIndex, result.id);
+                      });
+                    }
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Divider(
+                  color: Colors.blueAccent,
+                ),
+                Text("Ml per Minute"),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  width: 200,
+                  child: TextField(
+                    autofocus: false,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(fontSize: 22.0, color: Colors.black),
+                    textAlign: TextAlign.center,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9]'),
+                      ),
+                    ],
+                    maxLength: 4,
+                    controller: controller,
+                    onChanged: (data) {
+                      widget.dataManager.pumpConfiguration
+                          .setMlPerMinute(widget.pumpIndex, int.parse(data));
+                    },
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Ml per Minute',
+                        hintStyle: TextStyle(color: Colors.blueAccent),
+                        contentPadding: const EdgeInsets.only(
+                            left: 14.0, bottom: 8.0, top: 8.0),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(25.7),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(25.7),
+                        ),
+                        counterText: ""),
+                  ),
+                )
+              ],
+            )),
+      ),
+    );
+  }
+
+  Future chooseBeverageDialog(BuildContext context) {
+    List<Beverage> _searchResult = [];
+    List<Beverage> beverages =
+        Provider.of<DataManager>(context, listen: false).beverages;
+    Color textColor = Theme.of(context).textTheme.bodyText1.color;
+    return showDialog(
+      context: context,
+      builder: (dynamic) {
+        return StatefulBuilder(builder: (context, setState) {
+          onSearchTextChanged(String text) async {
+            _searchResult.clear();
+            if (text.isEmpty) {
+              setState(() {});
+              return;
+            }
+
+            beverages.forEach((beverage) {
+              if (beverage.name.toLowerCase().contains(text.toLowerCase()))
+                _searchResult.add(beverage);
+            });
+            setState(() {
+              if (_searchResult.length == 0) {
+                textColor = Colors.red;
+              } else {
+                textColor = Theme.of(context).textTheme.bodyText1.color;
+              }
+            });
+          }
+
+          return Dialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            insetPadding: EdgeInsets.all(15),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextField(
+                        onChanged: onSearchTextChanged,
+                        style: TextStyle(color: textColor),
+                      ),
+                      Expanded(
+                        child: _searchResult.length != 0
+                            ? BeverageList(
+                                beverages: _searchResult,
+                              )
+                            : BeverageList(
+                                beverages: beverages,
+                              ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Cancel"),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
       },
-      children: [
-        TableRow(
-          children: [
-            TableCell(
-              child: Text(languageManager.getData("pumpID")),
-            ),
-            TableCell(
-              child: Text("$pumpIndex"),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            TableCell(
-              child: Text(languageManager.getData("beverage")),
-            ),
-            TableCell(
-              child: InputTextfield(),
-            ),
-          ],
-        )
-      ],
     );
   }
 }
