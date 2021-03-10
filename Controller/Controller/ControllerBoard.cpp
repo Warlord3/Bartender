@@ -31,7 +31,7 @@ bool ControllerBoard::isConfigurated(void)
 
 stPumpInfo ControllerBoard::pumpInfo(uint8_t pumpID)
 {
-    return _pumps[pumpID & 0x0F];
+    return _pumps[pumpID & 0x07];
 }
 
 uint8_t ControllerBoard::getDirection(enPumpState direction)
@@ -171,20 +171,19 @@ void ControllerBoard::stopAllPumps(bool force = false)
     }
 }
 
-void ControllerBoard::setMlPerMinute(float mlPerMinute, uint8_t pumpID)
+void ControllerBoard::setMlPerMinute(int mlPerMinute, uint8_t pumpID)
 {
     DEBUG_PRINTF("Set ml/min: %i for Pump: %i\n", mlPerMinute, pumpID);
-
-    _pumps[pumpID & 0x0F].mlPerMinute = mlPerMinute;
+    _pumps[pumpID & 0x07].mlPerMinute = mlPerMinute;
 }
 void ControllerBoard::setBeverageID(int beverageID, uint8_t pumpID)
 {
     DEBUG_PRINTF("Set BeverageID: %i for Pump: %i\n", beverageID, pumpID);
-    _pumps[pumpID & 0x0F].beverageID = beverageID;
+    _pumps[pumpID & 0x07].beverageID = beverageID;
 }
 void ControllerBoard::setRemainingMl(float remainingMl, uint8_t pumpID)
 {
     DEBUG_PRINTF("Set Remaining ml: %f for Pump: %i\n", remainingMl, pumpID);
 
-    _pumps[pumpID & 0x0F].remainingMl = remainingMl;
+    _pumps[pumpID & 0x07].remainingMl = remainingMl;
 }

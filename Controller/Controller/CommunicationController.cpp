@@ -35,6 +35,7 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
         break;
     case WStype_CONNECTED:
     {
+        String response_msg = "";
         this->cliendID = num;
         this->clientConnected = true;
         IPAddress ip = webSocket.remoteIP(num);
@@ -42,6 +43,8 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
 
         // send message to client
         webSocket.sendTXT(num, "Connected");
+        response_msg = _controller->getConfiguration();
+        webSocket.sendTXT(num, response_msg);
     }
     break;
     case WStype_TEXT:
@@ -76,6 +79,7 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
             this->_controller->setConfiguration(data);
             response_msg = _controller->getConfiguration();
             webSocket.broadcastTXT(response_msg);
+            DEBUG_PRINTLN((int)this->_state->wifiState);
         }
         else if (command == "pump_config_request")
         {

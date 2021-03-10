@@ -64,6 +64,15 @@ void StorageController::loadConfig(void)
 
                 // Copy values from the JsonDocument to the Config
                 state->operationMode = (enOperationMode)doc["OperationMode"].as<int>();
+                if (state->operationMode == enOperationMode::normalMode)
+                {
+                    state->wifiState = enWiFiState::startWiFi;
+                }
+                else
+                {
+                    DEBUG_PRINTLN("Start Accespoint");
+                    state->wifiState = enWiFiState::startAccessPoint;
+                }
 
                 state->wifiSSID = (const char *)doc["WiFiSSID"];
                 state->wifiPassword = (const char *)doc["WiFiPassword"];

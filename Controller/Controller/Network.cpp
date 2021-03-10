@@ -1,6 +1,6 @@
 #include "Network.h"
 
-Network::Network() : _server(81)
+Network::Network() : _server(80)
 {
 }
 Network::~Network()
@@ -67,6 +67,7 @@ void Network::handleWiFi(void)
             DEBUG_PRINT(".");
             if (millis() - PrevMillis_WiFiTimeout > WiFiTimeout)
             {
+                DEBUG_PRINTLN("WiFi timeout");
                 state->wifiState = enWiFiState::startAccessPoint;
                 state->operationMode = enOperationMode::configMode;
                 return;
@@ -98,6 +99,7 @@ void Network::handleWiFi(void)
     case enWiFiState::disconnectWiFi:
         if (WiFi.status() != WL_CONNECTED)
         {
+            DEBUG_PRINTLN("Disconnect WiFI");
             state->WiFiConncted = false;
             WiFi.disconnect();
             state->wifiState = enWiFiState::startWiFi;
@@ -140,6 +142,7 @@ void Network::handleWiFi(void)
     case enWiFiState::monitorAccessPoint:
         break;
     case enWiFiState::disconnectAccessPoint:
+        DEBUG_PRINTLN("Stop AccessPoint");
         _server.close();
         _server.stop();
         resetWiFi();

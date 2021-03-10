@@ -17,7 +17,7 @@ void PumpController::setReferences(CommunicationController *communication, State
 
 uint8_t PumpController::getBoardID(uint8_t pumpID)
 {
-    return pumpID >> 4;
+    return pumpID >> 3;
 }
 int PumpController::getPumpID(uint beverageID)
 {
@@ -36,8 +36,11 @@ int PumpController::getPumpID(uint beverageID)
 void PumpController::init()
 {
     globalController = this;
-    Wire.begin();
-    startInterupt();
+    if (this->_state->operationMode != enOperationMode::configMode)
+    {
+        Wire.begin();
+        startInterupt();
+    }
 }
 void PumpController::run()
 {
@@ -45,7 +48,7 @@ void PumpController::run()
 
 void PumpController::startInterupt(void)
 {
-    if (!_interuptStarted)
+    if (!_interuptStarted && this->_state->operationMode != enOperationMode::configMode)
     {
         DEBUG_PRINTLN("Start Interrupt Timer");
         timer1_attachInterrupt(interruptCallback); // Add ISR Function
@@ -86,10 +89,13 @@ void PumpController::setConfiguration(char *newConfig)
     ptr = strtok_r(newConfig, ";", &rest);
     while (ptr != NULL)
     {
+        DEBUG_PRINTLN(ptr);
+
         long pumpID = strtol(strtok(ptr, ":"), NULL, 10);
         long beverageID = strtol(strtok(NULL, ":"), NULL, 10);
         long amount = strtol(strtok(NULL, ":"), NULL, 10);
         uint8_t boardID = getBoardID(pumpID);
+        DEBUG_PRINTLN(boardID)
         _boards[boardID].setBeverageID(beverageID, pumpID);
         _boards[boardID].setMlPerMinute(amount, pumpID);
         ptr = strtok_r(NULL, ";", &rest);
