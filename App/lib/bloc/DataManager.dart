@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:bartender/GlobalWidgets/NotifcationOverlay.dart';
+import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:bartender/models/PumpConfiguration.dart';
 import 'package:bartender/models/Websocket.dart';
@@ -17,9 +19,45 @@ class DataManager with ChangeNotifier {
   Websocket websocket;
   DataManager({allDrinks, favoriteDrinks, recentlyCreatedDrinks, beverages}) {
     websocket = Websocket("ws://192.168.178.74:81",
-        onConnectCallback: connected, onDisconnectCallback: disconnected);
-    websocket.connect();
+        onConnectCallback: connected,
+        onDisconnectCallback: disconnected,
+        onDataCallback: callback);
   }
+
+  DataManager.empty() {
+    allDrinks = [];
+    favoriteDrinks = [];
+    recentlyCreatedDrinks = [];
+    beverages = [];
+  }
+
+  void init() {
+    testData();
+    websocket.connect();
+    return;
+    String data = LocalStorageManager.storage.getString("DrinkData");
+    if (data != null) {
+      DrinkSaveData saveData = DrinkSaveData.fromJson(json.decode(data));
+      this.allDrinks = saveData.drinks;
+      this.favoriteDrinks =
+          saveData.drinks.where((element) => element.favorite).toList();
+      this.recentlyCreatedDrinks = this
+          .allDrinks
+          .where((element) => saveData.recently.contains(element.id))
+          .toList();
+      this.beverages = saveData.beverages;
+    }
+  }
+
+  void save() {
+    var temp = this.recentlyCreatedDrinks.map((e) => e.id).toList();
+    DrinkSaveData save = DrinkSaveData(
+        drinks: this.allDrinks, beverages: this.beverages, recently: temp);
+    var json = save.toJson();
+    String drinkData = jsonEncode(json);
+    LocalStorageManager.storage.setString("DrinkData", drinkData);
+  }
+
   void testData() {
     this.allDrinks = new List<Drink>.generate(
         40,
@@ -46,39 +84,7 @@ class DataManager with ChangeNotifier {
             percent: i.toDouble(),
             kcal: i.toDouble()));
     this.recentlyCreatedDrinks = getRecentlyDrinks();
-  }
-
-  DataManager.empty() {
-    allDrinks = [];
-    favoriteDrinks = [];
-    recentlyCreatedDrinks = [];
-    beverages = [];
-  }
-
-  void init() {
-    String data = LocalStorageManager.storage.getString("DrinkData");
-    if (data != null) {
-      DrinkSaveData saveData = DrinkSaveData.fromJson(json.decode(data));
-      this.allDrinks = saveData.drinks;
-      this.favoriteDrinks =
-          saveData.drinks.where((element) => element.favorite).toList();
-      this.recentlyCreatedDrinks = this
-          .allDrinks
-          .where((element) => saveData.recently.contains(element.id))
-          .toList();
-      this.beverages = saveData.beverages;
-    }
-    testData();
-    save();
-  }
-
-  void save() {
-    var temp = this.recentlyCreatedDrinks.map((e) => e.id).toList();
-    DrinkSaveData save = DrinkSaveData(
-        drinks: this.allDrinks, beverages: this.beverages, recently: temp);
-    var json = save.toJson();
-    String drinkData = jsonEncode(json);
-    LocalStorageManager.storage.setString("DrinkData", drinkData);
+    this.pumpConfiguration = PumpConfiguration.testData();
   }
 
   Map<String, dynamic> toJson() => {
@@ -106,6 +112,10 @@ class DataManager with ChangeNotifier {
 
   List<Drink> getRecentlyDrinks() {
     return this.allDrinks.where((element) => element.id < 3).toList();
+  }
+
+  Beverage getBeverageByID(int id) {
+    return this.beverages.firstWhere((element) => element.id == id);
   }
 
   void removeDrink(Drink drink) {
@@ -182,6 +192,10 @@ class DataManager with ChangeNotifier {
     return allDrinks.last.id + 1;
   }
 
+  bool pumpsConfigurated() {
+    return this.pumpConfiguration.configurated;
+  }
+
   startPump(List<int> ids) {
     String message = "start_pump";
     message += "\$";
@@ -214,11 +228,12 @@ class DataManager with ChangeNotifier {
   }
 
   sendConfiguration() {
-    String message = "new_drink";
+    String message = "pump_config";
     message += "\$";
     for (int i = 0; i < 16; i++) {
       message +=
-          "$i:${pumpConfiguration.beverageIDs[i]}:${pumpConfiguration.mlPerMinute[i]};";
+          "$i:${pumpConfiguration.beverageIDs[i]}:${pumpConfiguration.mlPerMinute[i]}";
+      if (i < 15) message += ";";
     }
     send(message);
   }
@@ -232,6 +247,17 @@ class DataManager with ChangeNotifier {
   }
 
   void disconnected(String reason) {
+    OverlayEntry entry = OverlayEntry(builder: (BuildContext context) {
+      return FunkyNotification();
+    });
+    PageStateManager.keyNavigator.currentState.overlay.insert(entry);
+    Future.delayed(Duration(seconds: 3), () {
+      entry.remove();
+    });
+
+    print(reason);
     notifyListeners();
   }
+
+  void callback(dynamic data) {}
 }
