@@ -72,11 +72,31 @@ class Themes {
       ),
       subtitle1: TextStyle(
         fontSize: 18,
-        color: Colors.teal[400],
+        color: Colors.grey[900],
+      ),
+      bodyText1: TextStyle(
+        fontSize: 18,
+        color: Colors.grey[900],
+        fontWeight: FontWeight.normal,
       ),
     ),
     // == Slider
-    sliderTheme: SliderThemeData(),
+    sliderTheme: SliderThemeData(
+      trackShape: RoundedRectSliderTrackShape(),
+      trackHeight: 4.0,
+      activeTrackColor: Colors.cyan[800],
+      activeTickMarkColor: Colors.cyan[800],
+      thumbColor: Colors.cyan[400],
+      showValueIndicator: ShowValueIndicator.never,
+      valueIndicatorColor: Colors.cyan[400],
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+      overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+      tickMarkShape: RoundSliderTickMarkShape(),
+      valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+      valueIndicatorTextStyle: TextStyle(
+        color: Colors.white,
+      ),
+    ),
     // == BottomNaviagtionBar
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       selectedLabelStyle: TextStyle(
@@ -142,11 +162,31 @@ class Themes {
       ),
       subtitle1: TextStyle(
         fontSize: 18,
-        color: Colors.cyan[400],
+        color: Colors.white,
+      ),
+      bodyText1: TextStyle(
+        fontSize: 18,
+        color: Colors.white,
+        fontWeight: FontWeight.normal,
       ),
     ),
     // == Slider
-    sliderTheme: SliderThemeData(),
+    sliderTheme: SliderThemeData(
+      trackShape: RoundedRectSliderTrackShape(),
+      trackHeight: 4.0,
+      activeTrackColor: Colors.teal[800],
+      activeTickMarkColor: Colors.teal[800],
+      thumbColor: Colors.teal[400],
+      showValueIndicator: ShowValueIndicator.never,
+      valueIndicatorColor: Colors.teal[400],
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+      overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+      tickMarkShape: RoundSliderTickMarkShape(),
+      valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+      valueIndicatorTextStyle: TextStyle(
+        color: Colors.white,
+      ),
+    ),
     // == BottomNaviagtionBar
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       selectedLabelStyle: TextStyle(

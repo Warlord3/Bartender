@@ -64,35 +64,31 @@ class _MixDringWidgetState extends State<MixDringWidget> {
                     ],
                   ),
                 ),
-                //TODO:Set textTheme
                 Text(
                   "${value.truncate()} ml",
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        color: Colors.white,
+                        fontSize: 22,
+                      ),
                 ),
                 SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    trackShape: RoundedRectSliderTrackShape(),
-                    trackHeight: 4.0,
-                    activeTickMarkColor: Colors.blueAccent,
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                    overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-                    tickMarkShape: RoundSliderTickMarkShape(),
-                    valueIndicatorShape: PaddleSliderValueIndicatorShape(),
-                    valueIndicatorTextStyle: TextStyle(
-                      color: Colors.white,
+                  data: Theme.of(context).sliderTheme,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
                     ),
-                  ),
-                  child: Slider(
-                    onChanged: (double newValue) {
-                      setState(() {
-                        this.value = newValue;
-                      });
-                    },
-                    label: "${value.truncate()}",
-                    value: value,
-                    min: minValue,
-                    max: 1000,
-                    divisions: (1000 - minValue) ~/ 10,
+                    child: Slider(
+                      onChanged: (double newValue) {
+                        setState(() {
+                          this.value = newValue;
+                        });
+                      },
+                      label: "${value.truncate()}",
+                      value: value,
+                      min: minValue,
+                      max: 1000,
+                      divisions: (1000 - minValue) ~/ 10,
+                    ),
                   ),
                 ),
                 Row(
