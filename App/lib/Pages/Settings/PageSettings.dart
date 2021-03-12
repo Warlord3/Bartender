@@ -14,14 +14,14 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  ThemeChangerProvider themeChangeProvider;
+  ThemeManager themeChangeProvider;
   LanguageManager languageManager;
   DataManager dataManager;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
-    themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
+    themeChangeProvider = Provider.of<ThemeManager>(context);
     dataManager = Provider.of<DataManager>(context, listen: false);
     return Container(
         /*

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class ThemeChangerProvider with ChangeNotifier {
+class ThemeManager with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
 
-  ThemeChangerProvider();
+  ThemeManager();
   getTheme() => _themeMode;
   setTheme(ThemeMode themeMode) {
     if (themeMode != this._themeMode) {
