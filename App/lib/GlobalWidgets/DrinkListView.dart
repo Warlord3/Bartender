@@ -188,7 +188,9 @@ class _ListTileState extends State<ListTile> {
                           scale: 0.8,
                           child: IconButton(
                             icon: Icon(
-                              Icons.favorite_outline,
+                              widget.drink.favorite == true
+                                  ? Icons.favorite_outline
+                                  : Icons.favorite,
                               size: 40,
                               color: Colors.red,
                             ),
