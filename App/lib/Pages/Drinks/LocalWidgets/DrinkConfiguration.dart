@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/models/Drinks.dart';
@@ -48,6 +50,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   Widget build(BuildContext context) {
     widget.mainData = Provider.of<DataManager>(context);
     languageManager = Provider.of<LanguageManager>(context);
+    Timer popTimer;
 
     return Material(
       color: Colors.transparent,
@@ -189,20 +192,37 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                               showDialog(
                                 context: context,
                                 builder: (context) => Dialog(
-                                  child: Container(
-                                    width: 100,
-                                    height: 50,
-                                    color: Colors.transparent,
-                                    child: Center(
-                                      child: Text(
-                                        languageManager.getData("saved_drink"),
-                                        style: TextStyle(fontSize: 30),
+                                  backgroundColor: Colors.red,
+                                  elevation: 0.0,
+                                  // ! Warning of overflow only gets shown in Debug dont remove its intentional!
+                                  // ToDo needs to be tested if it works correctly => should not allow a pop of the dialog when pressing the screen
+                                  child: UnconstrainedBox(
+                                    child: Container(
+                                      // Lets hope we dont use screens bigger than this :D
+                                      height: 5000,
+                                      width: 5000,
+                                      child: Center(
+                                        child: OverflowBox(
+                                          child: Text(
+                                            languageManager
+                                                .getData("saved_drink"),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline1,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               );
-                              // Navigator.of(context, rootNavigator: true).pop();
+                              popTimer = new Timer(
+                                  Duration(seconds: 3),
+                                  () => {
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop()
+                                      });
                             },
                             fillColor: Colors.green.withOpacity(0.3),
                             child: SizedBox(

@@ -66,6 +66,11 @@ class Themes {
     ),
     // == Text
     textTheme: TextTheme(
+      headline1: TextStyle(
+        fontSize: 55,
+        fontWeight: FontWeight.normal,
+        color: Colors.teal[400],
+      ),
       overline: TextStyle(
         fontSize: 25,
         color: Colors.teal[400],
@@ -156,6 +161,11 @@ class Themes {
     ),
     // == Text
     textTheme: TextTheme(
+      headline1: TextStyle(
+        fontSize: 55,
+        color: Colors.cyan[400],
+        fontWeight: FontWeight.normal,
+      ),
       overline: TextStyle(
         fontSize: 25,
         color: Colors.cyan[400],
