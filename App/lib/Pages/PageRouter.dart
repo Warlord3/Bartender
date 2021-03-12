@@ -22,13 +22,13 @@ class PageRouter extends StatefulWidget {
 class _PageRouterState extends State<PageRouter> {
   LanguageManager languageManager;
   PageStateManager pageState;
-  ThemeChangerProvider themeChangeProvider;
+  ThemeManager themeChangeProvider;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     pageState = Provider.of<PageStateManager>(context);
-    themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
+    themeChangeProvider = Provider.of<ThemeManager>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(

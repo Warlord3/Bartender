@@ -11,8 +11,8 @@ import 'bloc/ThemeManager.dart';
 
 void main() => runApp(MultiProvider(
       providers: [
-        ChangeNotifierProvider<ThemeChangerProvider>(
-          create: (context) => ThemeChangerProvider(),
+        ChangeNotifierProvider<ThemeManager>(
+          create: (context) => ThemeManager(),
         ),
         ChangeNotifierProvider<DataManager>(
           create: (context) => LocalStorageManager.getDrinkData(),
@@ -30,7 +30,7 @@ void main() => runApp(MultiProvider(
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<ThemeChangerProvider>(context);
+    final themeMode = Provider.of<ThemeManager>(context);
     return MaterialApp(
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,

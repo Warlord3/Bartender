@@ -10,12 +10,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HOmePageState extends State<HomePage> {
-  ThemeChangerProvider themeChangeProvider;
+  ThemeManager themeChangeProvider;
   LanguageManager languageManager;
 
   @override
   Widget build(BuildContext context) {
-    themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
+    themeChangeProvider = Provider.of<ThemeManager>(context);
     languageManager = Provider.of<LanguageManager>(context);
 
     return Container(
