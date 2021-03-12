@@ -35,6 +35,7 @@ class DataManager with ChangeNotifier {
     testData();
     websocket.connect();
     return;
+    /*
     String data = LocalStorageManager.storage.getString("DrinkData");
     if (data != null) {
       DrinkSaveData saveData = DrinkSaveData.fromJson(json.decode(data));
@@ -47,6 +48,7 @@ class DataManager with ChangeNotifier {
           .toList();
       this.beverages = saveData.beverages;
     }
+    */
   }
 
   void save() {
