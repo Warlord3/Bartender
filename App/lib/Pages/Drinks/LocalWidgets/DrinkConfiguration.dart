@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
+import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -31,11 +31,11 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
     super.initState();
     _nameController = TextEditingController(text: widget.newDrink.name);
     initControllers();
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        if (!visible) update();
-      },
-    );
+    // KeyboardVisibilityNotification().addNewListener(
+    // onChange: (bool visible) {
+    // if (!visible) update();
+    // },
+    // );
   }
 
   @override
@@ -66,7 +66,10 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
           // order to use the TextField component
           // ? mayebe add more gesture detector for better feeling when trying to close dialog
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+              update();
+            },
             child: Container(
               color: Colors.transparent,
               child: Column(
@@ -187,40 +190,9 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                                 widget.newDrink = Drink.newDrink();
                                 clearPage();
                               });
-                              showDialog(
-                                context: context,
-                                builder: (context) => Dialog(
-                                  backgroundColor: Colors.transparent,
-                                  elevation: 0.0,
-                                  // ! Warning of overflow only gets shown in Debug dont remove its intentional!
-                                  // ToDo needs to be tested if it works correctly => should not allow a pop of the dialog when pressing the screen
-                                  child: UnconstrainedBox(
-                                    child: Container(
-                                      // Lets hope we dont use screens bigger than this :D
-                                      height: 5000,
-                                      width: 5000,
-                                      child: Center(
-                                        child: OverflowBox(
-                                          child: Text(
-                                            languageManager
-                                                .getData("saved_drink"),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline1,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                              popTimer = new Timer(
-                                  Duration(seconds: 3),
-                                  () => {
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop()
-                                      });
+
+                              Navigator.of(context, rootNavigator: true).pop();
+                              PageStateManager.showOverlayEntry("Saved");
                             },
                             fillColor: Colors.green.withOpacity(0.3),
                             child: SizedBox(
@@ -283,6 +255,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
     setState(() {
       widget.newDrink.updateStats();
     });
+    FocusScope.of(context).requestFocus(new FocusNode());
   }
 
   deleteIngredient(int index) {
