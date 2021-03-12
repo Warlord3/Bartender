@@ -2,7 +2,6 @@ import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/models/Drinks.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

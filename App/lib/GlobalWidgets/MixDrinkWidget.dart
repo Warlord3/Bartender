@@ -64,7 +64,7 @@ class _MixDringWidgetState extends State<MixDringWidget> {
                     ],
                   ),
                 ),
-                //TODO:Set textTheme
+                //TODO: Set textTheme
                 Text(
                   "${value.truncate()} ml",
                   style: Theme.of(context).textTheme.bodyText1,

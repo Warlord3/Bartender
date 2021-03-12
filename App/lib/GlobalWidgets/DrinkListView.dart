@@ -1,7 +1,6 @@
 import 'package:bartender/GlobalWidgets/MixDrinkWidget.dart';
 import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'package:bartender/bloc/DataManager.dart';
-import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,24 +9,40 @@ import 'dart:ui';
 class DrinkListview extends StatelessWidget {
   final List<Drink> drinks;
   final DrinkType drinkType;
-  final GlobalKey<AnimatedListState> refKey;
-  DrinkListview({this.drinks, this.drinkType, this.refKey});
+  DrinkListview({this.drinks, this.drinkType});
 
   @override
   Widget build(BuildContext context) {
+    DataManager dataManager = Provider.of<DataManager>(context, listen: false);
+    GlobalKey<AnimatedListState> key = GlobalKey<AnimatedListState>();
     return Container(
       child: AnimatedList(
+        key: key,
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
-        key: refKey,
         itemBuilder: (context, index, animation) {
-          return ListTile(
-            key: ValueKey(drinks[index].id.toString()),
-            drink: drinks[index],
-            index: index,
-            drinkType: drinkType,
-            animation: animation,
+          return Dismissible(
+            background: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                color: Colors.red,
+                child: Icon(Icons.delete_outline),
+              ),
+            ),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) {
+              dataManager.removeDrink(drinks[index]);
+              key.currentState.removeItem(index, (context, animation) => null);
+            },
+            key: Key(drinks[index].name),
+            child: ListTile(
+              dataManager: dataManager,
+              drink: drinks[index],
+              index: index,
+              drinkType: drinkType,
+              animation: animation,
+            ),
           );
         },
         initialItemCount: drinks.length,
@@ -38,14 +53,18 @@ class DrinkListview extends StatelessWidget {
 
 // ignore: must_be_immutable
 class ListTile extends StatefulWidget {
-  Key key;
   Drink drink;
   int index;
   DrinkType drinkType;
   Animation<double> animation;
+  DataManager dataManager;
 
-  ListTile({this.key, this.drink, this.index, this.drinkType, this.animation})
-      : super(key: key);
+  ListTile(
+      {this.dataManager,
+      this.drink,
+      this.index,
+      this.drinkType,
+      this.animation});
   @override
   _ListTileState createState() => _ListTileState();
 }
@@ -116,19 +135,19 @@ class _ListTileState extends State<ListTile> {
                       Flexible(
                         flex: 1,
                         fit: FlexFit.tight,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.delete_outline,
-                          ),
-                          onPressed: () {
-                            var mainData = Provider.of<DataManager>(context,
-                                listen: false);
-                            var pageManager = Provider.of<PageStateManager>(
-                                context,
-                                listen: false);
-
-                            switch (widget.drinkType) {
-                              case DrinkType.AllDrinks:
+                        child: Transform.scale(
+                          scale: 0.8,
+                          child: IconButton(
+                            icon: Icon(
+                              widget.drink.favorite
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_outline,
+                              size: 40,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              if (widget.drinkType ==
+                                  DrinkType.FavoriteDrinks) {
                                 AnimatedList.of(context).removeItem(
                                     widget.index,
                                     (_, animation) => ListTile(
@@ -138,107 +157,10 @@ class _ListTileState extends State<ListTile> {
                                         ),
                                     duration:
                                         const Duration(milliseconds: 400));
-                                break;
-                              case DrinkType.FavoriteDrinks:
-                              case DrinkType.RecentlyDrinks:
-                                int index = mainData.recentlyCreatedDrinks
-                                    .indexWhere(
-                                        (drink) => drink.id == widget.drink.id);
-                                if (index != -1) {
-                                  pageManager.keyRecently.currentState
-                                      .removeItem(
-                                          index,
-                                          (_, animation) => ListTile(
-                                                drink: widget.drink,
-                                                index: index,
-                                                animation: animation,
-                                              ),
-                                          duration: const Duration(
-                                              milliseconds: 400));
-                                }
-                                index = mainData.favoriteDrinks.indexWhere(
-                                    (drink) => drink.id == widget.drink.id);
-                                if (index != -1) {
-                                  pageManager.keyFavorite.currentState
-                                      .removeItem(
-                                          index,
-                                          (_, animation) => ListTile(
-                                                drink: widget.drink,
-                                                index: index,
-                                                animation: animation,
-                                              ),
-                                          duration: const Duration(
-                                              milliseconds: 400));
-                                }
-
-                                break;
-                              default:
-                            }
-                            mainData.removeDrink(widget.drink);
-                          },
-                          iconSize: 30,
-                          tooltip: "Delete this Drink",
-                          padding: EdgeInsets.all(0),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        fit: FlexFit.tight,
-                        child: Transform.scale(
-                          scale: 0.8,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.favorite_outline,
-                              size: 40,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {
-                              var pageManager = Provider.of<PageStateManager>(
-                                  context,
-                                  listen: false);
-                              var mainData = Provider.of<DataManager>(context,
-                                  listen: false);
-
-                              switch (widget.drinkType) {
-                                case DrinkType.AllDrinks:
-                                  break;
-                                case DrinkType.FavoriteDrinks:
-                                  pageManager.keyFavorite.currentState
-                                      .removeItem(
-                                          widget.index,
-                                          (_, animation) => ListTile(
-                                                drink: widget.drink,
-                                                index: widget.index,
-                                                animation: animation,
-                                              ),
-                                          duration: const Duration(
-                                              milliseconds: 400));
-
-                                  break;
-                                case DrinkType.RecentlyDrinks:
-                                  if (widget.drink.favorite) {
-                                    int index = mainData.favoriteDrinks
-                                        .indexWhere((drink) =>
-                                            drink.id == widget.drink.id);
-                                    pageManager.keyFavorite.currentState
-                                        .removeItem(
-                                            index,
-                                            (_, animation) => ListTile(
-                                                  drink: widget.drink,
-                                                  index: index,
-                                                  animation: animation,
-                                                ),
-                                            duration: const Duration(
-                                                milliseconds: 400));
-                                  } else {
-                                    pageManager.keyFavorite.currentState
-                                        .insertItem(0);
-                                  }
-
-                                  break;
-                                default:
                               }
-                              mainData.changeFavorite(widget.drink, false);
+
+                              widget.dataManager
+                                  .changeFavorite(widget.drink, false);
 
                               setState(() {});
                             },

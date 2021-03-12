@@ -1,8 +1,7 @@
+import 'package:bartender/GlobalWidgets/NotifcationOverlay.dart';
 import 'package:flutter/cupertino.dart';
 
 class PageStateManager with ChangeNotifier {
-  GlobalKey<AnimatedListState> keyFavorite;
-  GlobalKey<AnimatedListState> keyRecently;
   static GlobalKey<NavigatorState> keyNavigator = GlobalKey<NavigatorState>();
 
   double scrollPositionFavoritePage = 0.0;
@@ -16,5 +15,15 @@ class PageStateManager with ChangeNotifier {
   void changeExpanded() {
     recentlyExpanded = !recentlyExpanded;
     notifyListeners();
+  }
+
+  static void showOverlayEntry(String text) {
+    OverlayEntry entry = OverlayEntry(builder: (BuildContext context) {
+      return FunkyNotification(text);
+    });
+    keyNavigator.currentState.overlay.insert(entry);
+    Future.delayed(Duration(seconds: 3), () {
+      entry.remove();
+    });
   }
 }

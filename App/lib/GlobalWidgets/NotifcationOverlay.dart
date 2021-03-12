@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class FunkyNotification extends StatefulWidget {
+  final String text;
+  FunkyNotification(this.text);
   @override
   State<StatefulWidget> createState() => FunkyNotificationState();
 }
@@ -42,7 +44,7 @@ class FunkyNotificationState extends State<FunkyNotification>
                 child: Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Notification!',
+                    widget.text,
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),

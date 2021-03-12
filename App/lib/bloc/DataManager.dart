@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:bartender/GlobalWidgets/NotifcationOverlay.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:bartender/models/PumpConfiguration.dart';
@@ -60,7 +58,7 @@ class DataManager with ChangeNotifier {
 
   void testData() {
     this.allDrinks = new List<Drink>.generate(
-        40,
+        10,
         (i) => Drink(
             name: "Drink" + i.toString(),
             favorite: i % 2 == 0,
@@ -247,13 +245,7 @@ class DataManager with ChangeNotifier {
   }
 
   void disconnected(String reason) {
-    OverlayEntry entry = OverlayEntry(builder: (BuildContext context) {
-      return FunkyNotification();
-    });
-    PageStateManager.keyNavigator.currentState.overlay.insert(entry);
-    Future.delayed(Duration(seconds: 3), () {
-      entry.remove();
-    });
+    PageStateManager.showOverlayEntry("Disconnected");
 
     print(reason);
     notifyListeners();

@@ -10,8 +10,8 @@ class PumpConfiguration {
         !mlPerMinute.any((element) => element == 0);
   }
 
-  void setBeverageID(int index, int ID) {
-    beverageIDs[index] = ID;
+  void setBeverageID(int index, int id) {
+    beverageIDs[index] = id;
   }
 
   void setMlPerMinute(int index, int ml) {

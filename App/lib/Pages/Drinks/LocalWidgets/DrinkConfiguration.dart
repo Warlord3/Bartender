@@ -1,5 +1,6 @@
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
+import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,7 +64,9 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
           // order to use the TextField component
           // ? mayebe add more gesture detector for better feeling when trying to close dialog
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+            },
             child: Container(
               color: Colors.transparent,
               child: Column(
@@ -186,23 +189,9 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                                 widget.newDrink = Drink.newDrink();
                                 clearPage();
                               });
-                              showDialog(
-                                context: context,
-                                builder: (context) => Dialog(
-                                  child: Container(
-                                    width: 100,
-                                    height: 50,
-                                    color: Colors.transparent,
-                                    child: Center(
-                                      child: Text(
-                                        languageManager.getData("saved_drink"),
-                                        style: TextStyle(fontSize: 30),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                              // Navigator.of(context, rootNavigator: true).pop();
+
+                              Navigator.of(context, rootNavigator: true).pop();
+                              PageStateManager.showOverlayEntry("Saved");
                             },
                             fillColor: Colors.green.withOpacity(0.3),
                             child: SizedBox(
@@ -265,6 +254,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
     setState(() {
       widget.newDrink.updateStats();
     });
+    FocusScope.of(context).requestFocus(new FocusNode());
   }
 
   deleteIngredient(int index) {
