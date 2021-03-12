@@ -4,7 +4,6 @@ import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -30,11 +29,11 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
     super.initState();
     _nameController = TextEditingController(text: widget.newDrink.name);
     initControllers();
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        if (!visible) update();
-      },
-    );
+    // KeyboardVisibilityNotification().addNewListener(
+    // onChange: (bool visible) {
+    // if (!visible) update();
+    // },
+    // );
   }
 
   @override
@@ -66,6 +65,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
           child: GestureDetector(
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
+              update();
             },
             child: Container(
               color: Colors.transparent,
