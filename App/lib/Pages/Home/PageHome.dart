@@ -99,7 +99,9 @@ class _HOmePageState extends State<HomePage> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
-                                    child: Text("Mixing Drink"),
+                                    child: Text(
+                                      languageManager.getData("mixing_drink"),
+                                    ),
                                   ),
                                   // ToDo add bartender status
                                 ],
@@ -111,7 +113,8 @@ class _HOmePageState extends State<HomePage> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
-                                    child: Text("None"),
+                                    child:
+                                        Text(languageManager.getData("none")),
                                   ),
                                   // ToDo add bartender error
                                 ],

@@ -93,8 +93,8 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                     child: Column(
                       children: [
                         Text(
-                          "Ingredients",
-                          style: TextStyle(fontSize: 25),
+                          languageManager.getData("ingredients"),
+                          style: Theme.of(context).textTheme.bodyText1,
                         ),
                         SizedBox(
                           height: 5,
@@ -119,9 +119,9 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                         ),
                         Container(
                           color: Colors.transparent,
-                          width: double.infinity,
                           child: Tooltip(
-                            message: "Add Ingredients to Drink",
+                            message: languageManager
+                                .getData("add_ingredient_to_drink"),
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(() {
@@ -131,15 +131,13 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                                       .add(TextEditingController(text: "0.0"));
                                 });
                               },
-                              child: Text("Add Ingredient"),
+                              child: Text(
+                                  languageManager.getData("add_ingredient")),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 15,
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
@@ -148,7 +146,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                     child: Column(
                       children: [
                         DrinkInfoText(
-                          infoText: "Ingredients",
+                          infoText: languageManager.getData("ingredients"),
                           value: widget.newDrink.ingredients.length
                               .toStringAsFixed(0),
                         ),
@@ -316,8 +314,11 @@ class IngredientsEditor extends StatefulWidget {
 
 class _IngredientsEditorState extends State<IngredientsEditor> {
   List<Beverage> beverages;
+  LanguageManager languageManager;
+
   @override
   Widget build(BuildContext context) {
+    languageManager = Provider.of<LanguageManager>(context);
     beverages = Provider.of<DataManager>(context, listen: false).beverages;
     return Column(
       children: [
@@ -333,7 +334,7 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                   style: TextStyle(fontWeight: FontWeight.bold)),
               TextSpan(
                   text: widget.ingredient.beverage.name == ""
-                      ? "Choose Beverage"
+                      ? languageManager.getData("choose_beverage")
                       : widget.ingredient.beverage.name),
             ],
           ),
@@ -369,8 +370,8 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                         padding: const EdgeInsets.all(12),
                         child: Text(
                           widget.ingredient.beverage.name == ""
-                              ? "Select Beverage"
-                              : "Change Beverage",
+                              ? languageManager.getData("select_beverage")
+                              : languageManager.getData("change_beverage"),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -485,7 +486,7 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text("Cancel"),
+                      child: Text(languageManager.getData("cancel")),
                     )
                   ],
                 ),
@@ -612,10 +613,7 @@ class DrinkInfoText extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: RichText(
         text: TextSpan(
-          style: new TextStyle(
-            fontSize: 14.0,
-            color: Colors.black,
-          ),
+          style: Theme.of(context).textTheme.bodyText1,
           children: [
             TextSpan(
                 text: "$value ", style: TextStyle(fontWeight: FontWeight.bold)),
