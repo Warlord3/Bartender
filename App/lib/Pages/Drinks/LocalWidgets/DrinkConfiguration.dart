@@ -192,7 +192,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                               showDialog(
                                 context: context,
                                 builder: (context) => Dialog(
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: Colors.transparent,
                                   elevation: 0.0,
                                   // ! Warning of overflow only gets shown in Debug dont remove its intentional!
                                   // ToDo needs to be tested if it works correctly => should not allow a pop of the dialog when pressing the screen
