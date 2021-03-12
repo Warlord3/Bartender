@@ -85,6 +85,7 @@ class DataManager with ChangeNotifier {
             kcal: i.toDouble()));
     this.recentlyCreatedDrinks = getRecentlyDrinks();
     this.pumpConfiguration = PumpConfiguration.testData();
+    this.favoriteDrinks = getFavoriteDrinks();
   }
 
   Map<String, dynamic> toJson() => {
