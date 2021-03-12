@@ -13,23 +13,10 @@ class FavoriteCard extends StatelessWidget {
     pageState.keyFavorite =
         GlobalKey<AnimatedListState>(debugLabel: "Favorite");
 
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          children: [
-            DrinkListview(
-              drinks: maindata.favoriteDrinks,
-              drinkType: DrinkType.FavoriteDrinks,
-              refKey: pageState.keyFavorite,
-            ),
-          ],
-        ),
-      ),
+    return DrinkListview(
+      drinks: maindata.favoriteDrinks,
+      drinkType: DrinkType.FavoriteDrinks,
+      refKey: pageState.keyFavorite,
     );
   }
 }

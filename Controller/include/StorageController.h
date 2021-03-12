@@ -8,6 +8,7 @@
 #define DRINKS_JSON_FILENAME "Drink.json"
 #define BEVERAGE_JSON_FILENAME "Beverage.json"
 #define CONFIG_JSON_FILENAME "Config.json"
+#define PUMPCONFIG_JSON_FILENAME "PumpConfig.json"
 class StorageController
 //asdf
 {
@@ -29,7 +30,8 @@ public:
 
     void loadConfig(void);
     bool saveConfig(stConfig config);
-    bool savePumpConfig(void);
+    bool loadPumpConfig(stPumpInfo pumps[16]);
+    bool savePumpConfig(stPumpInfo pumps[16]);
 
     bool saveFile(String filename, String data);
     String loadFile(String filename);

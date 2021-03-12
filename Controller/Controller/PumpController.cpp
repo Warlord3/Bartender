@@ -39,7 +39,18 @@ void PumpController::init()
     if (this->_state->operationMode != enOperationMode::configMode)
     {
         Wire.begin();
-        startInterupt();
+        //startInterupt();
+    }
+    stPumpInfo pumps[NUM_CONTROLLERS * PUMP_NUM];
+
+    if (_storage->loadPumpConfig(pumps))
+    {
+
+        for (int i = 0; i < NUM_CONTROLLERS * PUMP_NUM; i++)
+        {
+           _boards[getBoardID(i)].setBeverageID(pumps[i].beverageID, i);
+           _boards[getBoardID(i)].setRemainingMl(pumps[i].beverageID, i);
+        }
     }
 }
 void PumpController::run()
@@ -101,10 +112,17 @@ void PumpController::setConfiguration(char *newConfig)
         _boards[boardID].setMlPerMinute(amount, pumpID);
         ptr = strtok_r(NULL, ";", &rest);
     }
+    stPumpInfo pumps[NUM_CONTROLLERS * PUMP_NUM];
+    for (int i = 0; i < NUM_CONTROLLERS * PUMP_NUM; i++)
+    {
+        pumps[i] = _boards[getBoardID(i)].pumpInfo(i);
+    }
+    this->_storage->savePumpConfig(pumps);
 }
 
 String PumpController::getConfiguration(void)
 {
+    DEBUG_PRINTLN("Get Pump Configuration");
     String result = "pump_config";
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {

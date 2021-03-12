@@ -96,13 +96,6 @@ class _PageRouterState extends State<PageRouter> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.liquor,
-              color: Colors.blue,
-            ),
-            label: languageManager.getData("beverages"),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
               Icons.settings_outlined,
               color: themeChangeProvider.getTheme() == ThemeMode.light
                   ? Colors.grey[800]
@@ -136,9 +129,6 @@ class _PageRouterState extends State<PageRouter> {
             PageStateManager.keyNavigator.currentState.pushNamed("/Drinks");
             break;
           case 3:
-            PageStateManager.keyNavigator.currentState.pushNamed("/Beverages");
-            break;
-          case 4:
             PageStateManager.keyNavigator.currentState.pushNamed("/Settings");
             break;
           default:

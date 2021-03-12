@@ -85,8 +85,45 @@ class Drink {
         "ingredients": ingredients == null ? null : ingredients,
       };
 
+  ///Create a copy of the new scaled Drink
+  Drink scaleldCopy(double scalling) {
+    List<Ingredient> newIngredients;
+    for (Ingredient ingredient in this.ingredients) {
+      newIngredients.add(Ingredient(
+          beverage: ingredient.beverage,
+          amount: (ingredient.amount * scalling).truncate()));
+    }
+    Drink newDrink = Drink(
+        id: this.id,
+        favorite: this.favorite,
+        name: this.name,
+        ingredients: newIngredients);
+    return newDrink;
+  }
+
+  ///Check if the current drink is valid
   bool valid() {
     return (name != "" && !ingredients.any((element) => !element.valid()));
+  }
+
+  ///Return lowest Amount of Ingredient in Drink
+  ///
+  ///If no Igredients return 0
+  int lowestAmountIngredient() {
+    return ingredients
+            ?.reduce((curr, next) => curr.amount < next.amount ? curr : next)
+            ?.amount ??
+        0;
+  }
+
+  ///Get the lowest Amount of the Drink that is possible to mix
+  int minDrinkAmount() {
+    return amount ~/ lowestAmountIngredient();
+  }
+
+  ///get the scalling of the drink with the new Amount
+  double scalling(double newAmount) {
+    return newAmount / this.amount;
   }
 }
 

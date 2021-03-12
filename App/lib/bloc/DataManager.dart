@@ -68,7 +68,7 @@ class DataManager with ChangeNotifier {
             ingredients: List<Ingredient>.generate(
                 10,
                 (index) => Ingredient(
-                    amount: index,
+                    amount: (index + 1) * 10,
                     beverage: Beverage(
                         name: "Colaasdddddddddddddddddddddd",
                         id: index,
@@ -134,7 +134,7 @@ class DataManager with ChangeNotifier {
             ingredients: List<Ingredient>.generate(
                 10,
                 (index) => Ingredient(
-                    amount: index,
+                    amount: index * 10 + 1,
                     beverage: Beverage(
                         name: "Colaasdddddddddddddddddddddd",
                         addition: "Coca-Cola",
@@ -213,7 +213,7 @@ class DataManager with ChangeNotifier {
     send("stop_pump_all");
   }
 
-  sendDrink(Drink drink) {
+  sendDrink(Drink drink, {double scalling = 1.0}) {
     String message = "new_drink";
     message += "\$";
     message += "${drink.id}";
@@ -221,7 +221,7 @@ class DataManager with ChangeNotifier {
     for (Ingredient ingredient in drink.ingredients) {
       message += "${ingredient.beverage.id}";
       message += ":";
-      message += "${ingredient.amount}";
+      message += "${(ingredient.amount * scalling).truncate()}";
       message += ";";
     }
     send(message);

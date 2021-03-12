@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:bartender/Pages/Settings/LocalWidgets/BeverageConfiguration.dart';
 import 'package:bartender/Pages/Settings/LocalWidgets/ControllerConfiguration.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/ThemeManager.dart';
@@ -15,11 +16,13 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   ThemeChangerProvider themeChangeProvider;
   LanguageManager languageManager;
+  DataManager dataManager;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     themeChangeProvider = Provider.of<ThemeChangerProvider>(context);
+    dataManager = Provider.of<DataManager>(context, listen: false);
     return Container(
         /*
         Table with settings page content
@@ -150,8 +153,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: Center(
                         child: IconButton(
                           icon: Icon(Icons.construction),
-                          onPressed: () {
-                            showGeneralDialog(
+                          onPressed: () async {
+                            await showGeneralDialog(
                               barrierDismissible: true,
                               barrierLabel: '',
                               barrierColor: Colors.black38,
@@ -171,6 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               context: context,
                             );
+                            dataManager.sendConfiguration();
                           },
                         ),
                       ),

@@ -30,7 +30,10 @@ struct stPumpInfo
         remainingMl = 0;
         state = enPumpState::stop;
     }
-
+    void print()
+    {
+        DEBUG_PRINTF("ID:%i,ml:%i,beverage:%i,remain:%f,state:%i\n", ID, mlPerMinute, beverageID, remainingMl, (int)state);
+    }
 };
 
 struct stDrink
