@@ -123,6 +123,7 @@ void CommunicationController::init(void)
 {
     //webSocket.enableHeartbeat(15000, 3000, 2);
     webSocket.begin();
+    DEBUG_PRINTLN("Strat Websocket server");
     //Use Lambda to call Class member function
     webSocket.onEvent([this](uint8_t num, WStype_t type, uint8_t *payload, size_t length) { webSocketEvent(num, type, payload, length); });
 }

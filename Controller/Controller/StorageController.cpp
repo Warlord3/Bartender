@@ -152,10 +152,6 @@ bool StorageController::loadPumpConfig(stPumpInfo pumps[16])
 }
 bool StorageController::savePumpConfig(stPumpInfo pumps[16])
 {
-    for (int i = 0; i < 16; i++)
-    {
-        pumps[i].print();
-    }
 
     File file = LittleFS.open(PUMPCONFIG_JSON_FILENAME, "w");
     if (!file)
@@ -165,25 +161,27 @@ bool StorageController::savePumpConfig(stPumpInfo pumps[16])
     }
 
     DEBUG_PRINTLN("File opened");
-    StaticJsonDocument<1500> doc;
+    DynamicJsonDocument doc(1500);
     JsonArray newArray = doc.to<JsonArray>();
     DEBUG_PRINTLN("Create Array");
 
     for (int i = 0; i < 16; i++)
     {
+        delay(10);
+
         JsonObject nested = newArray.createNestedObject();
         nested["beverageID"] = pumps[i].beverageID;
         nested["MlPerMinute"] = pumps[i].mlPerMinute;
     }
-
     DEBUG_PRINTLN("Filled Json");
 
     if (serializeJson(doc, file) == 0)
     {
-       DEBUG_PRINTLN(F("Failed to save Pumpconfiguration to file"));
-       return false;
+        DEBUG_PRINTLN(F("Failed to save Pumpconfiguration to file"));
+        return false;
     }
     DEBUG_PRINTLN(F("Saved Pumpconfiguration on Flash"));
+
     file.close();
     return true;
 }

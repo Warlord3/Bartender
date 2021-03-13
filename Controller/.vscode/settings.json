@@ -16,6 +16,9 @@
         "typeinfo": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "random": "cpp",
+        "fstream": "cpp",
+        "ostream": "cpp"
     }
 }

@@ -48,8 +48,8 @@ void PumpController::init()
 
         for (int i = 0; i < NUM_CONTROLLERS * PUMP_NUM; i++)
         {
-           _boards[getBoardID(i)].setBeverageID(pumps[i].beverageID, i);
-           _boards[getBoardID(i)].setRemainingMl(pumps[i].beverageID, i);
+            _boards[getBoardID(i)].setBeverageID(pumps[i].beverageID, i);
+            _boards[getBoardID(i)].setRemainingMl(pumps[i].beverageID, i);
         }
     }
 }
@@ -101,13 +101,10 @@ void PumpController::setConfiguration(char *newConfig)
     ptr = strtok_r(newConfig, ";", &rest);
     while (ptr != NULL)
     {
-        DEBUG_PRINTLN(ptr);
-
         long pumpID = strtol(strtok(ptr, ":"), NULL, 10);
         long beverageID = strtol(strtok(NULL, ":"), NULL, 10);
         long amount = strtol(strtok(NULL, ":"), NULL, 10);
         uint8_t boardID = getBoardID(pumpID);
-        DEBUG_PRINTLN(boardID)
         _boards[boardID].setBeverageID(beverageID, pumpID);
         _boards[boardID].setMlPerMinute(amount, pumpID);
         ptr = strtok_r(NULL, ";", &rest);
