@@ -129,7 +129,8 @@ bool StorageController::loadPumpConfig(stPumpInfo pumps[16])
         f.close();
         return false;
     }
-    StaticJsonDocument<1500> doc;
+    //Dont Use StaticJsonDocument if size is greater than 1k
+    DynamicJsonDocument doc(1500);
     DeserializationError err = deserializeJson(doc, f);
     if (err)
     {
@@ -161,6 +162,7 @@ bool StorageController::savePumpConfig(stPumpInfo pumps[16])
     }
 
     DEBUG_PRINTLN("File opened");
+    //Dont Use StaticJsonDocument if size is greater than 1k
     DynamicJsonDocument doc(1500);
     JsonArray newArray = doc.to<JsonArray>();
     DEBUG_PRINTLN("Create Array");
