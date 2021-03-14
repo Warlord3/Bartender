@@ -1,49 +1,47 @@
-#include "CommunicationController.h"
-CommunicationController::CommunicationController() : webSocket(81)
-{
-}
-CommunicationController::~CommunicationController()
-{
-}
-void CommunicationController::setReferences(StateController *state, PumpController *controller)
-{
+#include "include\Communication.h"
 
-    this->_state = state;
-    this->_controller = controller;
-    this->clientConnected = false;
-    this->cliendID = -1;
-}
+WebSocketsServer webSocket(WEBSOCKET_PORT);
+bool clientConnected = false;
+uint8_t cliendID;
 
-bool CommunicationController::sendData(String data)
+
+void initCommunication(void)
 {
-    if (clientConnected)
-    {
-        webSocket.sendTXT(cliendID, data);
-        return true;
-    }
-    return false;
+    clientConnected = false;
+    cliendID = -1;
+    //webSocket.enableHeartbeat(15000, 3000, 2);
+    webSocket.begin();
+    DEBUG_PRINTLN("Strat Websocket server");
+    //Use Lambda to call Class member function
+    webSocket.onEvent(webSocketEvent);
+}
+void runCommunication(void)
+{
+    webSocket.loop();
 }
 
-void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
+
+
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
     switch (type)
     {
     case WStype_DISCONNECTED:
         DEBUG_PRINTF("[%u] Disconnected!\n", num);
-        this->clientConnected = false;
-        this->cliendID = -1;
+        clientConnected = false;
+        cliendID = -1;
         break;
     case WStype_CONNECTED:
     {
         String response_msg = "";
-        this->cliendID = num;
-        this->clientConnected = true;
+        cliendID = num;
+        clientConnected = true;
         IPAddress ip = webSocket.remoteIP(num);
         DEBUG_PRINTF("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
         // send message to client
         webSocket.sendTXT(num, "Connected");
-        response_msg = _controller->getConfiguration();
+        response_msg = getConfiguration();
         webSocket.sendTXT(num, response_msg);
     }
     break;
@@ -59,51 +57,51 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
         String response_msg = "";
         if (command == "new_drink")
         {
-            if (!this->_controller->isConfigurated())
+            if (!isConfigurated())
             {
                 webSocket.sendTXT(cliendID, "error$no_configuration");
             }
-            else if (this->_controller->setDrink(data))
+            else if (setDrink(data))
             {
-                webSocket.broadcastTXT("new_drink_response$" + String(_state->currentDrink.ID) + "true");
+                webSocket.broadcastTXT("new_drink_response$" + String(currentDrink.ID) + "true");
             }
             else
             {
                 webSocket.sendTXT(cliendID, "error$drink_not_possible");
-                response_msg = this->_controller->getConfiguration();
+                response_msg = getConfiguration();
                 webSocket.sendTXT(cliendID, response_msg);
             }
         }
         else if (command == "pump_config")
         {
-            this->_controller->setConfiguration(data);
-            response_msg = _controller->getConfiguration();
+            setConfiguration(data);
+            response_msg = getConfiguration();
             webSocket.broadcastTXT(response_msg);
-            DEBUG_PRINTLN((int)this->_state->wifiState);
+            DEBUG_PRINTLN((int)wifiState);
         }
         else if (command == "pump_config_request")
         {
-            response_msg = _controller->getConfiguration();
+            response_msg = getConfiguration();
             webSocket.broadcastTXT(response_msg);
         }
         else if (command == "stop_pump")
         {
-            _controller->stop(data);
+            stop(data);
             //webSocket.broadcastTXT(response_msg);
         }
         else if (command == "stop_pump_all")
         {
-            _controller->stopAll();
+            stopAllPumps(true);
             //webSocket.broadcastTXT(response_msg);
         }
         else if (command == "start_pump")
         {
-            _controller->stop(data);
+            stop(data);
             //webSocket.broadcastTXT(response_msg);
         }
         else if (command == "start_pump_all")
         {
-            _controller->startAll();
+            startAllPumps((enPumpDirection)strtol(data ,NULL, 10));
             //webSocket.broadcastTXT(response_msg);
         }
         else
@@ -119,15 +117,13 @@ void CommunicationController::webSocketEvent(uint8_t num, WStype_t type, uint8_t
         break;
     }
 }
-void CommunicationController::init(void)
+
+bool sendData(String data)
 {
-    //webSocket.enableHeartbeat(15000, 3000, 2);
-    webSocket.begin();
-    DEBUG_PRINTLN("Strat Websocket server");
-    //Use Lambda to call Class member function
-    webSocket.onEvent([this](uint8_t num, WStype_t type, uint8_t *payload, size_t length) { webSocketEvent(num, type, payload, length); });
-}
-void CommunicationController::run(void)
-{
-    webSocket.loop();
+    if (clientConnected)
+    {
+        webSocket.sendTXT(cliendID, data);
+        return true;
+    }
+    return false;
 }

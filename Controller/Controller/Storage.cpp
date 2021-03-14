@@ -1,35 +1,25 @@
-#include "StorageController.h"
+#include "Storage.h"
 
-bool StorageController::configExits(void)
+File fsUploadFile;
+
+bool configExits(void)
 {
     return false;
 }
 
-bool StorageController::backupExits(void)
+bool backupExits(void)
 {
     return false;
 }
 
-StorageController::StorageController()
-{
-}
-void StorageController::setReferences(StateController *state)
-{
-    this->state = state;
-}
-
-StorageController::~StorageController()
-{
-}
-
-void StorageController::init()
+void initStorage()
 {
     LittleFS.begin();
     listFiles("/");
     loadConfig();
 }
 
-void StorageController::listFiles(const char *Dirname)
+void listFiles(const char *Dirname)
 {
     DEBUG_PRINTLN(F("Found files in root dir:"));
 
@@ -46,10 +36,10 @@ void StorageController::listFiles(const char *Dirname)
     }
 }
 
-void StorageController::loadConfig(void)
+void loadConfig(void)
 {
-    state->operationMode = enOperationMode::configMode;
-    state->wifiState = enWiFiState::startAccessPoint;
+    operationMode = enOperationMode::configMode;
+    wifiState = enWiFiState::startAccessPoint;
     if (!LittleFS.exists(CONFIG_JSON_FILENAME))
     {
         DEBUG_PRINTLN(F("No Config File"));
@@ -72,26 +62,29 @@ void StorageController::loadConfig(void)
         return;
     }
     // Copy values from the JsonDocument to the Config
-    state->operationMode = (enOperationMode)doc["OperationMode"].as<int>();
-    if (state->operationMode == enOperationMode::normalMode)
+    operationMode = (enOperationMode)doc["OperationMode"].as<int>();
+
+    if (operationMode == enOperationMode::normalMode)
     {
-        state->wifiState = enWiFiState::startWiFi;
+        wifiState = enWiFiState::startWiFi;
     }
     else
     {
         DEBUG_PRINTLN("Start Accespoint");
-        state->wifiState = enWiFiState::startAccessPoint;
+        wifiState = enWiFiState::startAccessPoint;
     }
 
-    state->wifiSSID = (const char *)doc["WiFiSSID"];
-    state->wifiPassword = (const char *)doc["WiFiPassword"];
-
-    DEBUG_PRINTLN(F("Read Configuration from Config.json"));
+    wifiSSID = (const char *)doc["WiFiSSID"];
+    wifiPassword = (const char *)doc["WiFiPassword"];
+    DEBUG_PRINTLN("Loaded Config:");
+    DEBUG_PRINTF("\t OperationMode: %i\n",(int)operationMode);
+    DEBUG_PRINTF("\t WiFi SSID: %s\n",wifiSSID.c_str());
+    DEBUG_PRINTF("\t WiFi Password: %s\n",wifiPassword.c_str());
 
     f.close();
 }
 
-bool StorageController::saveConfig(stConfig config)
+bool saveConfig()
 {
     File file = LittleFS.open(CONFIG_JSON_FILENAME, "w");
     if (!file)
@@ -100,9 +93,9 @@ bool StorageController::saveConfig(stConfig config)
         return false;
     }
     StaticJsonDocument<512> doc;
-    doc["OperationMode"] = static_cast<int>(config.operationMode);
-    doc["WiFiSSID"] = config.wifiSSID;
-    doc["WiFiPassword"] = config.wifiPassword;
+    doc["OperationMode"] = static_cast<int>(operationMode);
+    doc["WiFiSSID"] = wifiSSID;
+    doc["WiFiPassword"] = wifiPassword;
     if (serializeJson(doc, file) == 0)
     {
         DEBUG_PRINTLN(F("Failed to write to file"));
@@ -115,7 +108,7 @@ bool StorageController::saveConfig(stConfig config)
     return true;
 }
 
-bool StorageController::loadPumpConfig(stPumpInfo pumps[16])
+bool loadPumpConfig()
 {
     if (!LittleFS.exists(PUMPCONFIG_JSON_FILENAME))
     {
@@ -151,7 +144,7 @@ bool StorageController::loadPumpConfig(stPumpInfo pumps[16])
     f.close();
     return true;
 }
-bool StorageController::savePumpConfig(stPumpInfo pumps[16])
+bool savePumpConfig()
 {
 
     File file = LittleFS.open(PUMPCONFIG_JSON_FILENAME, "w");
@@ -187,7 +180,7 @@ bool StorageController::savePumpConfig(stPumpInfo pumps[16])
     file.close();
     return true;
 }
-bool StorageController::saveFile(String filename, String data)
+bool saveFile(String filename, String data)
 {
     File f = LittleFS.open(CONFIG_JSON_FILENAME, "w");
     if (f)
@@ -200,7 +193,7 @@ bool StorageController::saveFile(String filename, String data)
     }
     return false;
 }
-String StorageController::loadFile(String filename)
+String loadFile(String filename)
 {
     File f = LittleFS.open(CONFIG_JSON_FILENAME, "r");
     if (f)

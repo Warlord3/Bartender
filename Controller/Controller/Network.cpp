@@ -1,40 +1,31 @@
 #include "Network.h"
 
-Network::Network() : _server(80)
-{
-}
-Network::~Network()
-{
-}
-void Network::setReferences(StateController *state, StorageController *storage)
-{
-    this->state = state;
-    DEBUG_PRINTLN("Create Network");
+bool initComplete = false;
+const unsigned long WiFiTimeout = 30000;
+unsigned long PrevMillis_WiFiTimeout;
+ESP8266WebServer server(SERVER_PORT);
 
-    this->storage = storage;
-}
-
-void Network::init(void)
+void initNetwork(void)
 {
     wifi_set_sleep_type(NONE_SLEEP_T);
     DEBUG_PRINTLN("Init Network");
     resetWiFi();
 }
 
-void Network::resetWiFi(void)
+void resetWiFi(void)
 {
     DEBUG_PRINTLN("Reset WiFi");
     WiFi.disconnect();
     WiFi.softAPdisconnect(true);
 }
 
-void Network::run(void)
+void runNetwork(void)
 {
     handleWiFi();
-    switch (state->operationMode)
+    switch (operationMode)
     {
     case enOperationMode::configMode:
-        _server.handleClient();
+        server.handleClient();
         break;
     case enOperationMode::normalMode:
 
@@ -47,9 +38,9 @@ void Network::run(void)
     }
 }
 
-void Network::handleWiFi(void)
+void handleWiFi(void)
 {
-    switch (state->wifiState)
+    switch (wifiState)
     {
     case enWiFiState::startWiFi:
         DEBUG_PRINT("Start WiFi in ");
@@ -58,7 +49,7 @@ void Network::handleWiFi(void)
 
         PrevMillis_WiFiTimeout = millis();
         WiFi.mode(WIFI_STA);
-        WiFi.begin(state->wifiSSID, state->wifiPassword);
+        WiFi.begin(wifiSSID, wifiPassword);
         delay(1); // Call delay(1) for the WiFi stack
 
         while (WiFi.status() != WL_CONNECTED)
@@ -68,31 +59,31 @@ void Network::handleWiFi(void)
             if (millis() - PrevMillis_WiFiTimeout > WiFiTimeout)
             {
                 DEBUG_PRINTLN("WiFi timeout");
-                state->wifiState = enWiFiState::startAccessPoint;
-                state->operationMode = enOperationMode::configMode;
+                wifiState = enWiFiState::startAccessPoint;
+                operationMode = enOperationMode::configMode;
                 return;
             }
         }
         DEBUG_PRINTLN(F("\n-- Wifi Connected --"));
         DEBUG_PRINT(F("  IP Address  : "));
-        state->ipAddress = WiFi.localIP().toString().c_str();
-        DEBUG_PRINTLN(state->ipAddress);
+        ipAddress = WiFi.localIP().toString().c_str();
+        DEBUG_PRINTLN(ipAddress);
         DEBUG_PRINT(F("  Subnetmask  : "));
         DEBUG_PRINTLN(WiFi.subnetMask());
         DEBUG_PRINT(F("  MAC Address : "));
-        state->macAddress = WiFi.macAddress();
-        DEBUG_PRINTLN(state->macAddress);
+        macAddress = WiFi.macAddress();
+        DEBUG_PRINTLN(macAddress);
         DEBUG_PRINT(F("  Gateway     : "));
         DEBUG_PRINTLN(WiFi.gatewayIP());
-        state->wifiState = enWiFiState::monitorWiFi;
-        state->WiFiConncted = true;
+        wifiState = enWiFiState::monitorWiFi;
+        WiFiConncted = true;
         break;
     case enWiFiState::monitorWiFi:
         if (WiFi.status() != WL_CONNECTED)
         {
             if (millis() - PrevMillis_WiFiTimeout > 5000)
             {
-                state->wifiState = enWiFiState::disconnectWiFi;
+                wifiState = enWiFiState::disconnectWiFi;
             }
         }
         break;
@@ -100,18 +91,18 @@ void Network::handleWiFi(void)
         if (WiFi.status() != WL_CONNECTED)
         {
             DEBUG_PRINTLN("Disconnect WiFI");
-            state->WiFiConncted = false;
+            WiFiConncted = false;
             WiFi.disconnect();
-            state->wifiState = enWiFiState::startWiFi;
+            wifiState = enWiFiState::startWiFi;
         }
         else
         {
 
-            state->wifiState = enWiFiState::monitorWiFi;
+            wifiState = enWiFiState::monitorWiFi;
         }
         break;
     case enWiFiState::startAccessPoint:
-        if (state->operationMode == enOperationMode::configMode)
+        if (operationMode == enOperationMode::configMode)
         {
 
             DEBUG_PRINTLN("Start Access Point for Config Mode");
@@ -137,22 +128,22 @@ void Network::handleWiFi(void)
             }
             startWebserver();
         }
-        state->wifiState = enWiFiState::monitorAccessPoint;
+        wifiState = enWiFiState::monitorAccessPoint;
         break;
     case enWiFiState::monitorAccessPoint:
         break;
     case enWiFiState::disconnectAccessPoint:
         DEBUG_PRINTLN("Stop AccessPoint");
-        _server.close();
-        _server.stop();
+        server.close();
+        server.stop();
         resetWiFi();
-        if (state->operationMode == enOperationMode::normalMode)
+        if (operationMode == enOperationMode::normalMode)
         {
-            state->wifiState = enWiFiState::startWiFi;
+            wifiState = enWiFiState::startWiFi;
         }
         else
         {
-            state->wifiState = enWiFiState::startAccessPoint;
+            wifiState = enWiFiState::startAccessPoint;
         }
 
         break;
@@ -162,57 +153,53 @@ void Network::handleWiFi(void)
     }
 }
 
-void Network::setMachineMode(enOperationMode newMode)
+void setMachineMode(enOperationMode newMode)
 {
 }
 
-void Network::startWebserver(void)
+void startWebserver(void)
 {
-    _server.onNotFound([this]() {
-        if (!handleFileRead(_server.uri()))                    // send it if it exists
-            _server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
+    server.onNotFound([]() {
+        if (!handleFileRead(server.uri()))                    // send it if it exists
+            server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
     });
-    _server.on("/", HTTP_GET, [this]() { 
-                _server.sendHeader("Location", "/config.html", true);
-                _server.send(302,"text/plane",""); });
-    _server.on(
+    server.on("/", HTTP_GET, []() { 
+                server.sendHeader("Location", "/config.html", true);
+                server.send(302,"text/plane",""); });
+    server.on(
         "/upload", HTTP_POST, // if the client posts to the upload page
-        [this]() {
-            _server.send(200);
+        []() {
+            server.send(200);
         }, // Send status 200 (OK) to tell the client we are ready to receive
-        [this]() { this->handleFileUpload(); });
-    _server.on("/success", HTTP_POST, [this]() { DEBUG_PRINTLN("TEst"); handleConfig(); });
-    _server.begin(); // start the HTTP server
+        handleFileUpload);
+    server.on("/success", HTTP_POST, handleConfig);
+    server.begin(); // start the HTTP server
     DEBUG_PRINTLN("HTTP server started.");
 }
 
-void Network::handleConfig(void)
+void handleConfig(void)
 {
     handleFileRead("/success.html");
     delay(100);
-    stConfig newConfig = stConfig();
-    if (_server.hasArg("wifiSSID"))
+    if (server.hasArg("wifiSSID"))
     {
-        newConfig.wifiSSID = _server.arg("wifiSSID");
+        wifiSSID = server.arg("wifiSSID");
     }
-    if (_server.hasArg("wifiPassword"))
+    if (server.hasArg("wifiPassword"))
     {
-        newConfig.wifiPassword = _server.arg("wifiPassword");
+        wifiPassword = server.arg("wifiPassword");
     }
-    if (_server.hasArg("operationMode"))
+    if (server.hasArg("operationMode"))
     {
-        newConfig.operationMode = (enOperationMode)strtol(_server.arg("operationMode").c_str(), NULL, 0);
+        operationMode = (enOperationMode)strtol(server.arg("operationMode").c_str(), NULL, 0);
     }
-    storage->saveConfig(newConfig);
-    state->wifiState = enWiFiState::disconnectAccessPoint;
-    state->operationMode = newConfig.operationMode;
-    state->wifiSSID = newConfig.wifiSSID;
-    state->wifiPassword = newConfig.wifiPassword;
+    saveConfig();
+    wifiState = enWiFiState::disconnectAccessPoint;
 }
 
-void Network::handleFileUpload(void)
+void handleFileUpload(void)
 {
-    HTTPUpload &upload = _server.upload();
+    HTTPUpload &upload = server.upload();
     if (upload.status == UPLOAD_FILE_START)
     {
         String filename = upload.filename;
@@ -220,32 +207,32 @@ void Network::handleFileUpload(void)
             filename = "/" + filename;
         DEBUG_PRINT("handleFileUpload Name: ");
         DEBUG_PRINTLN(filename);
-        storage->fsUploadFile = LittleFS.open(filename, "w+"); // Open the file for writing in LittleFS (create if it doesn't exist)
+        fsUploadFile = LittleFS.open(filename, "w+"); // Open the file for writing in LittleFS (create if it doesn't exist)
         filename = String();
     }
     else if (upload.status == UPLOAD_FILE_WRITE)
     {
-        if (storage->fsUploadFile)
-            storage->fsUploadFile.write(upload.buf, upload.currentSize); // Write the received bytes to the file
+        if (fsUploadFile)
+            fsUploadFile.write(upload.buf, upload.currentSize); // Write the received bytes to the file
     }
     else if (upload.status == UPLOAD_FILE_END)
     {
-        if (storage->fsUploadFile)
-        {                                  // If the file was successfully created
-            storage->fsUploadFile.close(); // Close the file again
+        if (fsUploadFile)
+        {                         // If the file was successfully created
+            fsUploadFile.close(); // Close the file again
             DEBUG_PRINT("handleFileUpload Size: ");
             DEBUG_PRINTLN(upload.totalSize);
-            _server.sendHeader("Location", "/success.html"); // Redirect the client to the success page
-            _server.send(303);
+            server.sendHeader("Location", "/success.html"); // Redirect the client to the success page
+            server.send(303);
         }
         else
         {
-            _server.send(500, "text/plain", "500: couldn't create file");
+            server.send(500, "text/plain", "500: couldn't create file");
         }
     }
 }
 
-bool Network::handleFileRead(String path)
+bool handleFileRead(String path)
 {
     DEBUG_PRINTLN("handleFileRead: " + path);
     if (path.endsWith("/"))
@@ -253,12 +240,12 @@ bool Network::handleFileRead(String path)
     String contentType = getContentType(path); // Get the MIME type
     String pathWithGz = path + ".gz";
     if (LittleFS.exists(pathWithGz) || LittleFS.exists(path))
-    {                                                        // If the file exists, either as a compressed archive, or normal
-        if (LittleFS.exists(pathWithGz))                     // If there's a compressed version available
-            path += ".gz";                                   // Use the compressed version
-        File file = LittleFS.open(path, "r");                // Open the file
-        size_t sent = _server.streamFile(file, contentType); // Send it to the client
-        file.close();                                        // Close the file again
+    {                                                       // If the file exists, either as a compressed archive, or normal
+        if (LittleFS.exists(pathWithGz))                    // If there's a compressed version available
+            path += ".gz";                                  // Use the compressed version
+        File file = LittleFS.open(path, "r");               // Open the file
+        size_t sent = server.streamFile(file, contentType); // Send it to the client
+        file.close();                                       // Close the file again
         DEBUG_PRINTLN(String("\tSent file: ") + path);
         return true;
     }
@@ -266,7 +253,7 @@ bool Network::handleFileRead(String path)
     return false; // If the file doesn't exist, return false
 }
 
-String Network::formatBytes(size_t bytes)
+String formatBytes(size_t bytes)
 {
     if (bytes < 1024)
     {
@@ -286,7 +273,7 @@ String Network::formatBytes(size_t bytes)
     }
 }
 
-String Network::getContentType(String filename)
+String getContentType(String filename)
 {
     if (filename.endsWith(".htm"))
         return "text/html";

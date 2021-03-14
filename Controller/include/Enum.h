@@ -1,6 +1,6 @@
 #pragma once
 
-enum class enPumpState
+enum class enPumpDirection
 {
     stop,
     forward,

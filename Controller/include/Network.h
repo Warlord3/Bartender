@@ -5,44 +5,33 @@
 #include "Debug.h"
 #include "LittleFS.h"
 #include "Arduino.h"
-#include "StateController.h"
-#include "StorageController.h"
+#include "State.h"
+#include "Storage.h"
 
-class Network
-{
-private:
-    /* data */
-    bool initComplete = false;
+#define SERVER_PORT 80
+/* data */
+extern bool initComplete;
 
-    //Timeout after Controller switches back to Configuration Mode
-    const unsigned long WiFiTimeout = 30000;
-    unsigned long PrevMillis_WiFiTimeout;
+//Timeout after Controller switches back to Configuration Mode
+extern const unsigned long WiFiTimeout;
+extern unsigned long PrevMillis_WiFiTimeout;
 
-    ESP8266WebServer _server;
+extern ESP8266WebServer server;
 
-    StateController *state;
-    StorageController *storage;
 
-    void handleWiFi(void);
+void handleWiFi(void);
 
-    void setMachineMode(enOperationMode newMode);
+void setMachineMode(enOperationMode newMode);
 
-    void resetWiFi(void);
-    void startWebserver(void);
-    bool handleFileRead(String path);
+void resetWiFi(void);
+void startWebserver(void);
+bool handleFileRead(String path);
 
-    void handleFileUpload(void);
-    void handleConfig(void);
+void handleFileUpload(void);
+void handleConfig(void);
 
-    String formatBytes(size_t bytes);
-    String getContentType(String filename);
+String formatBytes(size_t bytes);
+String getContentType(String filename);
 
-public:
-    Network();
-    ~Network();
-
-    void setReferences(StateController *state, StorageController *storage);
-
-    void init(void);
-    void run(void);
-};
+void initNetwork(void);
+void runNetwork(void);
