@@ -10,8 +10,8 @@
             "includePath": [
                 "d:/Projekte/Bartender/Controller/include",
                 "d:/Projekte/Bartender/Controller",
-                "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/LittleFS/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
+                "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/LittleFS/src",
                 "d:/Projekte/Bartender/Controller/.pio/libdeps/nodemcuv2/WebSockets/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
                 "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src",
@@ -53,8 +53,8 @@
                 "path": [
                     "d:/Projekte/Bartender/Controller/include",
                     "d:/Projekte/Bartender/Controller",
-                    "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/LittleFS/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
+                    "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/LittleFS/src",
                     "d:/Projekte/Bartender/Controller/.pio/libdeps/nodemcuv2/WebSockets/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
                     "C:/Users/Jan/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src",

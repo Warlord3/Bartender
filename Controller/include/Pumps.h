@@ -52,6 +52,9 @@ void startAllPumps(enPumpDirection direction);
 void stopAllPumps(bool force);
 void forward(uint8_t pumpID);
 void backward(uint8_t pumpID);
+
+void startPumpsWithCurrentDrink(void);
+
 //Update
 void ICACHE_RAM_ATTR updatePumps(void);
 void updateRegister(void);

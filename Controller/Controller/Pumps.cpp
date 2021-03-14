@@ -14,7 +14,7 @@ void initPumps()
     {
         DEBUG_PRINTLN("Start I2C");
         Wire.begin();
-        startInterupt();
+        //startInterupt();
     }
 
     if (!loadPumpConfig())
@@ -24,6 +24,7 @@ void initPumps()
 }
 void runPumps()
 {
+    updatePumps();
 }
 
 uint8_t getBoardID(uint8_t pumpID)
@@ -134,13 +135,11 @@ int8_t setDrink(char *newDrink)
             long beverageID = strtol(strtok(ptr, ":"), NULL, 10);
             long amount = strtol(strtok(NULL, ":"), NULL, 10);
             int index = getPumpID(beverageID);
-            DEBUG_PRINTF("Beverage ID: %i with amount of %i\n", beverageID, amount);
-
-            DEBUG_PRINTLN(index);
             if (index >= 0)
             {
                 drink.amount[index] = (float)amount;
             }
+            //TODO fix not found index
             ptr = strtok_r(NULL, ";", &rest);
         }
         currentDrink = drink;
@@ -148,6 +147,7 @@ int8_t setDrink(char *newDrink)
         {
             setRemainingMl(drink.amount[i], i);
         }
+        startPumpsWithCurrentDrink();
         return true;
     }
     DEBUG_PRINTLN("New Drink was declined");
@@ -206,6 +206,10 @@ void startPump(enPumpDirection direction, uint8_t pumpID)
         return;
     }
     numberPumpsRunning += 1;
+    if (numberPumpsRunning > NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS)
+    {
+        numberPumpsRunning = NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS;
+    }
     DEBUG_PRINTF("Start Pump %i \n", pumpID);
 
     if (pumps[pumpID].direction != direction)
@@ -216,6 +220,10 @@ void startPump(enPumpDirection direction, uint8_t pumpID)
 void stopPump(uint8_t pumpID)
 {
     numberPumpsRunning -= 1;
+    if (numberPumpsRunning < 0)
+    {
+        numberPumpsRunning = 0;
+    }
     DEBUG_PRINTF("Stop Pump %i \n", pumpID);
     pumps[pumpID].direction = enPumpDirection::stop;
 }
@@ -252,37 +260,44 @@ void backward(uint8_t pumpID)
     startPump(enPumpDirection::backward, pumpID);
 }
 
+///Start Pumps With Current set Drink
+void startPumpsWithCurrentDrink(void)
+{
+    for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
+    {
+        if (pumps[i].remainingMl > 0)
+        {
+            startPump(enPumpDirection::forward, i);
+        }
+    }
+}
+
 //Update
 void ICACHE_RAM_ATTR updatePumps(void)
 {
-    if (numberPumpsRunning == 0)
-    {
-        return;
-    }
+    delay(100);
     for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
     {
-        if (pumps[i].remainingMl <= 0 || pumps[i].mlPerMinute <= 0)
+
+        if (pumps[i].direction == enPumpDirection::stop)
         {
-            stopPump(i);
-            numberPumpsRunning -= 1;
-            if (numberPumpsRunning < 0)
-            {
-                numberPumpsRunning = 0;
-            }
             continue;
         }
-        pumps[i].remainingMl -= pumps[i].mlPerMinute * 100 / (60 * 1000);
-        if (pumps[i].remainingMl <= 0)
+        if (pumps[i].remainingMl <= 0 || pumps[i].mlPerMinute <= 0)
         {
             pumps[i].remainingMl = 0;
-            numberPumpsRunning -= 1;
-            if (numberPumpsRunning < 0)
-            {
-                numberPumpsRunning = 0;
-            }
-
             stopPump(i);
         }
+        else
+        {
+            pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
+        }
+    }
+    DEBUG_PRINTLN();
+    if (numberPumpsRunning == 0)
+    {
+        newDrinkPossible = true;
+        return;
     }
     updateRegister();
 }
