@@ -1,16 +1,111 @@
-ID:0,ml:50,beverage:5,remain:0.000000,state:0
-ID:1,ml:5,beverage:5,remain:0.000000,state:0
-ID:2,ml:5,beverage:5,remain:0.000000,state:0
-ID:3,ml:5,beverage:5,remain:0.000000,state:0
-ID:4,ml:5,beverage:5,remain:0.000000,state:0
-ID:5,ml:5,beverage:5,remain:0.000000,state:0
-ID:6,ml:5,beverage:5,remain:0.000000,state:0
-ID:7,ml:5,beverage:5,remain:0.000000,state:0
-ID:0,ml:5,beverage:5,remain:0.000000,state:0
-ID:1,ml:5,beverage:5,remain:0.000000,state:0
-ID:2,ml:5,beverage:5,remain:0.000000,state:0
-ID:3,ml:5,beverage:5,remain:0.000000,state:0
-ID:4,ml:5,beverage:5,remain:0.000000,state:0
-ID:5,ml:5,beverage:5,remain:0.000000,state:0
-ID:6,ml:5,beverage:5,remain:0.000000,state:0
-ID:7,ml:5,beverage:5,remain:0.000000,state:0
+{
+    "command": "status",
+    "numberPumpsRunning": 5,
+    "currentDrinkID": 3,
+    "progress": 0
+}
+{
+    "command": "pump_config",
+    "config": [
+        {
+            "beverageID": 2,
+            "mlPerMinute": 100
+        },
+        {
+            "beverageID": 5,
+            "mlPerMinute": 200
+        },
+    ]
+}
+{
+    "command": "pump_config_request"
+}
+{
+    "command": "new_drink",
+    "ID": 5,
+    "ingredients": [
+        {
+            "beverageID": 2,
+            "amount": 100
+        },
+        {
+            "beverageID": 5,
+            "amount": 200
+        },
+    ]
+}
+{
+    "command": "new_drink_response",
+    "accepted": true
+}
+{
+    "command": "start_pump",
+    "IDs": [
+        0,
+        1,
+        2,
+        3
+    ]
+}
+{
+    "command": "start_pump_all",
+    "dircetion": 1
+}
+{
+    "command": "stop_pump",
+    "IDs": [
+        0,
+        1,
+        2,
+        3
+    ]
+}
+{
+    "command": "stop_pump_all"
+}
+{
+    "command": "new_drink",
+    "id": 3,
+    "ingredients": [
+        {
+            "beverageID": 0,
+            "amount": 10
+        },
+        {
+            "beverageID": 1,
+            "amount": 20
+        },
+        {
+            "beverageID": 2,
+            "amount": 30
+        },
+        {
+            "beverageID": 3,
+            "amount": 40
+        },
+        {
+            "beverageID": 4,
+            "amount": 50
+        },
+        {
+            "beverageID": 5,
+            "amount": 60
+        },
+        {
+            "beverageID": 6,
+            "amount": 70
+        },
+        {
+            "beverageID": 7,
+            "amount": 80
+        },
+        {
+            "beverageID": 8,
+            "amount": 90
+        },
+        {
+            "beverageID": 9,
+            "amount": 100
+        }
+    ]
+}

@@ -18,6 +18,7 @@ void loop()
   switch (machineState)
   {
   case enMachineState::boot:
+    DEBUG_PRINTLN(ESP.getCpuFreqMHz());
     initState();
     machineState = enMachineState::init;
     break;

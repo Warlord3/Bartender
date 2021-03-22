@@ -4,17 +4,20 @@ stPumpInfo pumps[NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER];
 uint8_t addresses[NUM_CONTROLLERS] = {BOARD_ADR_BOT, BOARD_ADR_TOP};
 uint16_t pumpDataRegister[NUM_CONTROLLERS] = {0};
 unsigned long lastUpdatedMillis = 0;
-int numberPumpsRunning = 0;
 float remainingPumpTime = 0.0;
 bool interuptStarted = false;
 
 void initPumps()
 {
+
+    for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
+    {
+        pumps[i].ID = i;
+    }
     if (operationMode != enOperationMode::configMode)
     {
         DEBUG_PRINTLN("Start I2C");
         Wire.begin();
-        //startInterupt();
     }
 
     if (!loadPumpConfig())
@@ -24,7 +27,11 @@ void initPumps()
 }
 void runPumps()
 {
-    updatePumps();
+    //updatePumps();
+    if (wifiState == enWiFiState::monitorWiFi)
+    {
+        startInterupt();
+    }
 }
 
 uint8_t getBoardID(uint8_t pumpID)
@@ -47,11 +54,14 @@ void startInterupt(void)
 {
     if (!interuptStarted && operationMode != enOperationMode::configMode)
     {
+        interuptStarted = true;
         DEBUG_PRINTLN("Start Interrupt Timer");
-        timer1_isr_init();
+        timer1_disable();
         timer1_attachInterrupt(updatePumps); // Add ISR Function
+        timer1_isr_init();
+
         timer1_enable(TIM_DIV256, TIM_EDGE, TIM_LOOP);
-        timer1_write(62500); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval
+        timer1_write(31250); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval
     }
 }
 
@@ -68,39 +78,18 @@ bool isConfigurated(void)
     return true;
 }
 
-void setConfiguration(char *newConfig)
+void setConfiguration(DynamicJsonDocument &doc)
 {
     //https://github.com/Warlord3/Bartender/wiki/Data-structures#pump-configuration
-    char *ptr;
-    char *rest;
-
-    ptr = strtok_r(newConfig, ";", &rest);
-    while (ptr != NULL)
+    JsonArray array = doc["config"].as<JsonArray>();
+    for (JsonObject object : array)
     {
-        long pumpID = strtol(strtok(ptr, ":"), NULL, 10);
-        long beverageID = strtol(strtok(NULL, ":"), NULL, 10);
-        long amount = strtol(strtok(NULL, ":"), NULL, 10);
-        setBeverageID(beverageID, pumpID);
-        setMlPerMinute(amount, pumpID);
-        ptr = strtok_r(NULL, ";", &rest);
+        uint pumpID = object["ID"].as<uint>();
+        setBeverageID(object["beverageID"].as<int>(), pumpID);
+        setMlPerMinute(object["mlPerMinute"].as<int>(), pumpID);
     }
 
     savePumpConfig();
-}
-String getConfiguration(void)
-{
-    DEBUG_PRINTLN("Get Pump Configuration");
-    String result = "pump_config";
-    for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
-    {
-        result += pumps[i].ID;
-        result += ":";
-        result += pumps[i].beverageID;
-        result += ":";
-        result += pumps[i].mlPerMinute;
-        result += ";";
-    }
-    return result;
 }
 
 void setMlPerMinute(int mlPerMinute, uint8_t pumpID)
@@ -117,41 +106,6 @@ void setRemainingMl(float remainingMl, uint8_t pumpID)
 {
     DEBUG_PRINTF("Set Remaining ml: %f for Pump: %i\n", remainingMl, pumpID);
     pumps[pumpID].remainingMl = remainingMl;
-}
-int8_t setDrink(char *newDrink)
-{
-    if (newDrinkPossible)
-    {
-        newDrinkPossible = false;
-        DEBUG_PRINTLN("Set new Drink");
-        stDrink drink = stDrink();
-        char *ptr;
-        char *rest;
-        drink.ID = strtol(strtok_r(newDrink, ";", &rest), NULL, 10);
-        DEBUG_PRINTF("Drink ID:%i\n", drink.ID);
-        ptr = strtok_r(NULL, ";", &rest);
-        while (ptr != NULL)
-        {
-            long beverageID = strtol(strtok(ptr, ":"), NULL, 10);
-            long amount = strtol(strtok(NULL, ":"), NULL, 10);
-            int index = getPumpID(beverageID);
-            if (index >= 0)
-            {
-                drink.amount[index] = (float)amount;
-            }
-            //TODO fix not found index
-            ptr = strtok_r(NULL, ";", &rest);
-        }
-        currentDrink = drink;
-        for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
-        {
-            setRemainingMl(drink.amount[i], i);
-        }
-        startPumpsWithCurrentDrink();
-        return true;
-    }
-    DEBUG_PRINTLN("New Drink was declined");
-    return false;
 }
 
 //Status
@@ -275,7 +229,10 @@ void startPumpsWithCurrentDrink(void)
 //Update
 void ICACHE_RAM_ATTR updatePumps(void)
 {
-    delay(100);
+    if (numberPumpsRunning == 0)
+    {
+        return;
+    }
     for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
     {
 
@@ -292,12 +249,6 @@ void ICACHE_RAM_ATTR updatePumps(void)
         {
             pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
         }
-    }
-    DEBUG_PRINTLN();
-    if (numberPumpsRunning == 0)
-    {
-        newDrinkPossible = true;
-        return;
     }
     updateRegister();
 }
@@ -323,25 +274,63 @@ void updateRegister(void)
 }
 
 //Commands
-void start(char *data)
+void start(DynamicJsonDocument &doc)
 {
-    char *ptr;
-    char *rest;
-    ptr = strtok_r(data, ":", &rest);
-    while (ptr != NULL)
+    for (JsonVariant value : doc["IDs"].as<JsonArray>())
     {
-        forward(strtol(ptr, NULL, 10));
-        ptr = strtok_r(NULL, ":", &rest);
+        forward(value.as<int>());
     }
 }
-void stop(char *data)
+void stop(DynamicJsonDocument &doc)
 {
-    char *ptr;
-    char *rest;
-    ptr = strtok_r(data, ":", &rest);
-    while (ptr != NULL)
+    for (JsonVariant value : doc["IDs"].as<JsonArray>())
     {
-        stopPump(strtol(ptr, NULL, 10));
-        ptr = strtok_r(NULL, ":", &rest);
+        stopPump(value.as<int>());
     }
+}
+int8_t setDrink(DynamicJsonDocument &doc)
+{
+
+    if (newDrinkPossible)
+    {
+        newDrinkPossible = false;
+        DEBUG_PRINTLN("Set new Drink");
+        stDrink drink = stDrink();
+        drink.ID = doc["ID"].as<uint>();
+        JsonArray array = doc["ingredients"].as<JsonArray>();
+
+        for (JsonVariant value : array)
+        {
+            JsonObject object = value.as<JsonObject>();
+            int index = getPumpID(object["beverageID"].as<int>());
+
+            drink.amount[index] = object["amount"].as<int>();
+        }
+        currentDrink = drink;
+        for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
+        {
+            setRemainingMl(drink.amount[i], i);
+        }
+        startPumpsWithCurrentDrink();
+        return true;
+    }
+    DEBUG_PRINTLN("New Drink was declined");
+    return false;
+}
+String getConfiguration(void)
+{
+    DEBUG_PRINTLN("Get Pump Configuration");
+    DynamicJsonDocument doc(1500);
+    doc["commnad"] = "pump_config";
+    JsonArray array = doc["config"].to<JsonArray>();
+    for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
+    {
+        JsonObject object = array.createNestedObject();
+        object["ID"] = pumps[i].ID;
+        object["beverageID"] = pumps[i].beverageID;
+        object["mlPerMinute"] = pumps[i].mlPerMinute;
+    }
+    String result;
+    serializeJson(doc, result);
+    return result;
 }

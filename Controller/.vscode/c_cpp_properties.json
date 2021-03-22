@@ -93,7 +93,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=50100",
+                "PLATFORMIO=50101",
                 "ESP8266",
                 "ARDUINO_ARCH_ESP8266",
                 "ARDUINO_ESP8266_NODEMCU",
@@ -111,7 +111,6 @@
                 "VTABLES_IN_FLASH",
                 ""
             ],
-            "intelliSenseMode": "clang-x64",
             "cStandard": "c99",
             "cppStandard": "c++11",
             "compilerPath": "C:/Users/Jan/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc.exe",

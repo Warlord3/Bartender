@@ -16,7 +16,7 @@ extern String macAddress;
 extern bool newDrinkPossible;
 extern stDrink currentDrink;
 
-extern bool pumpsRunning;
+extern uint numberPumpsRunning;
 extern bool drinkFinished;
 
 extern bool WiFiConncted;

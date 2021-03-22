@@ -9,16 +9,21 @@ String ipAddress = "";
 String macAddress = "";
 bool newDrinkPossible = true;
 stDrink currentDrink;
-bool pumpsRunning = false;
+
+uint numberPumpsRunning = 0;
 bool drinkFinished = false;
 bool WiFiConncted = false;
 
 void initState(void)
-{
-    pumpsRunning = false;
+{ 
     drinkFinished = false;
     WiFiConncted = false;
 }
 void runState(void)
 {
+    if (numberPumpsRunning == 0 && !newDrinkPossible)
+    {
+        newDrinkPossible = true;
+        drinkFinished = true;
+    }
 }

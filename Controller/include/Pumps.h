@@ -17,7 +17,6 @@ extern stPumpInfo pumps[NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER];
 extern uint8_t addresses[NUM_CONTROLLERS];
 extern uint16_t pumpDataRegister[NUM_CONTROLLERS];
 extern unsigned long lastUpdatedMillis;
-extern int numberPumpsRunning;
 extern float remainingPumpTime;
 extern bool interuptStarted;
 
@@ -31,7 +30,6 @@ void runPumps();
 
 //Cofiguration of Pumps
 bool isConfigurated(void);
-void setConfiguration(char *newConfig);
 String getConfiguration(void);
 void setMlPerMinute(int mlPerMinute, uint8_t pumpID);
 void setBeverageID(int beverageID, uint8_t pumpID);
@@ -60,6 +58,7 @@ void ICACHE_RAM_ATTR updatePumps(void);
 void updateRegister(void);
 
 //Commands
-void start(char *data);
-void stop(char *data);
-int8_t setDrink(char *newDrink);
+void setConfiguration(DynamicJsonDocument &doc);
+void start(DynamicJsonDocument &doc);
+void stop(DynamicJsonDocument &doc);
+int8_t setDrink(DynamicJsonDocument &doc);
