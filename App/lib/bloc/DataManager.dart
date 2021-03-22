@@ -60,7 +60,7 @@ class DataManager with ChangeNotifier {
 
   void testData() {
     this.allDrinks = new List<Drink>.generate(
-        10,
+        16,
         (i) => Drink(
             name: "Drink" + i.toString(),
             favorite: i % 2 == 0,
@@ -187,6 +187,7 @@ class DataManager with ChangeNotifier {
       oldBeverage.kcal = newBeverage.kcal;
       oldBeverage.percent = newBeverage.percent;
     }
+    notifyListeners();
   }
 
   int _getNewBeverageID() {
@@ -195,6 +196,15 @@ class DataManager with ChangeNotifier {
 
   bool pumpsConfigurated() {
     return this.pumpConfiguration.configurated;
+  }
+
+  bool beverageDeleteable(Beverage beverage) {
+    return true;
+  }
+
+  resetController() {
+    String message = "reset";
+    send(message);
   }
 
   startPump(List<int> ids) {
@@ -215,16 +225,7 @@ class DataManager with ChangeNotifier {
   }
 
   sendDrink(Drink drink, {double scalling = 1.0}) {
-    String message = "new_drink";
-    message += "\$";
-    message += "${drink.id}";
-    message += ";";
-    for (Ingredient ingredient in drink.ingredients) {
-      message += "${ingredient.beverage.id}";
-      message += ":";
-      message += "${(ingredient.amount * scalling).truncate()}";
-      message += ";";
-    }
+    String message = jsonEncode(drink.toJsonAsCommand());
     send(message);
   }
 
