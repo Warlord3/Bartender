@@ -2,6 +2,7 @@ import 'package:bartender/GlobalWidgets/MixDrinkWidget.dart';
 import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/models/Drinks.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
@@ -24,12 +25,13 @@ class DrinkListview extends StatelessWidget {
         itemBuilder: (context, index, animation) {
           return Dismissible(
             background: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Container(
                 color: Colors.red,
                 child: Icon(Icons.delete_outline),
               ),
             ),
+            dragStartBehavior: DragStartBehavior.down,
             direction: DismissDirection.endToStart,
             onDismissed: (direction) {
               dataManager.removeDrink(drinks[index]);

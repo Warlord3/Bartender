@@ -1,9 +1,9 @@
 class PumpConfiguration {
   List<int> beverageIDs = List<int>.filled(16, 5);
-  List<int> mlPerMinute = List<int>.filled(16, 5);
+  List<int> mlPerMinute = List<int>.filled(16, 100);
   PumpConfiguration.testData() {
-    beverageIDs = List<int>.filled(16, 5);
-    mlPerMinute = List<int>.filled(16, 5);
+    beverageIDs = List<int>.generate(16, (index) => index);
+    mlPerMinute = List<int>.generate(16, (index) => 100);
   }
   bool get configurated {
     return !beverageIDs.any((element) => element == -1) &&

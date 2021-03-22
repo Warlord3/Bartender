@@ -57,15 +57,22 @@ class LanguageManager with ChangeNotifier {
     languageEntrys.add(new LanguageEntry("drinkname_cant_be_empty",
         "Drinkname can't be empty", "Drinkname kann nicht leer sein"));
     languageEntrys.add(new LanguageEntry("pumpID", "Pump ID", "Pumpen ID"));
-    languageEntrys.add(new LanguageEntry("ingredients", "Ingredients", "Zutaten"));
-    languageEntrys.add(new LanguageEntry("add_ingredient", "Add Ingredient", "Zutat hinzufügen"));
-    languageEntrys.add(new LanguageEntry("add_ingredient_to_drink", "Add Ingredients to Drink", "Zutaten zum Trink hinzufügen"));
-    languageEntrys.add(new LanguageEntry("choose_beverage", "Choose Beverage", "Getränk auswählen"));
-    languageEntrys.add(new LanguageEntry("select_beverage", "Select Beverage", "Getränk auswählen"));
-    languageEntrys.add(new LanguageEntry("change_beverage", "Change Beverage", "Getränk ändern"));
+    languageEntrys
+        .add(new LanguageEntry("ingredients", "Ingredients", "Zutaten"));
+    languageEntrys.add(new LanguageEntry(
+        "add_ingredient", "Add Ingredient", "Zutat hinzufügen"));
+    languageEntrys.add(new LanguageEntry("add_ingredient_to_drink",
+        "Add Ingredients to Drink", "Zutaten zum Trink hinzufügen"));
+    languageEntrys.add(new LanguageEntry(
+        "choose_beverage", "Choose Beverage", "Getränk auswählen"));
+    languageEntrys.add(new LanguageEntry(
+        "select_beverage", "Select Beverage", "Getränk auswählen"));
+    languageEntrys.add(new LanguageEntry(
+        "change_beverage", "Change Beverage", "Getränk ändern"));
     languageEntrys.add(new LanguageEntry("cancel", "Cancel", "Abbrechen"));
-    languageEntrys.add(new LanguageEntry("cancel", "Cancel", "Abbrechen"));
-    languageEntrys.add(new LanguageEntry("mixing_drink", "Mixing Drink", "Getränk am zubereiten"));
+    languageEntrys.add(new LanguageEntry("save", "Save", "Speichern"));
+    languageEntrys.add(new LanguageEntry(
+        "mixing_drink", "Mixing Drink", "Getränk am zubereiten"));
     languageEntrys.add(new LanguageEntry("none", "None", "Keine"));
   }
 }

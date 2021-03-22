@@ -8,7 +8,7 @@ class PageStateManager with ChangeNotifier {
   double scrollPositionDrinksPage = 0.0;
 
   int lastPageIndex = 0;
-
+  bool pushedPage = false;
   List<bool> showMoreInfo;
   bool recentlyExpanded = false;
 

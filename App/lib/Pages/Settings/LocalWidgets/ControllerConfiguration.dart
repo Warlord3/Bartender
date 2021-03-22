@@ -36,6 +36,7 @@ class _ControllerConfigurationState extends State<ControllerConfiguration> {
     return Align(
       alignment: Alignment.center,
       child: Container(
+        color: Theme.of(context).backgroundColor,
         height: 300,
         child: PageView.builder(
           scrollDirection: Axis.horizontal,

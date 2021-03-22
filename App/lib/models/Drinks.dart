@@ -1,3 +1,5 @@
+import 'package:bartender/Pages/Settings/LocalWidgets/BeverageEdit.dart';
+
 enum DrinkType {
   AllDrinks,
   FavoriteDrinks,
@@ -85,6 +87,14 @@ class Drink {
         "ingredients": ingredients == null ? null : ingredients,
       };
 
+  Map<String, dynamic> toJsonAsCommand() => {
+        "command": "new_drink",
+        "id": id == null ? null : id,
+        "ingredients": ingredients == null
+            ? null
+            : (ingredients.map((i) => i.toJsonAsCommand()).toList()),
+      };
+
   ///Create a copy of the new scaled Drink
   Drink scaleldCopy(double scalling) {
     List<Ingredient> newIngredients;
@@ -132,14 +142,18 @@ class Ingredient {
   int amount;
   Ingredient({this.beverage, this.amount});
   factory Ingredient.fromJson(Map<String, dynamic> json) => Ingredient(
-        beverage: json["beverage"] == null
+        beverage: json["beverageID"] == null
             ? null
-            : Beverage.fromJson(json["beverage"]),
+            : Beverage.fromJson(json["beverageID"]),
         amount: json["amount"] == null ? 0 : json["amount"],
       );
 
   Map<String, dynamic> toJson() => {
-        "beverage": beverage == null ? null : beverage,
+        "beverageID": beverage == null ? null : beverage,
+        "amount": amount == null ? 0 : amount,
+      };
+  Map<String, dynamic> toJsonAsCommand() => {
+        "beverageID": beverage == null ? null : beverage.id,
         "amount": amount == null ? 0 : amount,
       };
   Ingredient.randomIngredient() {
@@ -174,6 +188,16 @@ class Beverage {
   }
 
   Beverage.empty();
+
+  Beverage copy() {
+    return Beverage(
+      id: this.id,
+      addition: this.addition,
+      name: this.name,
+      percent: this.percent,
+      kcal: this.kcal,
+    );
+  }
 
   bool valid() {
     return name != "";

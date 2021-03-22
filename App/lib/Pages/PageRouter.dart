@@ -31,44 +31,56 @@ class _PageRouterState extends State<PageRouter> {
     themeChangeProvider = Provider.of<ThemeManager>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Navigator(
-          key: PageStateManager.keyNavigator,
-          initialRoute: "/Home",
-          onGenerateRoute: (RouteSettings settings) {
-            Widget page = Container();
-            switch (settings.name) {
-              case "/Home":
-                page = HomePage();
-                break;
-              case "/Favorite":
-                page = FavoritePage();
-                break;
-              case "/Drinks":
-                page = DrinksPage();
-                break;
-              case "/Beverages":
-                page = BeveragePage();
-                break;
-              case "/Settings":
-                page = SettingsPage();
-                break;
-              default:
-                page = StartPage();
-                break;
-            }
-            return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => page,
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) =>
-                      FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
-              transitionDuration: Duration(milliseconds: 500),
-              settings: settings,
-            );
-          },
+      body: WillPopScope(
+        onWillPop: () async {
+          print("pop");
+          if (PageStateManager.keyNavigator.currentState.canPop() &&
+              pageState.pushedPage) {
+            pageState.pushedPage = false;
+            PageStateManager.keyNavigator.currentState.pop();
+            return Future.value(false);
+          }
+          return Future.value(true);
+        },
+        child: SafeArea(
+          child: Navigator(
+            key: PageStateManager.keyNavigator,
+            initialRoute: "/Home",
+            onGenerateRoute: (RouteSettings settings) {
+              Widget page = Container();
+              switch (settings.name) {
+                case "/Home":
+                  page = HomePage();
+                  break;
+                case "/Favorite":
+                  page = FavoritePage();
+                  break;
+                case "/Drinks":
+                  page = DrinksPage();
+                  break;
+                case "/Beverages":
+                  page = BeveragePage();
+                  break;
+                case "/Settings":
+                  page = SettingsPage();
+                  break;
+                default:
+                  page = StartPage();
+                  break;
+              }
+              return PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => page,
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(
+                  opacity: animation,
+                  child: child,
+                ),
+                transitionDuration: Duration(milliseconds: 500),
+                settings: settings,
+              );
+            },
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
