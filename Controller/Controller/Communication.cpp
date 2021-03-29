@@ -37,8 +37,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     case WStype_CONNECTED:
     {
         String response_msg = "";
-        cliendID = num;
-        clientConnected = true;
         IPAddress ip = webSocket.remoteIP(num);
         DEBUG_PRINTF("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
@@ -51,6 +49,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     case WStype_TEXT:
     {
         DEBUG_PRINTF("[%u] get Text: %s\n", num, payload);
+        if (String((char *)payload) == "connected")
+        {
+            cliendID = num;
+            clientConnected = true;
+        }
 
         DynamicJsonDocument doc(1000);
         DeserializationError error = deserializeJson(doc, payload);
@@ -60,11 +63,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
             return;
         }
 
-        const char* command = doc["command"].as<char*>();
-        DEBUG_PRINTF("Command: %s\n",command);
+        const char *command = doc["command"].as<char *>();
+        DEBUG_PRINTF("Command: %s\n", command);
 
         String response_msg = "";
-        if (strcmp(command, "new_drink")==0)
+        if (strcmp(command, "new_drink") == 0)
         {
             if (!isConfigurated())
             {
@@ -81,34 +84,39 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
                 webSocket.sendTXT(cliendID, response_msg);
             }
         }
-        else if(strcmp(command, "pump_config")==0)
+        else if (strcmp(command, "pump_config") == 0)
         {
             setConfiguration(doc);
             response_msg = getConfiguration();
             webSocket.broadcastTXT(response_msg);
             DEBUG_PRINTLN((int)wifiState);
         }
-        else if (strcmp(command, "pump_config_request")==0)
+        else if (strcmp(command, "pump_config_request") == 0)
         {
             response_msg = getConfiguration();
             webSocket.broadcastTXT(response_msg);
         }
-        else if (strcmp(command, "stop_pump")==0)
+        else if (strcmp(command, "stop_pump") == 0)
         {
             stop(doc);
             //webSocket.broadcastTXT(response_msg);
         }
-        else if (strcmp(command, "stop_pump_all")==0)
+        else if (strcmp(command, "stop_pump_all") == 0)
         {
             stopAllPumps(true);
             //webSocket.broadcastTXT(response_msg);
         }
-        else if (strcmp(command, "start_pump")==0)
+        else if (strcmp(command, "start_pump") == 0)
         {
             stop(doc);
             //webSocket.broadcastTXT(response_msg);
         }
-        else if(strcmp(command, "start_pump_all")==0) 
+        else if (strcmp(command, "start_pump_all") == 0)
+        {
+            startAllPumps((enPumpDirection)doc["direction"].as<int>());
+            //webSocket.broadcastTXT(response_msg);
+        }
+        else if (strcmp(command, "reset") == 0)
         {
             startAllPumps((enPumpDirection)doc["direction"].as<int>());
             //webSocket.broadcastTXT(response_msg);

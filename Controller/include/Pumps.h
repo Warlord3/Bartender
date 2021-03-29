@@ -19,6 +19,7 @@ extern uint16_t pumpDataRegister[NUM_CONTROLLERS];
 extern unsigned long lastUpdatedMillis;
 extern float remainingPumpTime;
 extern bool interuptStarted;
+extern byte currentBiggestIngredient;
 
 extern uint8_t getBoardID(uint8_t pumpID);
 
@@ -30,7 +31,6 @@ void runPumps();
 
 //Cofiguration of Pumps
 bool isConfigurated(void);
-String getConfiguration(void);
 void setMlPerMinute(int mlPerMinute, uint8_t pumpID);
 void setBeverageID(int beverageID, uint8_t pumpID);
 void setRemainingMl(float remainingMl, uint8_t pumpID);
@@ -38,6 +38,7 @@ void setRemainingMl(float remainingMl, uint8_t pumpID);
 //Status
 bool pumpsAreRunning(void);
 bool pumpIsRunning(uint8_t pumpID);
+int progress();
 void status(void);
 uint8_t _getDirection(enPumpDirection direction);
 
@@ -62,3 +63,5 @@ void setConfiguration(DynamicJsonDocument &doc);
 void start(DynamicJsonDocument &doc);
 void stop(DynamicJsonDocument &doc);
 int8_t setDrink(DynamicJsonDocument &doc);
+String getConfiguration(void);
+String getPumpStatus();

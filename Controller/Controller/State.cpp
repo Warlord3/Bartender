@@ -15,7 +15,7 @@ bool drinkFinished = false;
 bool WiFiConncted = false;
 
 void initState(void)
-{ 
+{
     drinkFinished = false;
     WiFiConncted = false;
 }
@@ -26,4 +26,10 @@ void runState(void)
         newDrinkPossible = true;
         drinkFinished = true;
     }
+}
+void reset(void)
+{
+    operationMode = enOperationMode::configMode;
+    resetWiFi();
+    ESP.restart();
 }

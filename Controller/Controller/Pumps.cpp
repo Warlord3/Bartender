@@ -6,7 +6,7 @@ uint16_t pumpDataRegister[NUM_CONTROLLERS] = {0};
 unsigned long lastUpdatedMillis = 0;
 float remainingPumpTime = 0.0;
 bool interuptStarted = false;
-
+byte currentBiggestIngredient = 0;
 void initPumps()
 {
 
@@ -125,6 +125,11 @@ bool pumpIsRunning(uint8_t pumpID)
     return pumps[pumpID].direction != enPumpDirection::stop;
 }
 void status(void);
+int progress()
+{
+    return (currentDrink.amount[currentBiggestIngredient]-pumps[currentBiggestIngredient].remainingMl )/ currentDrink.amount[currentBiggestIngredient] * 100;
+}
+
 uint8_t getDirection(enPumpDirection direction)
 {
     switch (direction)
@@ -250,6 +255,7 @@ void ICACHE_RAM_ATTR updatePumps(void)
             pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
         }
     }
+    sendData(getPumpStatus());
     updateRegister();
 }
 void updateRegister(void)
@@ -290,6 +296,7 @@ void stop(DynamicJsonDocument &doc)
 }
 int8_t setDrink(DynamicJsonDocument &doc)
 {
+    currentBiggestIngredient = 0;
 
     if (newDrinkPossible)
     {
@@ -303,8 +310,11 @@ int8_t setDrink(DynamicJsonDocument &doc)
         {
             JsonObject object = value.as<JsonObject>();
             int index = getPumpID(object["beverageID"].as<int>());
-
             drink.amount[index] = object["amount"].as<int>();
+            if (drink.amount[index] > drink.amount[currentBiggestIngredient])
+            {
+                currentBiggestIngredient = index;
+            }
         }
         currentDrink = drink;
         for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
@@ -329,6 +339,35 @@ String getConfiguration(void)
         object["ID"] = pumps[i].ID;
         object["beverageID"] = pumps[i].beverageID;
         object["mlPerMinute"] = pumps[i].mlPerMinute;
+    }
+    String result;
+    serializeJson(doc, result);
+    return result;
+}
+
+String getPumpStatus()
+{
+    DynamicJsonDocument doc(2000);
+    doc["command"] = "status";
+    doc["numberPumpsRunning"] = numberPumpsRunning;
+    doc["currentDrinkID"] = currentDrink.ID;
+    doc["progress"] = progress();
+    JsonArray array = doc.createNestedArray("pumps");
+    for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
+    {
+        JsonObject object = array.createNestedObject();
+        object["ID"] = pumps[i].ID;
+        object["beverageID"] = pumps[i].beverageID;
+        int amount = currentDrink.amount[i] - pumps[i].remainingMl;
+        object["amount"] = amount;
+        if (currentDrink.amount[i] > 0) 
+        {
+            object["percent"] = (int)(((float)amount / currentDrink.amount[i]) * 100);
+        }
+        else
+        {
+            object["percent"] = 0;
+        }
     }
     String result;
     serializeJson(doc, result);

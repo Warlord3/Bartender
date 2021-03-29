@@ -2,6 +2,7 @@
 #include "Enum.h"
 #include "Arduino.h"
 #include "Structs.h"
+#include "Network.h"
 
 extern enMachineState machineState;
 extern enOperationMode operationMode;
@@ -23,3 +24,5 @@ extern bool WiFiConncted;
 
 void initState(void);
 void runState(void);
+
+void reset(void);

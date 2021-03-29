@@ -2,7 +2,21 @@
     "command": "status",
     "numberPumpsRunning": 5,
     "currentDrinkID": 3,
-    "progress": 0
+    "progress": 0,
+    "pumps": [
+        {
+            "ID": 0,
+            "beverageID": 2,
+            "amount": 10,
+            "percent": 52
+        },
+        {
+            "ID": 1,
+            "beverageID": 4,
+            "amount": 15,
+            "percent": 32
+        }
+    ]
 }
 {
     "command": "pump_config",
