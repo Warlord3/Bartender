@@ -15,13 +15,12 @@ class Websocket {
   bool connected = false;
   WebSocket _webSocket;
   void connect() async {
-    print("Connection to $url");
     Future<WebSocket> socket = WebSocket.connect(url, protocols: ["Arduino"])
         .timeout(Duration(seconds: 5));
     try {
       await socket.then((WebSocket ws) {
         _webSocket = ws;
-        _webSocket.pingInterval = Duration(milliseconds: 1000);
+        _webSocket.pingInterval = Duration(milliseconds: 5000);
         _webSocket.add("connected");
         if (onConnectCallback != null) {
           onConnectCallback();
@@ -38,7 +37,6 @@ class Websocket {
             connected = false;
           }
           _webSocket.close();
-          print("Disconnected");
           //Retry connection in 5 Seconds
           await Future.delayed(Duration(seconds: 5), connect);
         });
@@ -48,8 +46,9 @@ class Websocket {
         _webSocket.close();
       }
       _webSocket = null;
-      print('Connection Timeout');
       connect();
+    } on Exception {
+      print("exception");
     }
   }
 
@@ -57,7 +56,6 @@ class Websocket {
     if (onDataCallback != null) {
       onDataCallback(content);
     }
-    print("Data:$content");
   }
 
   void send(dynamic message) {
