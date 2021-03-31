@@ -7,7 +7,7 @@ struct stPumpInfo
 {
     uint8_t ID;
     int mlPerMinute;
-    volatile int beverageID;
+    int beverageID;
     float remainingMl;
     enPumpDirection direction;
     stPumpInfo()
