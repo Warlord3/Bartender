@@ -97,6 +97,7 @@
                 "ESP8266",
                 "ARDUINO_ARCH_ESP8266",
                 "ARDUINO_ESP8266_NODEMCU",
+                "DEBUG_ESP_PORT=Serial",
                 "F_CPU=80000000L",
                 "__ets__",
                 "ICACHE_FLASH",
