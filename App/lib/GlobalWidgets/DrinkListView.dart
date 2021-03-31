@@ -25,7 +25,7 @@ class DrinkListview extends StatelessWidget {
         itemBuilder: (context, index, animation) {
           return Dismissible(
             background: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 0.0),
               child: Container(
                 color: Colors.red,
                 child: Icon(Icons.delete_outline),
@@ -79,8 +79,8 @@ class _ListTileState extends State<ListTile> {
       sizeFactor: widget.animation,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 5,
+          horizontal: 0,
+          vertical: 3,
         ),
         child: Card(
           elevation: 3,
