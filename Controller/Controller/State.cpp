@@ -12,6 +12,7 @@ stDrink currentDrink;
 
 uint numberPumpsRunning = 0;
 bool drinkFinished = false;
+bool drinkRunning = false;
 bool WiFiConncted = false;
 
 void initState(void)

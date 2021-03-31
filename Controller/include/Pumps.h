@@ -13,10 +13,10 @@
 #define BOARD_ADR_BOT 0x20
 #define BOARD_ADR_TOP 0x21
 
-extern stPumpInfo pumps[NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER];
+extern volatile stPumpInfo pumps[NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER];
 extern uint8_t addresses[NUM_CONTROLLERS];
 extern uint16_t pumpDataRegister[NUM_CONTROLLERS];
-extern unsigned long lastUpdatedMillis;
+extern unsigned long progressMillis;
 extern float remainingPumpTime;
 extern bool interuptStarted;
 extern byte currentBiggestIngredient;
@@ -65,3 +65,4 @@ void stop(DynamicJsonDocument &doc);
 int8_t setDrink(DynamicJsonDocument &doc);
 String getConfiguration(void);
 String getPumpStatus();
+String getProgress();

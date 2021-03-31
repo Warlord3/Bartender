@@ -19,6 +19,7 @@ extern stDrink currentDrink;
 
 extern uint numberPumpsRunning;
 extern bool drinkFinished;
+extern bool drinkRunning;
 
 extern bool WiFiConncted;
 

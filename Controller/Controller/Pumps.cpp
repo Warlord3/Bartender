@@ -1,9 +1,9 @@
 #include "Pumps.h"
 
-stPumpInfo pumps[NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER];
+volatile stPumpInfo pumps[NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER];
 uint8_t addresses[NUM_CONTROLLERS] = {BOARD_ADR_BOT, BOARD_ADR_TOP};
 uint16_t pumpDataRegister[NUM_CONTROLLERS] = {0};
-unsigned long lastUpdatedMillis = 0;
+unsigned long progressMillis = 0;
 float remainingPumpTime = 0.0;
 bool interuptStarted = false;
 byte currentBiggestIngredient = 0;
@@ -31,6 +31,16 @@ void runPumps()
     if (wifiState == enWiFiState::monitorWiFi)
     {
         startInterupt();
+    }
+    if (drinkRunning)
+    {
+
+        unsigned long currentMillis = millis();
+        if (currentMillis - progressMillis >= 500)
+        {
+            progressMillis = currentMillis;
+            sendData(getProgress());
+        }
     }
 }
 
@@ -127,7 +137,11 @@ bool pumpIsRunning(uint8_t pumpID)
 void status(void);
 int progress()
 {
-    return (currentDrink.amount[currentBiggestIngredient]-pumps[currentBiggestIngredient].remainingMl )/ currentDrink.amount[currentBiggestIngredient] * 100;
+    if (currentDrink.amount[currentBiggestIngredient] == 0)
+    {
+        return 0;
+    }
+    return (currentDrink.amount[currentBiggestIngredient] - pumps[currentBiggestIngredient].remainingMl) / currentDrink.amount[currentBiggestIngredient] * 100;
 }
 
 uint8_t getDirection(enPumpDirection direction)
@@ -141,7 +155,7 @@ uint8_t getDirection(enPumpDirection direction)
         return 1;
         break;
     case enPumpDirection::backward:
-        return 1 >> 1;
+        return 1 << 1;
         break;
 
     default:
@@ -236,6 +250,7 @@ void ICACHE_RAM_ATTR updatePumps(void)
 {
     if (numberPumpsRunning == 0)
     {
+        drinkRunning = false;
         return;
     }
     for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
@@ -255,17 +270,17 @@ void ICACHE_RAM_ATTR updatePumps(void)
             pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
         }
     }
-    sendData(getPumpStatus());
     updateRegister();
 }
+
 void updateRegister(void)
 {
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
-        pumpDataRegister[i] = 0x00;
+        pumpDataRegister[i] = 0;
         for (int j = 0; j < NUM_PUMPS_PER_CONTROLLER; j++)
         {
-            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].direction) >> j * 2;
+            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].direction) << j * 2;
         }
     }
 
@@ -322,6 +337,7 @@ int8_t setDrink(DynamicJsonDocument &doc)
             setRemainingMl(drink.amount[i], i);
         }
         startPumpsWithCurrentDrink();
+        drinkRunning = true;
         return true;
     }
     DEBUG_PRINTLN("New Drink was declined");
@@ -330,7 +346,7 @@ int8_t setDrink(DynamicJsonDocument &doc)
 String getConfiguration(void)
 {
     DEBUG_PRINTLN("Get Pump Configuration");
-    DynamicJsonDocument doc(1500);
+    DynamicJsonDocument doc(2000);
     doc["commnad"] = "pump_config";
     JsonArray array = doc["config"].to<JsonArray>();
     for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
@@ -347,7 +363,7 @@ String getConfiguration(void)
 
 String getPumpStatus()
 {
-    DynamicJsonDocument doc(2000);
+    DynamicJsonDocument doc(2500);
     doc["command"] = "status";
     doc["numberPumpsRunning"] = numberPumpsRunning;
     doc["currentDrinkID"] = currentDrink.ID;
@@ -360,7 +376,7 @@ String getPumpStatus()
         object["beverageID"] = pumps[i].beverageID;
         int amount = currentDrink.amount[i] - pumps[i].remainingMl;
         object["amount"] = amount;
-        if (currentDrink.amount[i] > 0) 
+        if (currentDrink.amount[i] > 0)
         {
             object["percent"] = (int)(((float)amount / currentDrink.amount[i]) * 100);
         }
@@ -369,6 +385,16 @@ String getPumpStatus()
             object["percent"] = 0;
         }
     }
+    String result;
+    serializeJson(doc, result);
+    return result;
+}
+
+String getProgress()
+{
+    DynamicJsonDocument doc(300);
+    doc["command"] = "progress";
+    doc["progress"] = progress();
     String result;
     serializeJson(doc, result);
     return result;
