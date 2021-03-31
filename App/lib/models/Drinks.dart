@@ -1,5 +1,3 @@
-import 'package:bartender/Pages/Settings/LocalWidgets/BeverageEdit.dart';
-
 enum DrinkType {
   AllDrinks,
   FavoriteDrinks,
