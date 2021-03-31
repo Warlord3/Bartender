@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/models/CommunicationData.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:bartender/models/PumpConfiguration.dart';
 import 'package:bartender/models/Websocket.dart';
@@ -21,6 +22,7 @@ class DataManager with ChangeNotifier {
         onDisconnectCallback: disconnected,
         onDataCallback: callback);
   }
+  int drinkProgress = 0;
 
   DataManager.empty() {
     allDrinks = [];
@@ -255,5 +257,16 @@ class DataManager with ChangeNotifier {
     notifyListeners();
   }
 
-  void callback(dynamic data) {}
+  void callback(dynamic data) {
+    if (data == "Connected") {
+    } else {
+      var json = jsonDecode(data);
+      String command = Command.fromJson(json).command;
+      if (command == "status") {
+      } else if (command == "progress") {
+        drinkProgress = Progress.fromJson(json).progress;
+        notifyListeners();
+      }
+    }
+  }
 }

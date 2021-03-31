@@ -30,6 +30,9 @@ class _PageRouterState extends State<PageRouter> {
     pageState = Provider.of<PageStateManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
     return Scaffold(
+      appBar: AppBar(
+        title: Text(getAppBarTitle()),
+      ),
       resizeToAvoidBottomInset: false,
       body: WillPopScope(
         onWillPop: () async {
@@ -196,5 +199,33 @@ class _PageRouterState extends State<PageRouter> {
         size: 30,
       ),
     );
+  }
+
+  String getAppBarTitle() {
+    String title = "";
+    setState(() {
+      switch (pageState.lastPageIndex) {
+        case 0:
+          title = "My Bartender";
+          break;
+        case 1:
+          title = "Favorite";
+
+          break;
+        case 2:
+          title = "Drinks";
+
+          break;
+        case 3:
+          title = "Settings";
+
+          break;
+        default:
+          title = "";
+
+          break;
+      }
+    });
+    return title;
   }
 }

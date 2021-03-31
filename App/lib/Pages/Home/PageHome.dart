@@ -99,8 +99,13 @@ class _HOmePageState extends State<HomePage> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
-                                    child: Text(
-                                      languageManager.getData("mixing_drink"),
+                                    child: Selector<DataManager, int>(
+                                      builder: (context, data, child) {
+                                        return Text(
+                                            '${languageManager.getData("mixing_drink")} : $data%');
+                                      },
+                                      selector: (buildContext, countPro) =>
+                                          countPro.drinkProgress,
                                     ),
                                   ),
                                   // ToDo add bartender status
