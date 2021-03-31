@@ -21,7 +21,11 @@ void runCommunication(void)
     if (drinkFinished)
     {
         drinkFinished = false;
-        webSocket.broadcastTXT("drink_finished");
+        String output;
+        StaticJsonDocument<48> doc;
+        doc["commnad"] = "drink_finished";
+        serializeJson(doc, output);
+        webSocket.broadcastTXT(output);
     }
 }
 
