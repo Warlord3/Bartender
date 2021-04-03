@@ -60,10 +60,9 @@ class DataManager with ChangeNotifier {
 
   save([bool force = false]) async {
     dataChanged = true;
-    if (saveTimer != null) {
-      saveTimer.cancel();
-    }
-    if (force) {
+    saveTimer?.cancel();
+
+    if (force && dataChanged) {
       await syncData();
     } else {
       saveTimer = Timer(Duration(seconds: 5), syncData);
