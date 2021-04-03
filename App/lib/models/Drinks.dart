@@ -20,15 +20,15 @@ class DrinkSaveData {
   factory DrinkSaveData.fromJson(Map<String, dynamic> parsedJson) {
     return new DrinkSaveData(
       drinks: parsedJson['drinks'] == null
-          ? null
+          ? []
           : (parsedJson['drinks'] as List)
               .map((i) => Drink.fromJson(i))
               .toList(),
       recently: parsedJson['recently'] == null
-          ? null
+          ? []
           : List<int>.from(parsedJson['recently']),
       beverages: parsedJson['beverages'] == null
-          ? null
+          ? []
           : (parsedJson['beverages'] as List)
               .map((i) => Beverage.fromJson(i))
               .toList(),
@@ -68,28 +68,28 @@ class Drink {
     this.ingredients.add(Ingredient.empty());
   }
   factory Drink.fromJson(Map<String, dynamic> json) => Drink(
-        name: json["name"] == null ? null : json["name"],
-        id: json["id"] == null ? null : json["id"],
-        favorite: json["favorite"] == null ? null : json["favorite"],
+        name: json["name"] == null ? "" : json["name"],
+        id: json["id"] == null ? -1 : json["id"],
+        favorite: json["favorite"] == null ? false : json["favorite"],
         ingredients: json["ingredients"] == null
-            ? null
+            ? []
             : (json['ingredients'] as List)
                 .map((i) => Ingredient.fromJson(i))
                 .toList(),
       );
 
   Map<String, dynamic> toJson() => {
-        "name": name == null ? null : name,
-        "id": id == null ? null : id,
-        "favorite": favorite == null ? null : favorite,
-        "ingredients": ingredients == null ? null : ingredients,
+        "name": name == null ? "" : name,
+        "id": id == null ? -1 : id,
+        "favorite": favorite == null ? false : favorite,
+        "ingredients": ingredients == null ? [] : ingredients,
       };
 
   Map<String, dynamic> toJsonAsCommand() => {
         "command": "new_drink",
-        "id": id == null ? null : id,
+        "id": id == null ? -1 : id,
         "ingredients": ingredients == null
-            ? null
+            ? []
             : (ingredients.map((i) => i.toJsonAsCommand()).toList()),
       };
 
@@ -141,17 +141,17 @@ class Ingredient {
   Ingredient({this.beverage, this.amount});
   factory Ingredient.fromJson(Map<String, dynamic> json) => Ingredient(
         beverage: json["beverageID"] == null
-            ? null
+            ? Beverage.empty()
             : Beverage.fromJson(json["beverageID"]),
         amount: json["amount"] == null ? 0 : json["amount"],
       );
 
   Map<String, dynamic> toJson() => {
-        "beverageID": beverage == null ? null : beverage,
+        "beverageID": beverage == null ? Beverage.empty() : beverage,
         "amount": amount == null ? 0 : amount,
       };
   Map<String, dynamic> toJsonAsCommand() => {
-        "beverageID": beverage == null ? null : beverage.id,
+        "beverageID": beverage == null ? -1 : beverage.id,
         "amount": amount == null ? 0 : amount,
       };
   Ingredient.randomIngredient() {
@@ -202,18 +202,18 @@ class Beverage {
   }
 
   factory Beverage.fromJson(Map<String, dynamic> json) => Beverage(
-        id: json["id"] == null ? null : json["id"],
-        name: json["name"] == null ? null : json["name"],
-        addition: json["addition"] == null ? null : json["addition"],
-        percent: json["percent"] == null ? null : json["percent"],
-        kcal: json["kcal"] == null ? null : json["kcal"],
+        id: json["id"] == null ? -1 : json["id"],
+        name: json["name"] == null ? "null" : json["name"],
+        addition: json["addition"] == null ? "null" : json["addition"],
+        percent: json["percent"] == null ? 0 : json["percent"],
+        kcal: json["kcal"] == null ? 0 : json["kcal"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "name": name == null ? null : name,
-        "addition": addition == null ? null : addition,
-        "percent": percent == null ? null : percent,
-        "kcal": kcal == null ? null : kcal,
+        "id": id == null ? -1 : id,
+        "name": name == null ? "null" : name,
+        "addition": addition == "null" ? null : addition,
+        "percent": percent < 0 ? null : percent,
+        "kcal": kcal == null ? 0 : kcal,
       };
 }
