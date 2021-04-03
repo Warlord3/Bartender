@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class BeverageEditDialog extends StatefulWidget {
-  Beverage beverage;
+  final Beverage beverage;
   BeverageEditDialog(this.beverage);
 
   @override
@@ -77,7 +77,7 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9]+\.[0-9]+'),
+                      RegExp(r'^\d+\.?\d*'),
                     ),
                   ],
                   onEditingComplete: () =>
@@ -87,7 +87,9 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
                   decoration: decoration(hintText: "Percent"),
                   controller: _percentController,
                   onChanged: (value) {
-                    newBeverage.addition = value;
+                    if (value.isNotEmpty) {
+                      newBeverage.percent = double.parse(value);
+                    }
                   },
                 ),
               ),
@@ -97,14 +99,16 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9]+\.[0-9]+'),
+                      RegExp(r'^\d+\.?\d*'),
                     ),
                   ],
                   onEditingComplete: () => node.unfocus(), // Finish
                   decoration: decoration(hintText: "Kcal"),
                   controller: _kcalController,
                   onChanged: (value) {
-                    newBeverage.addition = value;
+                    if (value.isNotEmpty) {
+                      newBeverage.kcal = double.parse(value);
+                    }
                   },
                 ),
               ),

@@ -45,13 +45,13 @@ class Status extends Command {
 }
 
 class PumpStatus {
-  int ID;
+  int id;
   int beverageID;
   int amount; //Amount that the Pumps already delivered
   int percent;
-  PumpStatus({this.ID, this.beverageID, this.amount, this.percent});
+  PumpStatus({this.id, this.beverageID, this.amount, this.percent});
   factory PumpStatus.fromJson(Map<String, dynamic> json) => PumpStatus(
-        ID: json["ID"] == null ? -1 : json["ID"],
+        id: json["ID"] == null ? -1 : json["ID"],
         beverageID: json["beverageID"] == null ? -1 : json["beverageID"],
         amount: json["amount"] == null ? 0 : json["amount"],
         percent: json["percent"] == null ? 0 : json["percent"],

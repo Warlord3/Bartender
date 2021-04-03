@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/CommunicationData.dart';
@@ -5,8 +6,8 @@ import 'package:bartender/models/Drinks.dart';
 import 'package:bartender/models/PumpConfiguration.dart';
 import 'package:bartender/models/Websocket.dart';
 import 'package:flutter/material.dart';
-
-import 'LocalStorageManager.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class DataManager with ChangeNotifier {
   List<Drink> allDrinks = [];
@@ -15,15 +16,20 @@ class DataManager with ChangeNotifier {
   List<Beverage> beverages = [];
 
   PumpConfiguration pumpConfiguration;
+  final String url = "192.168.178.74";
+  final String filename = "data.json";
   Websocket websocket;
   DataManager({allDrinks, favoriteDrinks, recentlyCreatedDrinks, beverages}) {
-    websocket = Websocket("ws://192.168.178.74:81",
+    websocket = Websocket("ws://$url:81",
         onConnectCallback: connected,
         onDisconnectCallback: disconnected,
         onDataCallback: callback);
   }
   int drinkProgress = 0;
 
+  //Save Process
+  bool dataChanged = false;
+  Timer saveTimer;
   DataManager.empty() {
     allDrinks = [];
     favoriteDrinks = [];
@@ -31,33 +37,72 @@ class DataManager with ChangeNotifier {
     beverages = [];
   }
 
-  void init() {
-    testData();
-    websocket.connect();
-    return;
-    /*
-    String data = LocalStorageManager.storage.getString("DrinkData");
-    if (data != null) {
-      DrinkSaveData saveData = DrinkSaveData.fromJson(json.decode(data));
+  Future<void> init() async {
+    Uri uri = Uri.http('192.168.178.74', 'data.json');
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      DrinkSaveData saveData =
+          DrinkSaveData.fromJson(jsonDecode(response.body));
       this.allDrinks = saveData.drinks;
-      this.favoriteDrinks =
-          saveData.drinks.where((element) => element.favorite).toList();
-      this.recentlyCreatedDrinks = this
-          .allDrinks
-          .where((element) => saveData.recently.contains(element.id))
-          .toList();
       this.beverages = saveData.beverages;
+      this.recentlyCreatedDrinks = getRecentlyDrinks(saveData.recently);
+      print(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      print('Failed to load Data');
     }
-    */
+    websocket.connect();
+
+    return;
   }
 
-  void save() {
-    var temp = this.recentlyCreatedDrinks.map((e) => e.id).toList();
-    DrinkSaveData save = DrinkSaveData(
-        drinks: this.allDrinks, beverages: this.beverages, recently: temp);
-    var json = save.toJson();
-    String drinkData = jsonEncode(json);
-    LocalStorageManager.storage.setString("DrinkData", drinkData);
+  save([bool force = false]) async {
+    dataChanged = true;
+    if (saveTimer != null) {
+      saveTimer.cancel();
+    }
+    if (force) {
+      await syncData();
+    } else {
+      saveTimer = Timer(Duration(seconds: 5), syncData);
+    }
+  }
+
+  Future<bool> syncData() async {
+    DrinkSaveData saveData = DrinkSaveData(
+        beverages: this.beverages,
+        drinks: this.allDrinks,
+        recently: this.recentlyCreatedDrinks.map((e) => e.id).toList());
+
+    Map jsonMap = saveData.toJson();
+    String json = jsonEncode(jsonMap);
+
+    http.MultipartRequest request =
+        new http.MultipartRequest('POST', Uri.parse("http://$url/upload"));
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'userData',
+        utf8.encode(json),
+        filename: filename,
+        contentType: MediaType(
+          'application',
+          'json',
+          {'charset': 'utf-8'},
+        ),
+      ),
+    );
+    http.StreamedResponse response;
+    try {
+      response = await request.send();
+    } catch (error) {
+      return false;
+    }
+    if (response.statusCode != 200) {
+      return false;
+    }
+    return true;
   }
 
   void testData() {
@@ -85,7 +130,7 @@ class DataManager with ChangeNotifier {
             addition: "Coca-Cola",
             percent: i.toDouble(),
             kcal: i.toDouble()));
-    this.recentlyCreatedDrinks = getRecentlyDrinks();
+    this.recentlyCreatedDrinks = getRecentlyDrinks([1, 3, 4, 5, 8, 9]);
     this.pumpConfiguration = PumpConfiguration.testData();
     this.favoriteDrinks = getFavoriteDrinks();
   }
@@ -113,8 +158,11 @@ class DataManager with ChangeNotifier {
     return this.allDrinks.where((element) => element.favorite).toList();
   }
 
-  List<Drink> getRecentlyDrinks() {
-    return this.allDrinks.where((element) => element.id < 3).toList();
+  List<Drink> getRecentlyDrinks(List<int> recently) {
+    return this
+        .allDrinks
+        .where((element) => recently.contains(element.id))
+        .toList();
   }
 
   Beverage getBeverageByID(int id) {
@@ -126,6 +174,7 @@ class DataManager with ChangeNotifier {
     this.favoriteDrinks.removeWhere((element) => element.id == drink.id);
     this.recentlyCreatedDrinks.removeWhere((element) => element.id == drink.id);
     notifyListeners();
+    save();
   }
 
   void addDrink() {
@@ -171,10 +220,11 @@ class DataManager with ChangeNotifier {
       oldDrink.percent = newDrink.percent;
       oldDrink.ingredients = newDrink.ingredients;
     }
+    save();
   }
 
   int _getNewDrinkID() {
-    return allDrinks.last.id + 1;
+    return allDrinks.length != 0 ? allDrinks.last.id + 1 : 1;
   }
 
   void saveBeverage(Beverage newBeverage) {
@@ -190,10 +240,11 @@ class DataManager with ChangeNotifier {
       oldBeverage.percent = newBeverage.percent;
     }
     notifyListeners();
+    save();
   }
 
   int _getNewBeverageID() {
-    return allDrinks.last.id + 1;
+    return beverages.length != 0 ? beverages.last.id + 1 : 1;
   }
 
   bool pumpsConfigurated() {
@@ -251,7 +302,8 @@ class DataManager with ChangeNotifier {
   }
 
   void disconnected(String reason) {
-    PageStateManager.showOverlayEntry("Disconnected");
+    PageStateManager.showOverlayEntry(
+        "Disconnected", PageStateManager.keyNavigator.currentState);
 
     print(reason);
     notifyListeners();

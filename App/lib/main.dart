@@ -15,7 +15,7 @@ void main() => runApp(MultiProvider(
           create: (context) => ThemeManager(),
         ),
         ChangeNotifierProvider<DataManager>(
-          create: (context) => LocalStorageManager.getDrinkData(),
+          create: (context) => DataManager(),
         ),
         ChangeNotifierProvider<PageStateManager>(
           create: (context) => PageStateManager(),
@@ -27,7 +27,44 @@ void main() => runApp(MultiProvider(
       child: MainPage(),
     ));
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("resumed");
+        break;
+      case AppLifecycleState.paused:
+        print("paused");
+        break;
+      case AppLifecycleState.inactive:
+        Provider.of<DataManager>(context, listen: false).save(true);
+        print("inactive");
+        break;
+      case AppLifecycleState.detached:
+        print("detached");
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<ThemeManager>(context);
@@ -36,7 +73,7 @@ class MainPage extends StatelessWidget {
       darkTheme: Themes.darkTheme,
       themeMode: themeMode.getTheme(),
       home: FutureBuilder(
-          future: getSharedPreferences(),
+          future: init(context),
           builder: (context, snapshot) {
             Widget child;
             if (snapshot.connectionState == ConnectionState.done) {
@@ -52,8 +89,10 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  Future<bool> getSharedPreferences() async {
+  Future<bool> init(BuildContext context) async {
     await LocalStorageManager.init();
+    Provider.of<DataManager>(context, listen: false).init();
+
     return true;
   }
 }
