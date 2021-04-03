@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bartender/GlobalWidgets/NotifcationOverlay.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
@@ -50,7 +51,6 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   Widget build(BuildContext context) {
     widget.mainData = Provider.of<DataManager>(context);
     languageManager = Provider.of<LanguageManager>(context);
-    Timer popTimer;
 
     return Material(
       color: Colors.transparent,
@@ -80,6 +80,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
+                      controller: _nameController,
                       style: TextStyle(fontSize: 30),
                       decoration: InputDecoration(
                         fillColor: Colors.transparent,
@@ -131,7 +132,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                                   widget.newDrink.ingredients
                                       .add(Ingredient.empty());
                                   _controllers
-                                      .add(TextEditingController(text: "0.0"));
+                                      .add(TextEditingController(text: "0"));
                                 });
                               },
                               child: Text(
@@ -185,14 +186,23 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                             elevation: 0,
                             padding: EdgeInsets.all(10.0),
                             onPressed: () {
-                              widget.mainData.saveDrink(widget.newDrink);
-                              setState(() {
-                                widget.newDrink = Drink.newDrink();
-                                clearPage();
-                              });
+                              update();
+                              if (widget.newDrink.valid()) {
+                                widget.mainData.saveDrink(widget.newDrink);
+                                setState(() {
+                                  widget.newDrink = Drink.newDrink();
+                                  clearPage();
+                                });
 
-                              Navigator.of(context, rootNavigator: true).pop();
-                              PageStateManager.showOverlayEntry("Saved");
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                                PageStateManager.showOverlayEntry("Saved",
+                                    PageStateManager.keyNavigator.currentState);
+                              } else {
+                                PageStateManager.showOverlayEntry(
+                                    "The is something Missing",
+                                    Navigator.of(context));
+                              }
                             },
                             fillColor: Colors.green.withOpacity(0.3),
                             child: SizedBox(
@@ -375,8 +385,10 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.all(12),
                   ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter(RegExp("[0-9|\.]"), allow: true)
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d+'),
+                    ),
                   ],
                   onSubmitted: (value) => widget.refresh(),
                   onTap: () => widget.controller.selection = TextSelection(
