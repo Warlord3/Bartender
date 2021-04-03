@@ -28,10 +28,10 @@ class FunkyNotificationState extends State<FunkyNotification>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Material(
-        color: Colors.transparent,
-        child: Align(
-          alignment: Alignment.topCenter,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Material(
+          color: Colors.transparent,
           child: Padding(
             padding: EdgeInsets.only(top: 32.0),
             child: SlideTransition(
