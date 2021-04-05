@@ -91,7 +91,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
   Future<bool> init(BuildContext context) async {
     await LocalStorageManager.init();
-    Provider.of<DataManager>(context, listen: false).init();
+    await Provider.of<DataManager>(context, listen: false).init();
 
     return true;
   }

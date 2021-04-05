@@ -10,15 +10,15 @@ import 'dart:ui';
 class DrinkListview extends StatelessWidget {
   final List<Drink> drinks;
   final DrinkType drinkType;
-  DrinkListview({this.drinks, this.drinkType});
+  final GlobalKey<AnimatedListState> animatedListKey;
+  DrinkListview({this.drinks, this.drinkType, @required this.animatedListKey});
 
   @override
   Widget build(BuildContext context) {
     DataManager dataManager = Provider.of<DataManager>(context, listen: false);
-    GlobalKey<AnimatedListState> key = GlobalKey<AnimatedListState>();
     return Container(
       child: AnimatedList(
-        key: key,
+        key: animatedListKey,
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
@@ -35,9 +35,9 @@ class DrinkListview extends StatelessWidget {
             direction: DismissDirection.endToStart,
             onDismissed: (direction) {
               dataManager.removeDrink(drinks[index]);
-              key.currentState.removeItem(index, (context, animation) => null);
+              animatedListKey.currentState
+                  .removeItem(index, (context, animation) => null);
             },
-            key: Key(drinks[index].name),
             child: ListTile(
               dataManager: dataManager,
               drink: drinks[index],

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/models/CommunicationData.dart';
 import 'package:bartender/models/Drinks.dart';
-import 'package:bartender/models/PumpConfiguration.dart';
 import 'package:bartender/models/Websocket.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,20 +16,25 @@ class DataManager with ChangeNotifier {
   List<Beverage> beverages = [];
 
   PumpConfiguration pumpConfiguration;
+
+  //Connection
   final String url = "192.168.178.74";
-  final String filename = "data.json";
   Websocket websocket;
+  bool controllerConnected;
+  final String filename = "data.json";
+
+  int drinkProgress = 0;
+
+  //Save Process
+  bool dataChanged = false;
+  Timer saveTimer;
+
   DataManager({allDrinks, favoriteDrinks, recentlyCreatedDrinks, beverages}) {
     websocket = Websocket("ws://$url:81",
         onConnectCallback: connected,
         onDisconnectCallback: disconnected,
         onDataCallback: callback);
   }
-  int drinkProgress = 0;
-
-  //Save Process
-  bool dataChanged = false;
-  Timer saveTimer;
   DataManager.empty() {
     allDrinks = [];
     favoriteDrinks = [];
@@ -38,24 +43,50 @@ class DataManager with ChangeNotifier {
   }
 
   Future<void> init() async {
-    Uri uri = Uri.http('192.168.178.74', 'data.json');
-    final response = await http.get(uri);
+    await connect();
+    websocket.connect();
 
-    if (response.statusCode == 200) {
+    return;
+  }
+
+  Future<bool> ping(String ip, Duration timeout) async {
+    await Socket.connect(ip, 80, timeout: timeout).then((socket) {
+      controllerConnected = true;
+      socket.destroy();
+    }).catchError((error) {
+      controllerConnected = false;
+    });
+    return controllerConnected;
+  }
+
+  Future<void> connect() async {
+    if (!await ping('192.168.178.74', Duration(seconds: 5))) {
+      Future.delayed(Duration(seconds: 10), connect);
+      return;
+    }
+
+    Uri uri = Uri.http('192.168.178.74', 'data.json');
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 2),
+      onTimeout: () {
+        controllerConnected = false;
+        PageStateManager.showOverlayEntry("No Connection");
+        return null;
+      },
+    );
+    if (!controllerConnected) return;
+    if (response?.statusCode == 200) {
       DrinkSaveData saveData =
           DrinkSaveData.fromJson(jsonDecode(response.body));
       this.allDrinks = saveData.drinks;
       this.beverages = saveData.beverages;
+      this.favoriteDrinks = getFavoriteDrinks();
       this.recentlyCreatedDrinks = getRecentlyDrinks(saveData.recently);
       print(jsonDecode(response.body));
     } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
+      PageStateManager.showOverlayEntry("Failed to load Data'");
       print('Failed to load Data');
     }
-    websocket.connect();
-
-    return;
   }
 
   save([bool force = false]) async {
@@ -104,36 +135,6 @@ class DataManager with ChangeNotifier {
     return true;
   }
 
-  void testData() {
-    this.allDrinks = new List<Drink>.generate(
-        16,
-        (i) => Drink(
-            name: "Drink" + i.toString(),
-            favorite: i % 2 == 0,
-            id: i,
-            ingredients: List<Ingredient>.generate(
-                10,
-                (index) => Ingredient(
-                    amount: (index + 1) * 10,
-                    beverage: Beverage(
-                        name: "Colaasdddddddddddddddddddddd",
-                        id: index,
-                        addition: "Coca-Cola",
-                        percent: 0.0,
-                        kcal: 5)))));
-    this.beverages = List<Beverage>.generate(
-        this.allDrinks.length,
-        (i) => Beverage(
-            id: i,
-            name: "Cola" + i.toString(),
-            addition: "Coca-Cola",
-            percent: i.toDouble(),
-            kcal: i.toDouble()));
-    this.recentlyCreatedDrinks = getRecentlyDrinks([1, 3, 4, 5, 8, 9]);
-    this.pumpConfiguration = PumpConfiguration.testData();
-    this.favoriteDrinks = getFavoriteDrinks();
-  }
-
   Map<String, dynamic> toJson() => {
         'drinks': allDrinks,
         'favorite': favoriteDrinks,
@@ -174,23 +175,6 @@ class DataManager with ChangeNotifier {
     this.recentlyCreatedDrinks.removeWhere((element) => element.id == drink.id);
     notifyListeners();
     save();
-  }
-
-  void addDrink() {
-    this.allDrinks.insert(
-        0,
-        Drink(
-            name: "Drink",
-            favorite: true,
-            ingredients: List<Ingredient>.generate(
-                10,
-                (index) => Ingredient(
-                    amount: index * 10 + 1,
-                    beverage: Beverage(
-                        name: "Colaasdddddddddddddddddddddd",
-                        addition: "Coca-Cola",
-                        percent: 0.0,
-                        kcal: 5)))));
   }
 
   void changeFavorite(Drink drink, bool notify) {
@@ -255,7 +239,7 @@ class DataManager with ChangeNotifier {
   }
 
   resetController() {
-    String message = "reset";
+    String message = '{"command":"reset"';
     send(message);
   }
 
@@ -269,27 +253,28 @@ class DataManager with ChangeNotifier {
   }
 
   stopPump(int id) {
-    send("$id");
+    StopPump command = StopPump();
+    send(jsonEncode(command.toJson()));
   }
 
   stopAllPumps() {
-    send("stop_pump_all");
+    StopPumpAll command = StopPumpAll();
+    send(jsonEncode(command.toJson()));
   }
 
   sendDrink(Drink drink, {double scalling = 1.0}) {
-    String message = jsonEncode(drink.toJsonAsCommand());
-    send(message);
+    NewDrink command =
+        NewDrink(drink: scalling == 1.0 ? drink : drink.scaleldCopy(scalling));
+    send(jsonEncode(command.toJson()));
+  }
+
+  requestConfiguration() {
+    ConfigRequest command = ConfigRequest();
+    send(jsonEncode(command.toJson()));
   }
 
   sendConfiguration() {
-    String message = "pump_config";
-    message += "\$";
-    for (int i = 0; i < 16; i++) {
-      message +=
-          "$i:${pumpConfiguration.beverageIDs[i]}:${pumpConfiguration.mlPerMinute[i]}";
-      if (i < 15) message += ";";
-    }
-    send(message);
+    send(this.pumpConfiguration.toJson());
   }
 
   void send(dynamic data) {
@@ -297,6 +282,7 @@ class DataManager with ChangeNotifier {
   }
 
   void connected() {
+    print("Weboscket connected");
     notifyListeners();
   }
 
@@ -309,15 +295,18 @@ class DataManager with ChangeNotifier {
   }
 
   void callback(dynamic data) {
-    if (data == "Connected") {
-    } else {
-      var json = jsonDecode(data);
-      String command = Command.fromJson(json).command;
-      if (command == "status") {
-      } else if (command == "progress") {
-        drinkProgress = Progress.fromJson(json).progress;
-        notifyListeners();
-      }
+    var json = jsonDecode(data);
+    print(data);
+    String command = Command.fromJson(json).command;
+    if (command == "connected") {
+      requestConfiguration();
+    } else if (command == "status") {
+    } else if (command == "progress") {
+      drinkProgress = Progress.fromJson(json).progress;
+      notifyListeners();
+    } else if (command == "pump_config") {
+      print("Read Configuration");
+      this.pumpConfiguration = PumpConfiguration.fromJson(json);
     }
   }
 }

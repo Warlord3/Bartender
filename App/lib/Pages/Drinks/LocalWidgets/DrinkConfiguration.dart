@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bartender/GlobalWidgets/NotifcationOverlay.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';

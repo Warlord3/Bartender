@@ -325,7 +325,17 @@ int8_t setDrink(DynamicJsonDocument &doc)
         {
             JsonObject object = value.as<JsonObject>();
             int index = getPumpID(object["beverageID"].as<int>());
+            if (index < 0)
+            {
+                DEBUG_PRINTLN("Error: BeverageID not found");
+                return false;
+            }
             drink.amount[index] = object["amount"].as<int>();
+            if (drink.amount[index] == 0)
+            {
+                DEBUG_PRINTLN("Error: Beverage amount is zero");
+                return false;
+            }
             if (drink.amount[index] > drink.amount[currentBiggestIngredient])
             {
                 currentBiggestIngredient = index;
@@ -347,7 +357,7 @@ String getConfiguration(void)
 {
     DEBUG_PRINTLN("Get Pump Configuration");
     DynamicJsonDocument doc(2000);
-    doc["commnad"] = "pump_config";
+    doc["command"] = "pump_config";
     JsonArray array = doc["config"].to<JsonArray>();
     for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
     {

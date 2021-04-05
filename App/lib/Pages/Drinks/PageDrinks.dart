@@ -9,6 +9,7 @@ class DrinksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var pageState = Provider.of<PageStateManager>(context, listen: false);
+    DataManager dataManager = Provider.of<DataManager>(context, listen: false);
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -17,20 +18,12 @@ class DrinksPage extends StatelessWidget {
         }
         return true;
       },
-      child: Consumer<DataManager>(
-        builder: (context, mainData, child) => SafeArea(
-          child: Container(
-            color: Theme.of(context).backgroundColor,
-            child: SingleChildScrollView(
-              controller: ScrollController(
-                  initialScrollOffset: pageState.scrollPositionFavoritePage),
-              child: DrinkListview(
-                drinks: mainData.allDrinks,
-                drinkType: DrinkType.AllDrinks,
-              ),
-            ),
-          ),
-        ),
+      child: Container(
+        color: Theme.of(context).backgroundColor,
+        child: DrinkListview(
+            drinks: dataManager.allDrinks,
+            drinkType: DrinkType.AllDrinks,
+            animatedListKey: pageState.drinkListist),
       ),
     );
   }

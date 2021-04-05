@@ -9,7 +9,7 @@
 
 extern WebSocketsServer webSocket;
 extern bool clientConnected;
-
+extern String response;
 extern uint8_t cliendID;
 
 //Websocket Event callback function to receive Data

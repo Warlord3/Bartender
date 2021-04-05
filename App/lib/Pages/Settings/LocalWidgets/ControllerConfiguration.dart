@@ -15,6 +15,7 @@ class ControllerConfiguration extends StatefulWidget {
 class _ControllerConfigurationState extends State<ControllerConfiguration> {
   PageController controller;
   int currentpage = 0;
+  DataManager dataManager;
   @override
   initState() {
     super.initState();
@@ -33,6 +34,7 @@ class _ControllerConfigurationState extends State<ControllerConfiguration> {
 
   @override
   Widget build(BuildContext context) {
+    dataManager = Provider.of<DataManager>(context, listen: false);
     return Align(
       alignment: Alignment.center,
       child: Container(
@@ -41,12 +43,13 @@ class _ControllerConfigurationState extends State<ControllerConfiguration> {
         child: PageView.builder(
           scrollDirection: Axis.horizontal,
           controller: controller,
-          itemCount: 16,
+          itemCount: dataManager.pumpConfiguration.configs.length,
           itemBuilder: (context, index) => GestureDetector(
             onTap: () => controller.animateToPage(index,
                 duration: Duration(milliseconds: 300), curve: Curves.easeIn),
             child: PumpConfiguration(
               pumpIndex: index,
+              dataManager: dataManager,
             ),
           ),
         ),
@@ -60,10 +63,11 @@ class PumpConfiguration extends StatefulWidget {
   PumpConfiguration({
     Key key,
     @required this.pumpIndex,
+    @required this.dataManager,
   }) : super(key: key);
 
   final int pumpIndex;
-  DataManager dataManager;
+  final DataManager dataManager;
   LanguageManager languageManager;
   @override
   _PumpConfigurationState createState() => _PumpConfigurationState();
@@ -82,14 +86,13 @@ class _PumpConfigurationState extends State<PumpConfiguration> {
   Widget build(BuildContext context) {
     widget.languageManager =
         Provider.of<LanguageManager>(context, listen: false);
-    widget.dataManager = Provider.of<DataManager>(context, listen: false);
     beverageName = widget.dataManager
-            .getBeverageByID(widget
-                .dataManager.pumpConfiguration.beverageIDs[widget.pumpIndex])
+            .getBeverageByID(widget.dataManager.pumpConfiguration
+                .configs[widget.pumpIndex].beverageID)
             ?.name ??
         "Select Beverage";
     controller.text =
-        "${widget.dataManager.pumpConfiguration.mlPerMinute[widget.pumpIndex]}";
+        "${widget.dataManager.pumpConfiguration.configs[widget.pumpIndex].mlPerMinute}";
     return Material(
       color: Colors.transparent,
       child: Center(

@@ -2,6 +2,7 @@
 
 WebSocketsServer webSocket(WEBSOCKET_PORT);
 bool clientConnected = false;
+String response = "";
 uint8_t cliendID;
 
 void initCommunication(void)
@@ -31,6 +32,7 @@ void runCommunication(void)
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
+    response = "";
     switch (type)
     {
     case WStype_DISCONNECTED:
@@ -40,14 +42,14 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         break;
     case WStype_CONNECTED:
     {
-        String response_msg = "";
         IPAddress ip = webSocket.remoteIP(num);
         DEBUG_PRINTF("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
+        StaticJsonDocument<48> doc;
+        doc["command"] = "connected";
+        serializeJson(doc, response);
         // send message to client
-        webSocket.sendTXT(num, "Connected");
-        response_msg = getConfiguration();
-        webSocket.sendTXT(num, response_msg);
+        webSocket.sendTXT(num, response);
     }
     break;
     case WStype_TEXT:
@@ -79,13 +81,21 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
             }
             else if (setDrink(doc))
             {
-                webSocket.broadcastTXT("new_drink_response$" + String(currentDrink.ID) + "true");
+                doc.clear();
+                doc["command"] = "new_drink_response";
+                doc["accepted"] = true;
+                serializeJson(doc, response);
+                webSocket.broadcastTXT(response);
             }
             else
             {
-                webSocket.sendTXT(cliendID, "error$drink_not_possible");
+                doc.clear();
+                doc["command"] = "error";
+                doc["message"] = "drink_not_possible";
+                serializeJson(doc, response);
+                webSocket.sendTXT(num, response);
                 response_msg = getConfiguration();
-                webSocket.sendTXT(cliendID, response_msg);
+                webSocket.sendTXT(num, response_msg);
             }
         }
         else if (strcmp(command, "pump_config") == 0)

@@ -26,6 +26,7 @@ class FavoritePage extends StatelessWidget {
           child: DrinkListview(
             drinks: maindata.favoriteDrinks,
             drinkType: DrinkType.FavoriteDrinks,
+            animatedListKey: pageState.favoriteDrink,
           ),
         ),
       ),
