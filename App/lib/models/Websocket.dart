@@ -33,10 +33,10 @@ class Websocket {
         }, onDone: () async {
           if (onDisconnectCallback != null) {
             onDisconnectCallback(
-                "${_webSocket.closeReason ?? "null"}:${_webSocket.closeCode ?? "null"}");
+                '${_webSocket?.closeReason ?? "null"}:${_webSocket?.closeCode ?? "null"}');
             connected = false;
           }
-          _webSocket.close();
+          _webSocket?.close();
           _webSocket = null;
 
           //Retry connection in 5 Seconds
