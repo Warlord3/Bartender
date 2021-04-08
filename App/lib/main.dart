@@ -81,17 +81,19 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
             } else {
               child = StartPage();
             }
-            return AnimatedSwitcher(
-              duration: Duration(milliseconds: 500),
-              child: child,
-            );
+            return child;
           }),
     );
   }
 
   Future<bool> init(BuildContext context) async {
     await LocalStorageManager.init();
-    await Provider.of<DataManager>(context, listen: false).init();
+    if (LocalStorageManager.storage.containsKey("controllerIP")) {
+      String controllerIp =
+          LocalStorageManager.storage.getString("controllerIP");
+    }
+
+    //await Provider.of<DataManager>(context, listen: false).init();
 
     return true;
   }

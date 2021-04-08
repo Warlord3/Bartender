@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 
 class PageStateManager with ChangeNotifier {
   static GlobalKey<NavigatorState> keyNavigator = GlobalKey<NavigatorState>();
-  final GlobalKey<AnimatedListState> favoriteDrink =
+  GlobalKey<AnimatedListState> favoriteListKey =
       GlobalKey<AnimatedListState>(debugLabel: "favoriteDrinkKey");
-  final GlobalKey<AnimatedListState> drinkListist =
+  GlobalKey<AnimatedListState> drinkListKey =
       GlobalKey<AnimatedListState>(debugLabel: "normalDrinkKey");
   double scrollPositionFavoritePage = 0.0;
   double scrollPositionDrinksPage = 0.0;

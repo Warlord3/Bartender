@@ -10,7 +10,8 @@ class DrinksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var pageState = Provider.of<PageStateManager>(context, listen: false);
     DataManager dataManager = Provider.of<DataManager>(context, listen: false);
-
+    pageState.drinkListKey =
+        GlobalKey<AnimatedListState>(debugLabel: "favoriteDrinkKey");
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is ScrollEndNotification) {
@@ -23,7 +24,7 @@ class DrinksPage extends StatelessWidget {
         child: DrinkListview(
             drinks: dataManager.allDrinks,
             drinkType: DrinkType.AllDrinks,
-            animatedListKey: pageState.drinkListist),
+            animatedListKey: pageState.drinkListKey),
       ),
     );
   }

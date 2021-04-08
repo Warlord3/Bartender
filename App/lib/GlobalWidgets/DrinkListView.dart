@@ -38,6 +38,7 @@ class DrinkListview extends StatelessWidget {
               animatedListKey.currentState
                   .removeItem(index, (context, animation) => null);
             },
+            key: Key(drinks[index].name),
             child: ListTile(
               dataManager: dataManager,
               drink: drinks[index],

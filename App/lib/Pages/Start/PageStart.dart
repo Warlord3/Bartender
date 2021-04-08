@@ -21,7 +21,7 @@ class _SettingsPageState extends State<StartPage> {
                 ColorFiltered(
                   colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
                   child: Icon(Icons.local_drink),
-                )
+                ),
               ],
             ),
           ),

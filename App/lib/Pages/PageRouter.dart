@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bartender/Pages/Connection/PageConnection.dart';
 import 'package:bartender/Pages/Drinks/PageDrinks.dart';
 import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
@@ -48,10 +49,13 @@ class _PageRouterState extends State<PageRouter> {
         child: SafeArea(
           child: Navigator(
             key: PageStateManager.keyNavigator,
-            initialRoute: "/Home",
+            initialRoute: "/Connection",
             onGenerateRoute: (RouteSettings settings) {
               Widget page = Container();
               switch (settings.name) {
+                case "/Connection":
+                  page = ConnectionPage();
+                  break;
                 case "/Home":
                   page = HomePage();
                   break;

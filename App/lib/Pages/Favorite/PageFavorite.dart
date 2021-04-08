@@ -10,7 +10,8 @@ class FavoritePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var pageState = Provider.of<PageStateManager>(context, listen: false);
     var maindata = Provider.of<DataManager>(context, listen: false);
-
+    pageState.favoriteListKey =
+        GlobalKey<AnimatedListState>(debugLabel: "favoriteDrinkKey");
     return Container(
       color: Theme.of(context).backgroundColor,
       child: NotificationListener<ScrollNotification>(
@@ -26,7 +27,7 @@ class FavoritePage extends StatelessWidget {
           child: DrinkListview(
             drinks: maindata.favoriteDrinks,
             drinkType: DrinkType.FavoriteDrinks,
-            animatedListKey: pageState.favoriteDrink,
+            animatedListKey: pageState.favoriteListKey,
           ),
         ),
       ),

@@ -74,6 +74,10 @@ class LanguageManager with ChangeNotifier {
     languageEntrys.add(new LanguageEntry(
         "mixing_drink", "Mixing Drink", "Getränk am zubereiten"));
     languageEntrys.add(new LanguageEntry("none", "None", "Keine"));
+    languageEntrys.add(new LanguageEntry(
+        "search_connection",
+        "Search for Bartenders in local network",
+        "Suche nach Bartendern im lokalen Netzwerk"));
   }
 }
 

@@ -18,7 +18,7 @@ class DataManager with ChangeNotifier {
   PumpConfiguration pumpConfiguration;
 
   //Connection
-  final String url = "192.168.178.74";
+  String ip = "192.168.178.74";
   Websocket websocket;
   bool controllerConnected;
   final String filename = "data.json";
@@ -30,7 +30,7 @@ class DataManager with ChangeNotifier {
   Timer saveTimer;
 
   DataManager({allDrinks, favoriteDrinks, recentlyCreatedDrinks, beverages}) {
-    websocket = Websocket("ws://$url:81",
+    websocket = Websocket("ws://$ip:81",
         onConnectCallback: connected,
         onDisconnectCallback: disconnected,
         onDataCallback: callback);
@@ -110,7 +110,7 @@ class DataManager with ChangeNotifier {
     String json = jsonEncode(jsonMap);
 
     http.MultipartRequest request =
-        new http.MultipartRequest('POST', Uri.parse("http://$url/upload"));
+        new http.MultipartRequest('POST', Uri.parse("http://$ip/upload"));
     request.files.add(
       http.MultipartFile.fromBytes(
         'userData',
