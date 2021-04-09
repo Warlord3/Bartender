@@ -17,14 +17,14 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   ThemeManager themeChangeProvider;
   LanguageManager languageManager;
-  PageStateManager pageStateManager;
+  AppStateManager pageStateManager;
   DataManager dataManager;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
-    pageStateManager = Provider.of<PageStateManager>(context);
+    pageStateManager = Provider.of<AppStateManager>(context);
     dataManager = Provider.of<DataManager>(context, listen: false);
     return Container(
         /*
@@ -205,9 +205,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         splashRadius: 25,
                         icon: Icon(Icons.local_gas_station),
                         onPressed: () {
-                          pageStateManager.pushedPage = true;
+                          AppStateManager.pushedPage = true;
 
-                          PageStateManager.keyNavigator.currentState.push(
+                          AppStateManager.keyNavigator.currentState.push(
                             PageRouteBuilder(
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>

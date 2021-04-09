@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:bartender/Pages/Connection/PageConnection.dart';
 import 'package:bartender/Pages/Drinks/PageDrinks.dart';
 import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
@@ -22,13 +20,13 @@ class PageRouter extends StatefulWidget {
 
 class _PageRouterState extends State<PageRouter> {
   LanguageManager languageManager;
-  PageStateManager pageState;
+  AppStateManager pageState;
   ThemeManager themeChangeProvider;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
-    pageState = Provider.of<PageStateManager>(context);
+    pageState = Provider.of<AppStateManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
     return Scaffold(
       appBar: AppBar(
@@ -38,24 +36,21 @@ class _PageRouterState extends State<PageRouter> {
       body: WillPopScope(
         onWillPop: () async {
           print("pop");
-          if (PageStateManager.keyNavigator.currentState.canPop() &&
-              pageState.pushedPage) {
-            pageState.pushedPage = false;
-            PageStateManager.keyNavigator.currentState.pop();
+          if (AppStateManager.keyNavigator.currentState.canPop() &&
+              AppStateManager.pushedPage) {
+            AppStateManager.pushedPage = false;
+            AppStateManager.keyNavigator.currentState.pop();
             return Future.value(false);
           }
           return Future.value(true);
         },
         child: SafeArea(
           child: Navigator(
-            key: PageStateManager.keyNavigator,
-            initialRoute: "/Connection",
+            key: AppStateManager.keyNavigator,
+            initialRoute: "/Home",
             onGenerateRoute: (RouteSettings settings) {
               Widget page = Container();
               switch (settings.name) {
-                case "/Connection":
-                  page = ConnectionPage();
-                  break;
                 case "/Home":
                   page = HomePage();
                   break;
@@ -124,7 +119,7 @@ class _PageRouterState extends State<PageRouter> {
           )
         ],
         onTap: _pageSelect,
-        currentIndex: pageState.lastPageIndex,
+        currentIndex: AppStateManager.lastPageIndex,
         unselectedItemColor: Colors.transparent,
         type: BottomNavigationBarType.shifting,
         selectedLabelStyle: TextStyle(fontSize: 15),
@@ -136,26 +131,26 @@ class _PageRouterState extends State<PageRouter> {
   void _pageSelect(int value) {
     pageState = Provider.of(context, listen: false);
     setState(() {
-      if (pageState.lastPageIndex != value) {
+      if (AppStateManager.lastPageIndex != value) {
         switch (value) {
           case 0:
-            PageStateManager.keyNavigator.currentState.pushNamed("/Home");
+            AppStateManager.keyNavigator.currentState.pushNamed("/Home");
             break;
           case 1:
-            PageStateManager.keyNavigator.currentState.pushNamed("/Favorite");
+            AppStateManager.keyNavigator.currentState.pushNamed("/Favorite");
             break;
           case 2:
-            PageStateManager.keyNavigator.currentState.pushNamed("/Drinks");
+            AppStateManager.keyNavigator.currentState.pushNamed("/Drinks");
             break;
           case 3:
-            PageStateManager.keyNavigator.currentState.pushNamed("/Settings");
+            AppStateManager.keyNavigator.currentState.pushNamed("/Settings");
             break;
           default:
-            PageStateManager.keyNavigator.currentState.pushNamed("/Home");
+            AppStateManager.keyNavigator.currentState.pushNamed("/Home");
             break;
         }
       }
-      pageState.lastPageIndex = value;
+      AppStateManager.lastPageIndex = value;
     });
   }
 
@@ -166,7 +161,7 @@ class _PageRouterState extends State<PageRouter> {
   */
   Widget showFloatingButton() {
     Widget widget;
-    switch (pageState.lastPageIndex) {
+    switch (AppStateManager.lastPageIndex) {
       case 2:
         widget = DrinkConfiguration();
         break;
@@ -208,7 +203,7 @@ class _PageRouterState extends State<PageRouter> {
   String getAppBarTitle() {
     String title = "";
     setState(() {
-      switch (pageState.lastPageIndex) {
+      switch (AppStateManager.lastPageIndex) {
         case 0:
           title = "My Bartender";
           break;

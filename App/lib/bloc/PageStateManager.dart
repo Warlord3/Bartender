@@ -1,24 +1,20 @@
 import 'package:bartender/GlobalWidgets/NotifcationOverlay.dart';
 import 'package:flutter/cupertino.dart';
 
-class PageStateManager with ChangeNotifier {
+class AppStateManager {
   static GlobalKey<NavigatorState> keyNavigator = GlobalKey<NavigatorState>();
-  GlobalKey<AnimatedListState> favoriteListKey =
+  static GlobalKey<AnimatedListState> favoriteListKey =
       GlobalKey<AnimatedListState>(debugLabel: "favoriteDrinkKey");
-  GlobalKey<AnimatedListState> drinkListKey =
+  static GlobalKey<AnimatedListState> drinkListKey =
       GlobalKey<AnimatedListState>(debugLabel: "normalDrinkKey");
-  double scrollPositionFavoritePage = 0.0;
-  double scrollPositionDrinksPage = 0.0;
+  static double scrollPositionFavoritePage = 0.0;
+  static double scrollPositionDrinksPage = 0.0;
 
-  int lastPageIndex = 0;
-  bool pushedPage = false;
-  List<bool> showMoreInfo;
-  bool recentlyExpanded = false;
-
-  void changeExpanded() {
-    recentlyExpanded = !recentlyExpanded;
-    notifyListeners();
-  }
+  static int lastPageIndex = 0;
+  static bool pushedPage = false;
+  static bool initIP = false;
+  static bool initStorage = false;
+  static List<bool> showMoreInfo;
 
   static void showOverlayEntry(String text, [NavigatorState navigator]) {
     OverlayEntry entry = OverlayEntry(builder: (BuildContext context) {

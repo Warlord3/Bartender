@@ -42,6 +42,8 @@ class DataManager with ChangeNotifier {
     beverages = [];
   }
 
+  bool get ipValid => ip.isNotEmpty;
+
   Future<void> init() async {
     await connect();
     websocket.connect();
@@ -70,7 +72,7 @@ class DataManager with ChangeNotifier {
       Duration(seconds: 2),
       onTimeout: () {
         controllerConnected = false;
-        PageStateManager.showOverlayEntry("No Connection");
+        AppStateManager.showOverlayEntry("No Connection");
         return null;
       },
     );
@@ -84,7 +86,7 @@ class DataManager with ChangeNotifier {
       this.recentlyCreatedDrinks = getRecentlyDrinks(saveData.recently);
       print(jsonDecode(response.body));
     } else {
-      PageStateManager.showOverlayEntry("Failed to load Data'");
+      AppStateManager.showOverlayEntry("Failed to load Data'");
       print('Failed to load Data');
     }
   }
@@ -287,8 +289,8 @@ class DataManager with ChangeNotifier {
   }
 
   void disconnected(String reason) {
-    PageStateManager.showOverlayEntry(
-        "Disconnected", PageStateManager.keyNavigator.currentState);
+    AppStateManager.showOverlayEntry(
+        "Disconnected", AppStateManager.keyNavigator.currentState);
 
     print(reason);
     notifyListeners();

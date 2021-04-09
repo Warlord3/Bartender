@@ -195,10 +195,10 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
 
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
-                                PageStateManager.showOverlayEntry("Saved",
-                                    PageStateManager.keyNavigator.currentState);
+                                AppStateManager.showOverlayEntry("Saved",
+                                    AppStateManager.keyNavigator.currentState);
                               } else {
-                                PageStateManager.showOverlayEntry(
+                                AppStateManager.showOverlayEntry(
                                     "The is something Missing",
                                     Navigator.of(context));
                               }

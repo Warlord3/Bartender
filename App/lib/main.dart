@@ -1,3 +1,4 @@
+import 'package:bartender/Pages/Connection/PageConnection.dart';
 import 'package:bartender/Pages/Start/PageStart.dart';
 import 'package:bartender/bloc/LocalStorageManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
@@ -17,9 +18,6 @@ void main() => runApp(MultiProvider(
         ChangeNotifierProvider<DataManager>(
           create: (context) => DataManager(),
         ),
-        ChangeNotifierProvider<PageStateManager>(
-          create: (context) => PageStateManager(),
-        ),
         ChangeNotifierProvider<LanguageManager>(
           create: (context) => LanguageManager(),
         ),
@@ -33,6 +31,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
+  bool hasIP = false;
+  ThemeManager themeMode;
+  DataManager dataManager;
   @override
   void initState() {
     super.initState();
@@ -67,23 +68,29 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<ThemeManager>(context);
+    themeMode = Provider.of<ThemeManager>(context);
+    dataManager = Provider.of<DataManager>(context, listen: false);
+
     return MaterialApp(
       theme: Themes.lightTheme,
       darkTheme: Themes.darkTheme,
       themeMode: themeMode.getTheme(),
-      home: FutureBuilder(
-          future: init(context),
-          builder: (context, snapshot) {
-            Widget child;
-            if (snapshot.connectionState == ConnectionState.done) {
-              child = PageRouter();
-            } else {
-              child = StartPage();
-            }
-            return child;
-          }),
+      home: getPage(),
     );
+  }
+
+  Widget getPage() {
+    if (!AppStateManager.initStorage) {
+      return FutureBuilder(
+          future: init(context),
+          builder: (buidContext, snapshot) {
+            return StartPage();
+          });
+    } else if (!AppStateManager.initIP) {
+      return ConnectionPage();
+    } else {
+      return PageRouter();
+    }
   }
 
   Future<bool> init(BuildContext context) async {
@@ -91,10 +98,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     if (LocalStorageManager.storage.containsKey("controllerIP")) {
       String controllerIp =
           LocalStorageManager.storage.getString("controllerIP");
+      Provider.of<DataManager>(context, listen: false).ip = controllerIp;
+
+      AppStateManager.initIP = true;
     }
-
-    //await Provider.of<DataManager>(context, listen: false).init();
-
+    setState(() {});
     return true;
   }
 }

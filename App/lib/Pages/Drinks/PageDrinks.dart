@@ -8,14 +8,14 @@ import 'package:provider/provider.dart';
 class DrinksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var pageState = Provider.of<PageStateManager>(context, listen: false);
     DataManager dataManager = Provider.of<DataManager>(context, listen: false);
-    pageState.drinkListKey =
+    AppStateManager.drinkListKey =
         GlobalKey<AnimatedListState>(debugLabel: "favoriteDrinkKey");
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is ScrollEndNotification) {
-          pageState.scrollPositionDrinksPage = notification.metrics.pixels;
+          AppStateManager.scrollPositionDrinksPage =
+              notification.metrics.pixels;
         }
         return true;
       },
@@ -24,7 +24,7 @@ class DrinksPage extends StatelessWidget {
         child: DrinkListview(
             drinks: dataManager.allDrinks,
             drinkType: DrinkType.AllDrinks,
-            animatedListKey: pageState.drinkListKey),
+            animatedListKey: AppStateManager.drinkListKey),
       ),
     );
   }

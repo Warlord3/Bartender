@@ -8,26 +8,26 @@ import 'package:provider/provider.dart';
 class FavoritePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var pageState = Provider.of<PageStateManager>(context, listen: false);
     var maindata = Provider.of<DataManager>(context, listen: false);
-    pageState.favoriteListKey =
+    AppStateManager.favoriteListKey =
         GlobalKey<AnimatedListState>(debugLabel: "favoriteDrinkKey");
     return Container(
       color: Theme.of(context).backgroundColor,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification is ScrollEndNotification) {
-            pageState.scrollPositionFavoritePage = notification.metrics.pixels;
+            AppStateManager.scrollPositionFavoritePage =
+                notification.metrics.pixels;
           }
           return true;
         },
         child: SingleChildScrollView(
           controller: ScrollController(
-              initialScrollOffset: pageState.scrollPositionFavoritePage),
+              initialScrollOffset: AppStateManager.scrollPositionFavoritePage),
           child: DrinkListview(
             drinks: maindata.favoriteDrinks,
             drinkType: DrinkType.FavoriteDrinks,
-            animatedListKey: pageState.favoriteListKey,
+            animatedListKey: AppStateManager.favoriteListKey,
           ),
         ),
       ),
