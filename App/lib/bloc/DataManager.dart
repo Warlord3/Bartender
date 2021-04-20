@@ -19,11 +19,14 @@ class DataManager with ChangeNotifier {
 
   //Connection
   String ip = "192.168.178.74";
+  bool get ipValid => ip.isNotEmpty;
+
   Websocket websocket;
   bool controllerConnected;
   final String filename = "data.json";
 
   int drinkProgress = 0;
+  bool drinkActive = false;
 
   //Save Process
   bool dataChanged = false;
@@ -35,14 +38,13 @@ class DataManager with ChangeNotifier {
         onDisconnectCallback: disconnected,
         onDataCallback: callback);
   }
+
   DataManager.empty() {
     allDrinks = [];
     favoriteDrinks = [];
     recentlyCreatedDrinks = [];
     beverages = [];
   }
-
-  bool get ipValid => ip.isNotEmpty;
 
   Future<void> init() async {
     await connect();
@@ -80,15 +82,18 @@ class DataManager with ChangeNotifier {
     if (response?.statusCode == 200) {
       DrinkSaveData saveData =
           DrinkSaveData.fromJson(jsonDecode(response.body));
-      this.allDrinks = saveData.drinks;
-      this.beverages = saveData.beverages;
-      this.favoriteDrinks = getFavoriteDrinks();
-      this.recentlyCreatedDrinks = getRecentlyDrinks(saveData.recently);
+      loadDataFromSaveData(saveData);
       print(jsonDecode(response.body));
     } else {
-      AppStateManager.showOverlayEntry("Failed to load Data'");
       print('Failed to load Data');
     }
+  }
+
+  loadDataFromSaveData(DrinkSaveData data) {
+    this.allDrinks = data.drinks;
+    this.beverages = data.beverages;
+    this.favoriteDrinks = getFavoriteDrinks();
+    this.recentlyCreatedDrinks = getRecentlyDrinks(data.recently);
   }
 
   save([bool force = false]) async {
@@ -167,8 +172,13 @@ class DataManager with ChangeNotifier {
         .toList();
   }
 
+  List<int> getRecentlyDrinkList() {
+    return recentlyCreatedDrinks.map(((element) => element.id)).toList();
+  }
+
   Beverage getBeverageByID(int id) {
-    return this.beverages.firstWhere((element) => element.id == id);
+    return this.beverages.firstWhere((element) => element.id == id,
+        orElse: () => Beverage.None());
   }
 
   void removeDrink(Drink drink) {
@@ -245,17 +255,13 @@ class DataManager with ChangeNotifier {
     send(message);
   }
 
-  startPump(List<int> ids) {
-    String message = "start_pump";
-    message += "\$";
-    for (int id in ids) {
-      message += "$id:";
-    }
-    send(message);
+  startPump(int ID, enPumpDirection pumpDirection) {
+    StartPump command = StartPump(pumpID: ID, pumpDirection: pumpDirection);
+    send(command.toString());
   }
 
   stopPump(int id) {
-    StopPump command = StopPump();
+    StopPump command = StopPump(pumpID: id);
     send(jsonEncode(command.toJson()));
   }
 
@@ -271,12 +277,19 @@ class DataManager with ChangeNotifier {
   }
 
   requestConfiguration() {
-    ConfigRequest command = ConfigRequest();
-    send(jsonEncode(command.toJson()));
+    send(jsonEncode(ConfigRequest().toJson()));
   }
 
   sendConfiguration() {
-    send(this.pumpConfiguration.toJson());
+    send(jsonEncode(this.pumpConfiguration.toJson()));
+  }
+
+  testMode() {
+    send(jsonEncode(TestMode().toJson()));
+  }
+
+  normalMode() {
+    send(jsonEncode(NormalMode().toJson()));
   }
 
   void send(dynamic data) {
@@ -303,6 +316,15 @@ class DataManager with ChangeNotifier {
     if (command == "connected") {
       requestConfiguration();
     } else if (command == "status") {
+    } else if (command == "new_drink_response") {
+      NewDrinkResponse response = NewDrinkResponse.fromJson(json);
+      if (response.accepted) {
+        drinkActive = true;
+      } else {
+        AppStateManager.showOverlayEntry("There went something wrong");
+      }
+    } else if (command == "drink_finished") {
+      drinkActive = false;
     } else if (command == "progress") {
       drinkProgress = Progress.fromJson(json).progress;
       notifyListeners();
