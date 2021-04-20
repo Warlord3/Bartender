@@ -15,6 +15,7 @@ class Websocket {
   bool connected = false;
   WebSocket _webSocket;
   void connect() async {
+    if (this.connected) return;
     Future<WebSocket> socket = WebSocket.connect(url, protocols: ["Arduino"])
         .timeout(Duration(seconds: 5));
     try {
