@@ -1,13 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:bartender/Pages/Settings/LocalWidgets/BeverageConfiguration.dart';
 import 'package:bartender/Pages/Settings/LocalWidgets/ControllerConfiguration.dart';
+import 'package:bartender/Pages/Settings/LocalWidgets/PumpTestPage.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/ThemeManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
+import 'package:file_picker/file_picker.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -17,14 +22,12 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   ThemeManager themeChangeProvider;
   LanguageManager languageManager;
-  AppStateManager pageStateManager;
   DataManager dataManager;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
-    pageStateManager = Provider.of<AppStateManager>(context);
     dataManager = Provider.of<DataManager>(context, listen: false);
     return Container(
         /*
@@ -159,6 +162,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         splashRadius: 25,
                         icon: Icon(Icons.construction),
                         onPressed: () async {
+                          if (!dataManager.controllerConnected) {
+                            AppStateManager.showOverlayEntry("Not Connected");
+                            return;
+                          }
                           await showGeneralDialog(
                             barrierDismissible: true,
                             barrierLabel: '',
@@ -180,6 +187,56 @@ class _SettingsPageState extends State<SettingsPage> {
                             context: context,
                           );
                           dataManager.sendConfiguration();
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              /*
+              Pump PumpTesting
+              */
+              TableRow(
+                children: [
+                  TableCell(
+                    child: Center(
+                      child: Text(
+                        languageManager.getData("pump_testing"),
+                      ),
+                    ),
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                  ),
+                  TableCell(
+                    child: Center(
+                      child: IconButton(
+                        splashRadius: 25,
+                        icon: Icon(Icons.local_gas_station),
+                        onPressed: () {
+                          if (!dataManager.controllerConnected) {
+                            AppStateManager.showOverlayEntry("Not Connected");
+                            return;
+                          }
+                          if (dataManager.drinkActive) {
+                            AppStateManager.showOverlayEntry(
+                                "Drink in progress");
+                            return;
+                          }
+                          dataManager.testMode();
+                          AppStateManager.pushedPage = true;
+                          AppStateManager.keyNavigator.currentState.push(
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      PumpTestPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -230,6 +287,49 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
           Spacer(),
+          ElevatedButton(
+            onPressed: () async {
+              FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ["json"]).then((value) {
+                if (value != null) {
+                  File file = File(value.paths.first);
+                  Map<String, dynamic> json =
+                      jsonDecode(file.readAsStringSync());
+                  if (json.containsKey("drinks") &&
+                      json.containsKey("recently") &&
+                      json.containsKey("beverages")) {
+                    DrinkSaveData data = DrinkSaveData.fromJson(json);
+                    dataManager.loadDataFromSaveData(data);
+                    AppStateManager.showOverlayEntry("BackupLoaded");
+                    dataManager.syncData();
+                  } else {
+                    AppStateManager.showOverlayEntry("Couldn't read File");
+                  }
+                }
+              });
+            },
+            child: Text("Load Config"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              FilePicker.platform.getDirectoryPath().then((path) {
+                if (path != null) {
+                  DrinkSaveData data = DrinkSaveData();
+                  data.beverages = dataManager.beverages;
+                  data.drinks = dataManager.allDrinks;
+                  data.recently = dataManager.getRecentlyDrinkList();
+                  DateTime now = new DateTime.now();
+                  print(
+                      "$path/MyBartender_${now.day.toString()}_${now.month.toString()}_${now.year.toString()}.json");
+                  File file = File(
+                      "$path/MyBartender_${now.day.toString()}_${now.month.toString()}_${now.year.toString()}.json");
+                  file.writeAsString(jsonEncode(data.toJson()));
+                }
+              });
+            },
+            child: Text("Save Config"),
+          ),
           ElevatedButton(
             onPressed: () async {
               await showGeneralDialog(
