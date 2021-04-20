@@ -154,8 +154,10 @@ class _PumpConfigurationState extends State<PumpConfiguration> {
                     maxLength: 4,
                     controller: controller,
                     onChanged: (data) {
-                      widget.dataManager.pumpConfiguration
-                          .setMlPerMinute(widget.pumpIndex, int.parse(data));
+                      if (data.isNotEmpty) {
+                        widget.dataManager.pumpConfiguration
+                            .setMlPerMinute(widget.pumpIndex, int.parse(data));
+                      }
                     },
                     decoration: InputDecoration(
                         filled: true,
