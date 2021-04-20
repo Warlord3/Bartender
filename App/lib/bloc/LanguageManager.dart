@@ -78,6 +78,8 @@ class LanguageManager with ChangeNotifier {
         "search_connection",
         "Search for Bartenders in local network",
         "Suche nach Bartendern im lokalen Netzwerk"));
+    languageEntrys
+        .add(new LanguageEntry("pump_testing", "Pump Testing", "Pumpen Test"));
   }
 }
 
