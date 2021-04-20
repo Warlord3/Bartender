@@ -101,6 +101,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       Provider.of<DataManager>(context, listen: false).ip = controllerIp;
 
       AppStateManager.initIP = true;
+      await Provider.of<DataManager>(context, listen: false).init();
     }
     setState(() {});
     return true;
