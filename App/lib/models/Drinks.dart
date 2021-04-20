@@ -187,6 +187,14 @@ class Beverage {
 
   Beverage.empty();
 
+  Beverage.None() {
+    this.id = -1;
+    this.addition = "None";
+    this.kcal = 0;
+    this.name = "None";
+    this.percent = 0;
+  }
+
   Beverage copy() {
     return Beverage(
       id: this.id,
