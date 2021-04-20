@@ -20,12 +20,13 @@ void initState(void)
     drinkFinished = false;
     WiFiConncted = false;
 }
-void runState(void)
+void checkDrinkFinished(void)
 {
     if (numberPumpsRunning == 0 && !newDrinkPossible)
     {
         newDrinkPossible = true;
         drinkFinished = true;
+        sendDrinkFinished();
     }
 }
 void reset(void)

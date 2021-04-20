@@ -25,9 +25,9 @@ extern uint8_t getBoardID(uint8_t pumpID);
 
 int getPumpID(uint beverageID);
 void startInterupt(void);
-
+void stopInterupt(void);
 void initPumps();
-void runPumps();
+void updateProgress();
 
 //Cofiguration of Pumps
 bool isConfigurated(void);
@@ -39,6 +39,7 @@ void setRemainingMl(float remainingMl, uint8_t pumpID);
 bool pumpsAreRunning(void);
 bool pumpIsRunning(uint8_t pumpID);
 int progress();
+void sendDrinkFinished(void);
 void status(void);
 uint8_t _getDirection(enPumpDirection direction);
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bartender/models/Drinks.dart';
 
 class Command {
@@ -113,8 +115,8 @@ class PumpConfiguration {
 }
 
 class PumpConfig {
-  int beverageID;
-  int mlPerMinute;
+  int beverageID = -1;
+  int mlPerMinute = 0;
   PumpConfig({
     this.beverageID,
     this.mlPerMinute,
@@ -139,12 +141,18 @@ class ConfigRequest {
 }
 
 class StartPump {
-  List<int> IDs;
-  StartPump({this.IDs});
+  int pumpID;
+  enPumpDirection pumpDirection;
+  StartPump({this.pumpID, this.pumpDirection});
   Map<String, dynamic> toJson() => {
         'command': "start_pump",
-        'IDs': IDs,
+        'ID': pumpID,
+        'direction': pumpDirection.index,
       };
+  @override
+  String toString() {
+    return jsonEncode(toJson());
+  }
 }
 
 enum enPumpDirection {
@@ -163,17 +171,29 @@ class StartPumpAll {
 }
 
 class StopPump {
-  List<int> IDs;
-  StopPump({this.IDs});
+  int pumpID;
+  StopPump({this.pumpID});
   Map<String, dynamic> toJson() => {
-        'command': "stop_pump",
-        'IDs': IDs,
+        'command': "start_pump",
+        'ID': pumpID,
       };
 }
 
 class StopPumpAll {
   Map<String, dynamic> toJson() => {
         'command': "stop_pump_all",
+      };
+}
+
+class TestMode {
+  Map<String, dynamic> toJson() => {
+        'command': "test_mode",
+      };
+}
+
+class NormalMode {
+  Map<String, dynamic> toJson() => {
+        'command': "normal_mode",
       };
 }
 

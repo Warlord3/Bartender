@@ -10,10 +10,6 @@ byte currentBiggestIngredient = 0;
 void initPumps()
 {
 
-    for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
-    {
-        pumps[i].ID = i;
-    }
     if (operationMode != enOperationMode::configMode)
     {
         DEBUG_PRINTLN("Start I2C");
@@ -25,13 +21,8 @@ void initPumps()
         sendData("Configurate Pumps");
     }
 }
-void runPumps()
+void updateProgress()
 {
-    //updatePumps();
-    if (wifiState == enWiFiState::monitorWiFi)
-    {
-        startInterupt();
-    }
     if (drinkRunning)
     {
 
@@ -72,6 +63,15 @@ void startInterupt(void)
 
         timer1_enable(TIM_DIV256, TIM_EDGE, TIM_LOOP);
         timer1_write(31250); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval
+    }
+}
+void stopInterupt(void)
+{
+    if (interuptStarted)
+    {
+        interuptStarted = false;
+        DEBUG_PRINTLN("Stop Interrupt Timer");
+        timer1_disable();
     }
 }
 
@@ -302,12 +302,8 @@ void start(DynamicJsonDocument &doc)
         forward(value.as<int>());
     }
 }
-void stop(DynamicJsonDocument &doc)
+void stop(uint8_t pumpID)
 {
-    for (JsonVariant value : doc["IDs"].as<JsonArray>())
-    {
-        stopPump(value.as<int>());
-    }
 }
 int8_t setDrink(DynamicJsonDocument &doc)
 {
@@ -348,6 +344,7 @@ int8_t setDrink(DynamicJsonDocument &doc)
         }
         startPumpsWithCurrentDrink();
         drinkRunning = true;
+        machineState = enMachineState::running;
         return true;
     }
     DEBUG_PRINTLN("New Drink was declined");
@@ -368,6 +365,7 @@ String getConfiguration(void)
     }
     String result;
     serializeJson(doc, result);
+    DEBUG_PRINTLN(result);
     return result;
 }
 
@@ -408,4 +406,8 @@ String getProgress()
     String result;
     serializeJson(doc, result);
     return result;
+}
+void sendDrinkFinished(void)
+{
+    sendData("{'command':'drink_finished'}");
 }

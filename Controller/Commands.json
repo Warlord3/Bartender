@@ -42,25 +42,16 @@
 
 {
     "command": "start_pump",
-    "IDs": [
-        0,
-        1,
-        2,
-        3
-    ]
+    "ID": 0,
+    "direction" :1
 }
 {
     "command": "start_pump_all",
-    "dircetion": 1
+    "direction": 1
 }
 {
     "command": "stop_pump",
-    "IDs": [
-        0,
-        1,
-        2,
-        3
-    ]
+    "ID": 0,
 }
 {
     "command": "stop_pump_all"
@@ -115,3 +106,4 @@
     "command": "new_drink_response",
     "accepted": true
 }
+{"command":"drink_finished"}

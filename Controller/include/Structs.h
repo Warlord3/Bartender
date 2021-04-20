@@ -5,14 +5,14 @@
 
 struct stPumpInfo
 {
-    uint8_t ID;
+    int ID;
     int mlPerMinute;
     int beverageID;
     float remainingMl;
     enPumpDirection direction;
     stPumpInfo()
     {
-        ID = 0;
+        ID = -1;
         mlPerMinute = 0;
         beverageID = 0;
         remainingMl = 0;

@@ -18,7 +18,6 @@ void loop()
   switch (machineState)
   {
   case enMachineState::boot:
-    DEBUG_PRINTLN(ESP.getCpuFreqMHz());
     initState();
     machineState = enMachineState::init;
     break;
@@ -32,9 +31,16 @@ void loop()
     break;
 
   case enMachineState::idle:
+    machineState = enMachineState::running;
+    updateProgress();
 
     break;
   case enMachineState::running:
+    if (wifiState == enWiFiState::monitorWiFi)
+    {
+      startInterupt();
+    }
+    checkDrinkFinished();
 
     break;
 
@@ -43,7 +49,7 @@ void loop()
     break;
 
   case enMachineState::testing:
-
+    stopInterupt();
     break;
 
   default:
@@ -51,8 +57,6 @@ void loop()
   }
   if (machineState > enMachineState::init)
   {
-    runPumps();
-    runState();
     runNetwork();
     runCommunication();
   }

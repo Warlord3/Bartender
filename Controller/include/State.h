@@ -24,6 +24,6 @@ extern bool drinkRunning;
 extern bool WiFiConncted;
 
 void initState(void);
-void runState(void);
+void checkDrinkFinished(void);
 
 void reset(void);

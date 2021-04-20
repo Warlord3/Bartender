@@ -112,23 +112,31 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         }
         else if (strcmp(command, "stop_pump") == 0)
         {
-            stop(doc);
-            //webSocket.broadcastTXT(response_msg);
+            stopPump(doc["ID"].as<int>());
         }
         else if (strcmp(command, "stop_pump_all") == 0)
         {
             stopAllPumps(true);
-            //webSocket.broadcastTXT(response_msg);
         }
         else if (strcmp(command, "start_pump") == 0)
         {
-            stop(doc);
-            //webSocket.broadcastTXT(response_msg);
+            startPump((enPumpDirection)doc["direction"].as<int>(), doc["ID"].as<int>());
         }
         else if (strcmp(command, "start_pump_all") == 0)
         {
+
             startAllPumps((enPumpDirection)doc["direction"].as<int>());
             //webSocket.broadcastTXT(response_msg);
+        }
+        else if (strcmp(command, "normal_mode") == 0)
+        {
+            machineState = enMachineState::running;
+            DEBUG_PRINTLN("Set to Normal Mode");
+        }
+        else if (strcmp(command, "test_mode") == 0)
+        {
+            machineState = enMachineState::testing;
+            DEBUG_PRINTLN("Set to Testing Mode");
         }
         else if (strcmp(command, "reset") == 0)
         {
