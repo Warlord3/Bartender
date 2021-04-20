@@ -22,6 +22,10 @@ class _SettingsPageState extends State<StartPage> {
                   colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
                   child: Icon(Icons.local_drink),
                 ),
+                SizedBox(
+                  height: 20,
+                ),
+                CircularProgressIndicator()
               ],
             ),
           ),
