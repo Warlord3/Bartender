@@ -4,6 +4,7 @@ import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
 import 'package:bartender/Pages/Settings/PageSettings.dart';
 import 'package:bartender/Pages/Home/PageHome.dart';
+import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/PageStateManager.dart';
 import 'package:bartender/bloc/ThemeManager.dart';
 import 'package:flutter/material.dart';
@@ -20,13 +21,11 @@ class PageRouter extends StatefulWidget {
 
 class _PageRouterState extends State<PageRouter> {
   LanguageManager languageManager;
-  AppStateManager pageState;
   ThemeManager themeChangeProvider;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
-    pageState = Provider.of<AppStateManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
     return Scaffold(
       appBar: AppBar(
@@ -40,6 +39,11 @@ class _PageRouterState extends State<PageRouter> {
               AppStateManager.pushedPage) {
             AppStateManager.pushedPage = false;
             AppStateManager.keyNavigator.currentState.pop();
+            DataManager dataManager =
+                Provider.of<DataManager>(context, listen: false);
+            dataManager.stopAllPumps();
+            dataManager.normalMode();
+
             return Future.value(false);
           }
           return Future.value(true);
@@ -129,7 +133,6 @@ class _PageRouterState extends State<PageRouter> {
   }
 
   void _pageSelect(int value) {
-    pageState = Provider.of(context, listen: false);
     setState(() {
       if (AppStateManager.lastPageIndex != value) {
         switch (value) {
@@ -171,7 +174,7 @@ class _PageRouterState extends State<PageRouter> {
     return FloatingActionButton(
       elevation: 10,
       shape: CircleBorder(),
-      heroTag: "FloatingButton$pageState.lastPageIndex",
+      heroTag: "FloatingButton$AppStateManager.lastPageIndex",
       onPressed: () {
         showGeneralDialog(
           barrierDismissible: true,
