@@ -62,7 +62,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
     Provider.of<DataManager>(context, listen: false).ip = ip;
     LocalStorageManager.storage.setString("controllerIP", ip);
     AppStateManager.initIP = true;
-    await Provider.of<DataManager>(context, listen: false).init();
+    Provider.of<DataManager>(context, listen: false).init();
     Navigator.of(context)
         .pushReplacement(MaterialPageRoute(builder: (buildContext) {
       return PageRouter();
