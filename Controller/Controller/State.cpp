@@ -11,6 +11,7 @@ bool newDrinkPossible = true;
 stDrink currentDrink;
 
 uint numberPumpsRunning = 0;
+volatile bool interuptActive = true;
 bool drinkFinished = false;
 bool drinkRunning = false;
 bool WiFiConncted = false;

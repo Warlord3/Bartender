@@ -2,6 +2,14 @@ import 'dart:convert';
 
 import 'package:bartender/models/Drinks.dart';
 
+class CommandBase {
+  Map<String, dynamic> toJson() => throw UnimplementedError();
+  @override
+  String toString() {
+    return jsonEncode(toJson());
+  }
+}
+
 class Command {
   String command;
   Command({this.command});
@@ -12,7 +20,7 @@ class Command {
   }
 }
 
-class Status {
+class Status extends CommandBase {
   int numberPumpsRunning;
   int drinkID;
   int progress;
@@ -23,6 +31,7 @@ class Status {
     this.progress,
     this.pumpStatus,
   });
+  @override
   Map<String, dynamic> toJson() => {
         'numberPumpsRunning': numberPumpsRunning,
         'drinkID': drinkID,
@@ -46,7 +55,7 @@ class Status {
   }
 }
 
-class PumpStatus {
+class PumpStatus extends CommandBase {
   int id;
   int beverageID;
   int amount; //Amount that the Pumps already delivered
@@ -60,7 +69,7 @@ class PumpStatus {
       );
 }
 
-class Progress {
+class Progress extends CommandBase {
   int progress;
   Progress({
     this.progress,
@@ -71,7 +80,7 @@ class Progress {
       );
 }
 
-class PumpConfiguration {
+class PumpConfiguration extends CommandBase {
   List<PumpConfig> configs = List<PumpConfig>.filled(
       16,
       PumpConfig(
@@ -108,13 +117,14 @@ class PumpConfiguration {
                 .map((i) => PumpConfig.fromJson(i))
                 .toList(),
       );
+  @override
   Map<String, dynamic> toJson() => {
         "command": "pump_config",
         "config": configs.map((e) => e.toJson()).toList(),
       };
 }
 
-class PumpConfig {
+class PumpConfig extends CommandBase {
   int beverageID = -1;
   int mlPerMinute = 0;
   PumpConfig({
@@ -127,20 +137,21 @@ class PumpConfig {
         mlPerMinute:
             parsedJson['mlPerMinute'] == null ? 0 : parsedJson['mlPerMinute'],
       );
+  @override
   Map<String, dynamic> toJson() => {
         "beverageID": beverageID,
         "mlPerMinute": mlPerMinute,
       };
 }
 
-class ConfigRequest {
+class ConfigRequest extends CommandBase {
   final String command = "pump_config_request";
   Map<String, dynamic> toJson() => {
         'command': command,
       };
 }
 
-class StartPump {
+class StartPump extends CommandBase {
   int pumpID;
   enPumpDirection pumpDirection;
   StartPump({this.pumpID, this.pumpDirection});
@@ -161,7 +172,7 @@ enum enPumpDirection {
   backward,
 }
 
-class StartPumpAll {
+class StartPumpAll extends CommandBase {
   enPumpDirection direction;
   StartPumpAll({this.direction});
   Map<String, dynamic> toJson() => {
@@ -170,39 +181,50 @@ class StartPumpAll {
       };
 }
 
-class StopPump {
+class StopPump extends CommandBase {
   int pumpID;
   StopPump({this.pumpID});
+  @override
   Map<String, dynamic> toJson() => {
         'command': "start_pump",
         'ID': pumpID,
       };
 }
 
-class StopPumpAll {
+class StopPumpAll extends CommandBase {
+  @override
   Map<String, dynamic> toJson() => {
         'command': "stop_pump_all",
       };
 }
 
-class TestMode {
+class InteruptActive extends CommandBase {
+  final active;
+  InteruptActive(this.active);
+  @override
+  Map<String, dynamic> toJson() =>
+      {'command': "interrupt_enable", "active": this.active};
+}
+
+class PumpMilliliter extends CommandBase {
+  final int pumpID;
+  final int ml;
+  PumpMilliliter(this.pumpID, this.ml);
+  @override
   Map<String, dynamic> toJson() => {
-        'command': "test_mode",
+        'command': "pump_milliliter",
+        "ID": this.pumpID,
+        "ml": this.ml,
       };
 }
 
-class NormalMode {
-  Map<String, dynamic> toJson() => {
-        'command': "normal_mode",
-      };
-}
-
-class NewDrink {
+class NewDrink extends CommandBase {
   Drink drink;
   NewDrink({
     this.drink,
   });
 
+  @override
   Map<String, dynamic> toJson() => {
         "command": "new_drink",
         "id": drink.id == null ? -1 : drink.id,
@@ -212,7 +234,7 @@ class NewDrink {
       };
 }
 
-class NewDrinkResponse {
+class NewDrinkResponse extends CommandBase {
   bool accepted;
   NewDrinkResponse({
     this.accepted,

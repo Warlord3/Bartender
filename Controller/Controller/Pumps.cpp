@@ -65,15 +65,6 @@ void startInterupt(void)
         timer1_write(31250); // 2500000 / 5 ticks per us from TIM_DIV16 == 500,000 us interval
     }
 }
-void stopInterupt(void)
-{
-    if (interuptStarted)
-    {
-        interuptStarted = false;
-        DEBUG_PRINTLN("Stop Interrupt Timer");
-        timer1_disable();
-    }
-}
 
 //Cofiguration of Pumps
 bool isConfigurated(void)
@@ -92,11 +83,12 @@ void setConfiguration(DynamicJsonDocument &doc)
 {
     //https://github.com/Warlord3/Bartender/wiki/Data-structures#pump-configuration
     JsonArray array = doc["config"].as<JsonArray>();
+    int index = 0;
     for (JsonObject object : array)
     {
-        uint pumpID = object["ID"].as<uint>();
-        setBeverageID(object["beverageID"].as<int>(), pumpID);
-        setMlPerMinute(object["mlPerMinute"].as<int>(), pumpID);
+        setBeverageID(object["beverageID"].as<int>(), index);
+        setMlPerMinute(object["mlPerMinute"].as<int>(), index);
+        index++;
     }
 
     savePumpConfig();
@@ -248,7 +240,7 @@ void startPumpsWithCurrentDrink(void)
 //Update
 void ICACHE_RAM_ATTR updatePumps(void)
 {
-    if (numberPumpsRunning == 0)
+    if (!interuptActive || numberPumpsRunning == 0)
     {
         drinkRunning = false;
         return;
@@ -359,7 +351,7 @@ String getConfiguration(void)
     for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
     {
         JsonObject object = array.createNestedObject();
-        object["ID"] = pumps[i].ID;
+        DEBUG_PRINTF("Beverage: %i, Ml: %i\n", pumps[i].beverageID, pumps[i].mlPerMinute);
         object["beverageID"] = pumps[i].beverageID;
         object["mlPerMinute"] = pumps[i].mlPerMinute;
     }
@@ -380,7 +372,6 @@ String getPumpStatus()
     for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
     {
         JsonObject object = array.createNestedObject();
-        object["ID"] = pumps[i].ID;
         object["beverageID"] = pumps[i].beverageID;
         int amount = currentDrink.amount[i] - pumps[i].remainingMl;
         object["amount"] = amount;

@@ -49,7 +49,6 @@ void loop()
     break;
 
   case enMachineState::testing:
-    stopInterupt();
     break;
 
   default:

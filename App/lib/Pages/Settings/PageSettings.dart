@@ -221,7 +221,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                 "Drink in progress");
                             return;
                           }
-                          dataManager.testMode();
                           AppStateManager.pushedPage = true;
                           AppStateManager.keyNavigator.currentState.push(
                             PageRouteBuilder(

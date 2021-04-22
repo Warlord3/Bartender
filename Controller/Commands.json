@@ -20,7 +20,7 @@
 }
 
 {
-    "command":"progress",
+    "command": "progress",
     "progress": 10
 }
 {
@@ -43,7 +43,7 @@
 {
     "command": "start_pump",
     "ID": 0,
-    "direction" :1
+    "direction": 1
 }
 {
     "command": "start_pump_all",
@@ -106,4 +106,6 @@
     "command": "new_drink_response",
     "accepted": true
 }
-{"command":"drink_finished"}
+{
+    "command": "drink_finished"
+}

@@ -5,14 +5,12 @@
 
 struct stPumpInfo
 {
-    int ID;
     int mlPerMinute;
     int beverageID;
     float remainingMl;
     enPumpDirection direction;
     stPumpInfo()
     {
-        ID = -1;
         mlPerMinute = 0;
         beverageID = 0;
         remainingMl = 0;
@@ -20,7 +18,7 @@ struct stPumpInfo
     }
     void print()
     {
-        DEBUG_PRINTF("ID:%i,ml:%i,beverage:%i,remain:%f,state:%i\n", ID, mlPerMinute, beverageID, remainingMl, (int)direction);
+        DEBUG_PRINTF("ml:%i,beverage:%i,remain:%f,state:%i\n", mlPerMinute, beverageID, remainingMl, (int)direction);
     }
 };
 

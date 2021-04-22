@@ -74,7 +74,6 @@ class DataManager with ChangeNotifier {
       Duration(seconds: 2),
       onTimeout: () {
         controllerConnected = false;
-        AppStateManager.showOverlayEntry("No Connection");
         return null;
       },
     );
@@ -262,37 +261,42 @@ class DataManager with ChangeNotifier {
 
   stopPump(int id) {
     StopPump command = StopPump(pumpID: id);
-    send(jsonEncode(command.toJson()));
+    send(command.toString());
   }
 
   stopAllPumps() {
     StopPumpAll command = StopPumpAll();
-    send(jsonEncode(command.toJson()));
+    send(command.toString());
   }
 
   sendDrink(Drink drink, {double scalling = 1.0}) {
     NewDrink command =
         NewDrink(drink: scalling == 1.0 ? drink : drink.scaleldCopy(scalling));
-    send(jsonEncode(command.toJson()));
+    send(command.toString());
   }
 
   requestConfiguration() {
-    send(jsonEncode(ConfigRequest().toJson()));
+    send(ConfigRequest().toString());
   }
 
   sendConfiguration() {
-    send(jsonEncode(this.pumpConfiguration.toJson()));
+    send(this.pumpConfiguration.toString());
   }
 
-  testMode() {
-    send(jsonEncode(TestMode().toJson()));
+  sendMilliliter(int index, int ml) {
+    send(PumpMilliliter(index, ml).toString());
   }
 
-  normalMode() {
-    send(jsonEncode(NormalMode().toJson()));
+  enablePumpInterupt() {
+    send(InteruptActive(true).toString());
+  }
+
+  disablePumpInterupt() {
+    send(InteruptActive(false).toString());
   }
 
   void send(dynamic data) {
+    print("Websocket send:$data");
     websocket.send(data);
   }
 

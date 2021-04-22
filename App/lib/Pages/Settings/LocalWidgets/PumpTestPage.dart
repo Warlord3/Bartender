@@ -26,29 +26,69 @@ class PumpTestPage extends StatelessWidget {
 class PumpTest extends StatelessWidget {
   final DataManager dataManager;
   final int index;
+  final TextEditingController controller = TextEditingController(text: "100");
   PumpTest(this.dataManager, this.index);
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Text(index <= 9 ? "0$index." : "$index."),
-        ElevatedButton(
-            onPressed: () {
-              dataManager.startPump(index, enPumpDirection.forward);
-            },
-            child: Text("Forward")),
-        ElevatedButton(
-            onPressed: () {
-              dataManager.stopPump(index);
-            },
-            child: Text("Stop")),
-        ElevatedButton(
-            onPressed: () {
-              dataManager.startPump(index, enPumpDirection.backward);
-            },
-            child: Text("Backward"))
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(index <= 9 ? "0$index." : "$index."),
+              ElevatedButton(
+                onPressed: () {
+                  dataManager.startPump(index, enPumpDirection.forward);
+                  dataManager.disablePumpInterupt();
+                },
+                child: Text("Forward"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  dataManager.stopPump(index);
+                  dataManager.enablePumpInterupt();
+                },
+                child: Text("Stop"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  dataManager.startPump(index, enPumpDirection.backward);
+                  dataManager.disablePumpInterupt();
+                },
+                child: Text("Backward"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                flex: 1,
+                child: TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              SizedBox(
+                width: 15,
+              ),
+              Flexible(
+                flex: 1,
+                child: ElevatedButton(
+                  onPressed: () {
+                    dataManager.enablePumpInterupt();
+                    dataManager.sendMilliliter(
+                        this.index, int.parse(controller.text));
+                  },
+                  child: Text("Donate"),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }

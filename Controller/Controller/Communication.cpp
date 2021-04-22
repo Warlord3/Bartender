@@ -128,15 +128,17 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
             startAllPumps((enPumpDirection)doc["direction"].as<int>());
             //webSocket.broadcastTXT(response_msg);
         }
-        else if (strcmp(command, "normal_mode") == 0)
+        else if (strcmp(command, "interrupt_enable") == 0)
         {
-            machineState = enMachineState::running;
-            DEBUG_PRINTLN("Set to Normal Mode");
+            interuptActive = doc["active"].as<bool>();
+            DEBUG_PRINTLN("Set to Interrupt enable");
         }
-        else if (strcmp(command, "test_mode") == 0)
+        else if (strcmp(command, "pump_milliliter") == 0)
         {
-            machineState = enMachineState::testing;
-            DEBUG_PRINTLN("Set to Testing Mode");
+            int pumpID = doc["ID"].as<int>();
+            int ml = doc["ml"].as<int>();
+            setRemainingMl(ml, pumpID);
+            startPump(enPumpDirection::forward,pumpID);
         }
         else if (strcmp(command, "reset") == 0)
         {
