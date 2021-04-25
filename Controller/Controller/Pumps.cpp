@@ -15,7 +15,8 @@ void initPumps()
         DEBUG_PRINTLN("Start I2C");
         Wire.begin();
     }
-
+    pinMode(D3, OUTPUT);
+    digitalWrite(D3, HIGH);
     if (!loadPumpConfig())
     {
         sendData("Configurate Pumps");
