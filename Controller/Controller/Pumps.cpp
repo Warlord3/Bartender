@@ -241,27 +241,30 @@ void startPumpsWithCurrentDrink(void)
 //Update
 void ICACHE_RAM_ATTR updatePumps(void)
 {
-    if (!interuptActive || numberPumpsRunning == 0)
-    {
-        drinkRunning = false;
-        return;
-    }
-    for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
+    if (interuptActive && numberPumpsRunning > 0)
     {
 
-        if (pumps[i].direction == enPumpDirection::stop)
+        for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
         {
-            continue;
+
+            if (pumps[i].direction == enPumpDirection::stop)
+            {
+                continue;
+            }
+            if (pumps[i].remainingMl <= 0 || pumps[i].mlPerMinute <= 0)
+            {
+                pumps[i].remainingMl = 0;
+                stopPump(i);
+            }
+            else
+            {
+                pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
+            }
         }
-        if (pumps[i].remainingMl <= 0 || pumps[i].mlPerMinute <= 0)
-        {
-            pumps[i].remainingMl = 0;
-            stopPump(i);
-        }
-        else
-        {
-            pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
-        }
+    }
+    else
+    {
+        drinkRunning = false;
     }
     updateRegister();
 }
@@ -279,10 +282,9 @@ void updateRegister(void)
 
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
-
         Wire.beginTransmission(addresses[i]);
         Wire.write((uint8_t)pumpDataRegister[i]);
-        Wire.write((uint8_t)pumpDataRegister[i] >> 8);
+        Wire.write((uint8_t)(pumpDataRegister[i] >> 8));
         Wire.endTransmission();
     }
 }
