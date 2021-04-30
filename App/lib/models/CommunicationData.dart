@@ -186,7 +186,7 @@ class StopPump extends CommandBase {
   StopPump({this.pumpID});
   @override
   Map<String, dynamic> toJson() => {
-        'command': "start_pump",
+        'command': "stop_pump",
         'ID': pumpID,
       };
 }

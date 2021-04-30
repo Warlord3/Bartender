@@ -21,6 +21,7 @@ extern uint numberPumpsRunning;
 extern bool drinkFinished;
 extern bool drinkRunning;
 extern volatile bool interuptActive;
+extern volatile bool dataChanged;
 
 extern bool WiFiConncted;
 

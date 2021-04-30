@@ -17,6 +17,8 @@ void initPumps()
     }
     pinMode(D3, OUTPUT);
     digitalWrite(D3, HIGH);
+    stopAllPumps(true);
+
     if (!loadPumpConfig())
     {
         sendData("Configurate Pumps");
@@ -182,20 +184,24 @@ void startPump(enPumpDirection direction, uint8_t pumpID)
     {
         pumps[pumpID].direction = direction;
     }
+    dataChanged = true;
 }
 void stopPump(uint8_t pumpID)
 {
+
+    DEBUG_PRINTF("Stop Pump %i \n", pumpID);
+    pumps[pumpID].direction = enPumpDirection::stop;
     numberPumpsRunning -= 1;
     if (numberPumpsRunning < 0)
     {
         numberPumpsRunning = 0;
     }
-    DEBUG_PRINTF("Stop Pump %i \n", pumpID);
-    pumps[pumpID].direction = enPumpDirection::stop;
+    dataChanged = true;
 }
 
 void startAllPumps(enPumpDirection direction)
 {
+
     numberPumpsRunning = NUM_PUMPS_PER_CONTROLLER;
     DEBUG_PRINTLN("Start All Pumps");
 
@@ -203,9 +209,11 @@ void startAllPumps(enPumpDirection direction)
     {
         pumps[i].direction = direction;
     }
+    dataChanged = true;
 }
 void stopAllPumps(bool force = false)
 {
+
     numberPumpsRunning = 0;
     DEBUG_PRINTLN("Stop All Pumps");
     for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER; i++)
@@ -216,6 +224,7 @@ void stopAllPumps(bool force = false)
     {
         updateRegister();
     }
+    dataChanged = true;
 }
 void forward(uint8_t pumpID)
 {
@@ -241,6 +250,7 @@ void startPumpsWithCurrentDrink(void)
 //Update
 void ICACHE_RAM_ATTR updatePumps(void)
 {
+
     if (interuptActive && numberPumpsRunning > 0)
     {
 
@@ -269,8 +279,13 @@ void ICACHE_RAM_ATTR updatePumps(void)
     updateRegister();
 }
 
-void updateRegister(void)
+void ICACHE_RAM_ATTR updateRegister(void)
 {
+    if (!dataChanged)
+    {
+        return;
+    }
+    dataChanged = false;
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         pumpDataRegister[i] = 0;
@@ -292,6 +307,7 @@ void updateRegister(void)
 //Commands
 void start(DynamicJsonDocument &doc)
 {
+    dataChanged = true;
     for (JsonVariant value : doc["IDs"].as<JsonArray>())
     {
         forward(value.as<int>());

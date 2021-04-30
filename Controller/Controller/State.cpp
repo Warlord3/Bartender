@@ -12,6 +12,8 @@ stDrink currentDrink;
 
 uint numberPumpsRunning = 0;
 volatile bool interuptActive = true;
+volatile bool dataChanged = true;
+
 bool drinkFinished = false;
 bool drinkRunning = false;
 bool WiFiConncted = false;
