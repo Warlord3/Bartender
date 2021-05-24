@@ -50,6 +50,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         serializeJson(doc, response);
         // send message to client
         webSocket.sendTXT(num, response);
+        response = getProgress();
+        webSocket.sendTXT(num, response);
     }
     break;
     case WStype_TEXT:
@@ -112,7 +114,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         }
         else if (strcmp(command, "stop_pump") == 0)
         {
-            stopPump(doc["ID"].as<int>());
+            int id = doc["ID"].as<int>();
+            if (testingMode)
+            {
+                pumps[id].testingMode = false;
+            }
+            stopPump(id);
         }
         else if (strcmp(command, "stop_pump_all") == 0)
         {
@@ -120,29 +127,47 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         }
         else if (strcmp(command, "start_pump") == 0)
         {
-            startPump((enPumpDirection)doc["direction"].as<int>(), doc["ID"].as<int>());
+            int id = doc["ID"].as<int>();
+            if (testingMode)
+            {
+                pumps[id].testingMode = true;
+            }
+            startPump((enPumpRunningDirection)doc["direction"].as<int>(), id);
         }
         else if (strcmp(command, "start_pump_all") == 0)
         {
 
-            startAllPumps((enPumpDirection)doc["direction"].as<int>());
+            startAllPumps((enPumpRunningDirection)doc["direction"].as<int>());
             //webSocket.broadcastTXT(response_msg);
-        }
-        else if (strcmp(command, "interrupt_enable") == 0)
-        {
-            interuptActive = doc["active"].as<bool>();
-            DEBUG_PRINTLN("Set to Interrupt enable");
         }
         else if (strcmp(command, "pump_milliliter") == 0)
         {
             int pumpID = doc["ID"].as<int>();
             int ml = doc["ml"].as<int>();
             setRemainingMl(ml, pumpID);
-            startPump(enPumpDirection::forward,pumpID);
+            startPump(enPumpRunningDirection::forward, pumpID);
+        }
+        else if (strcmp(command, "testing_mode") == 0)
+        {
+            if (doc["enable"].as<bool>())
+            {
+                testingMode = true;
+                machineState = enMachineState::testing;
+            }
+            else
+            {
+                testingMode = false;
+                for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
+                {
+                    pumps[i].testingMode = false;
+                }
+                stopAllPumps(true);
+                machineState = enMachineState::running;
+            }
         }
         else if (strcmp(command, "reset") == 0)
         {
-            startAllPumps((enPumpDirection)doc["direction"].as<int>());
+            startAllPumps((enPumpRunningDirection)doc["direction"].as<int>());
             //webSocket.broadcastTXT(response_msg);
         }
         else
