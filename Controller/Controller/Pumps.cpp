@@ -304,7 +304,7 @@ void ICACHE_RAM_ATTR updateRegister(void)
         pumpDataRegister[i] = 0;
         for (int j = 0; j < NUM_PUMPS_PER_CONTROLLER; j++)
         {
-            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].runningDirection) << j * 2;
+            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].runningDirection,pumps[j + i * NUM_PUMPS_PER_CONTROLLER].mechanicalDirection) << j * 2;
         }
     }
 
