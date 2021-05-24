@@ -15,6 +15,7 @@ void setup()
 
 void loop()
 {
+  yield();
   switch (machineState)
   {
   case enMachineState::boot:

@@ -10,6 +10,9 @@ String macAddress = "";
 bool newDrinkPossible = true;
 stDrink currentDrink;
 
+volatile bool interuptActive = true;
+volatile bool dataChanged = true;
+
 bool drinkFinished = false;
 bool drinkRunning = false;
 bool testingMode = false;

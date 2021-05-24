@@ -11,7 +11,7 @@ void initCommunication(void)
     cliendID = -1;
     //webSocket.enableHeartbeat(15000, 3000, 2);
     webSocket.begin();
-    DEBUG_PRINTLN("Strat Websocket server");
+    DEBUG_PRINTLN("Start Websocket server");
     //Use Lambda to call Class member function
     webSocket.onEvent(webSocketEvent);
 }

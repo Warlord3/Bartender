@@ -25,6 +25,8 @@ void initPumps()
     }
     pinMode(D3, OUTPUT);
     digitalWrite(D3, HIGH);
+    stopAllPumps(true);
+
     if (!loadPumpConfig())
     {
         sendData("Configurate Pumps");
@@ -208,6 +210,7 @@ void startPump(enPumpRunningDirection direction, uint8_t pumpID)
     {
         pumps[pumpID].runningDirection = direction;
     }
+    dataChanged = true;
 }
 void stopPump(uint8_t pumpID)
 {
@@ -223,6 +226,7 @@ void startAllPumps(enPumpRunningDirection direction)
     {
         pumps[i].runningDirection = direction;
     }
+    dataChanged = true;
 }
 void stopAllPumps(bool force = false)
 {
@@ -235,6 +239,7 @@ void stopAllPumps(bool force = false)
     {
         updateRegister();
     }
+    dataChanged = true;
 }
 void forward(uint8_t pumpID)
 {
@@ -280,11 +285,20 @@ void ICACHE_RAM_ATTR updatePumps(void)
             }
         }
     }
+    else
+    {
+        drinkRunning = false;
+    }
     updateRegister();
 }
 
 void ICACHE_RAM_ATTR updateRegister(void)
 {
+    if (!dataChanged)
+    {
+        return;
+    }
+    dataChanged = false;
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         pumpDataRegister[i] = 0;
@@ -296,7 +310,6 @@ void ICACHE_RAM_ATTR updateRegister(void)
 
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
-
         Wire.beginTransmission(addresses[i]);
         Wire.write((uint8_t)pumpDataRegister[i]);
         Wire.write((uint8_t)(pumpDataRegister[i] >> 8));
@@ -307,6 +320,7 @@ void ICACHE_RAM_ATTR updateRegister(void)
 //Commands
 void start(DynamicJsonDocument &doc)
 {
+    dataChanged = true;
     for (JsonVariant value : doc["IDs"].as<JsonArray>())
     {
         forward(value.as<int>());

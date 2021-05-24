@@ -1,7 +1,7 @@
 #include "Network.h"
 
 bool initComplete = false;
-const unsigned long WiFiTimeout = 30000;
+const unsigned long WiFiTimeout = 300000;
 unsigned long PrevMillis_WiFiTimeout;
 ESP8266WebServer server(SERVER_PORT);
 
@@ -47,7 +47,7 @@ void handleWiFi(void)
         DEBUG_PRINT("Start WiFi in ");
 
         DEBUG_PRINTLN("Normal Mode");
-
+        resetWiFi();
         PrevMillis_WiFiTimeout = millis();
         WiFi.mode(WIFI_STA);
         WiFi.begin(wifiSSID, wifiPassword);
@@ -55,6 +55,7 @@ void handleWiFi(void)
 
         while (WiFi.status() != WL_CONNECTED)
         {
+            yield();
             delay(500);
             DEBUG_PRINT(".");
             if (millis() - PrevMillis_WiFiTimeout > WiFiTimeout)
@@ -88,6 +89,9 @@ void handleWiFi(void)
         {
             if (millis() - PrevMillis_WiFiTimeout > 5000)
             {
+                DEBUG_PRINTLN("WIFI Failed reason:");
+                DEBUG_PRINTLN(WiFi.status());
+
                 wifiState = enWiFiState::disconnectWiFi;
             }
         }
@@ -97,7 +101,7 @@ void handleWiFi(void)
         {
             DEBUG_PRINTLN("Disconnect WiFI");
             WiFiConncted = false;
-            WiFi.disconnect();
+            //WiFi.disconnect();
             wifiState = enWiFiState::startWiFi;
         }
         else
