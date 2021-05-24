@@ -8,17 +8,20 @@ struct stPumpInfo
     int mlPerMinute;
     int beverageID;
     float remainingMl;
-    enPumpDirection direction;
+    bool testingMode = false;
+    enPumpRunningDirection runningDirection;
+    enMechanicalDirection mechanicalDirection;
     stPumpInfo()
     {
         mlPerMinute = 0;
         beverageID = 0;
         remainingMl = 0;
-        direction = enPumpDirection::stop;
+        runningDirection = enPumpRunningDirection::stop;
+        mechanicalDirection = enMechanicalDirection::forward;
     }
     void print()
     {
-        DEBUG_PRINTF("ml:%i,beverage:%i,remain:%f,state:%i\n", mlPerMinute, beverageID, remainingMl, (int)direction);
+        DEBUG_PRINTF("ml:%i,beverage:%i,remain:%f,state:%i\n", mlPerMinute, beverageID, remainingMl, (int)runningDirection);
     }
 };
 

@@ -34,21 +34,21 @@ bool isConfigurated(void);
 void setMlPerMinute(int mlPerMinute, uint8_t pumpID);
 void setBeverageID(int beverageID, uint8_t pumpID);
 void setRemainingMl(float remainingMl, uint8_t pumpID);
-
+void setMechanicalDirection(enMechanicalDirection direction, uint8_t pumpID);
 //Status
 bool pumpsAreRunning(void);
 bool pumpIsRunning(uint8_t pumpID);
 int progress();
 void sendDrinkFinished(void);
 void status(void);
-uint8_t _getDirection(enPumpDirection direction);
+uint8_t _getDirection(enPumpRunningDirection runningDirection);
 
 void startCleaning(void);
 void stopCleaning(void);
 
-void startPump(enPumpDirection direction, uint8_t pumpID);
+void startPump(enPumpRunningDirection runningDirection, uint8_t pumpID);
 void stopPump(uint8_t pumpID);
-void startAllPumps(enPumpDirection direction);
+void startAllPumps(enPumpRunningDirection runningDirection);
 void stopAllPumps(bool force);
 void forward(uint8_t pumpID);
 void backward(uint8_t pumpID);
@@ -67,3 +67,4 @@ int8_t setDrink(DynamicJsonDocument &doc);
 String getConfiguration(void);
 String getPumpStatus();
 String getProgress();
+uint8_t getNumberPumpsRunning();

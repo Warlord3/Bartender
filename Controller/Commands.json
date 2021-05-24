@@ -21,6 +21,7 @@
 
 {
     "command": "progress",
+    "drinkActiv": true,
     "progress": 10
 }
 {
@@ -108,4 +109,8 @@
 }
 {
     "command": "drink_finished"
+}
+{
+    "command": "testing_mode",
+    "enable": true //Enter testing Mode = true / Leave testing Mode = false
 }

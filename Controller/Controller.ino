@@ -32,7 +32,6 @@ void loop()
 
   case enMachineState::idle:
     machineState = enMachineState::running;
-    updateProgress();
 
     break;
   case enMachineState::running:
@@ -40,7 +39,7 @@ void loop()
     {
       startInterupt();
     }
-    checkDrinkFinished();
+    updateProgress();
 
     break;
 

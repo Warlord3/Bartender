@@ -187,7 +187,7 @@ class Beverage {
 
   Beverage.empty();
 
-  Beverage.None() {
+  Beverage.none() {
     this.id = -1;
     this.addition = "None";
     this.kcal = 0;

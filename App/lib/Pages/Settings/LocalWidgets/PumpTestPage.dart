@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:bartender/models/CommunicationData.dart';
 import 'package:provider/provider.dart';
 
-class PumpTestPage extends StatelessWidget {
+class PumpTestPage extends StatefulWidget {
+  @override
+  _PumpTestPageState createState() => _PumpTestPageState();
+}
+
+class _PumpTestPageState extends State<PumpTestPage> {
+  DataManager dataManager;
+
   @override
   Widget build(BuildContext context) {
-    final DataManager dataManager =
-        Provider.of<DataManager>(context, listen: false);
+    dataManager = Provider.of<DataManager>(context, listen: false);
     return Center(
       child: Material(
         color: Theme.of(context).backgroundColor,
@@ -20,6 +26,12 @@ class PumpTestPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    dataManager.testingMode(false);
+    super.dispose();
   }
 }
 
@@ -41,21 +53,18 @@ class PumpTest extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   dataManager.startPump(index, enPumpDirection.forward);
-                  dataManager.disablePumpInterupt();
                 },
                 child: Text("Forward"),
               ),
               ElevatedButton(
                 onPressed: () {
                   dataManager.stopPump(index);
-                  dataManager.enablePumpInterupt();
                 },
                 child: Text("Stop"),
               ),
               ElevatedButton(
                 onPressed: () {
                   dataManager.startPump(index, enPumpDirection.backward);
-                  dataManager.disablePumpInterupt();
                 },
                 child: Text("Backward"),
               ),
@@ -78,7 +87,6 @@ class PumpTest extends StatelessWidget {
                 flex: 1,
                 child: ElevatedButton(
                   onPressed: () {
-                    dataManager.enablePumpInterupt();
                     dataManager.sendMilliliter(
                         this.index, int.parse(controller.text));
                   },

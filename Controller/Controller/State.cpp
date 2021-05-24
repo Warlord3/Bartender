@@ -10,10 +10,9 @@ String macAddress = "";
 bool newDrinkPossible = true;
 stDrink currentDrink;
 
-uint numberPumpsRunning = 0;
-volatile bool interuptActive = true;
 bool drinkFinished = false;
 bool drinkRunning = false;
+bool testingMode = false;
 bool WiFiConncted = false;
 
 void initState(void)
@@ -23,7 +22,7 @@ void initState(void)
 }
 void checkDrinkFinished(void)
 {
-    if (numberPumpsRunning == 0 && !newDrinkPossible)
+    if (!newDrinkPossible)
     {
         newDrinkPossible = true;
         drinkFinished = true;

@@ -42,7 +42,6 @@ class _PageRouterState extends State<PageRouter> {
             DataManager dataManager =
                 Provider.of<DataManager>(context, listen: false);
             dataManager.stopAllPumps();
-            dataManager.enablePumpInterupt();
 
             return Future.value(false);
           }

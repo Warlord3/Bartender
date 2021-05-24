@@ -76,7 +76,8 @@ void handleWiFi(void)
         DEBUG_PRINTLN(macAddress);
         DEBUG_PRINT(F("  Gateway     : "));
         DEBUG_PRINTLN(WiFi.gatewayIP());
-
+        DEBUG_PRINT(F("  WiFi strengths  : "));
+        DEBUG_PRINTLN(WiFi.RSSI());
         startWebserver();
 
         wifiState = enWiFiState::monitorWiFi;
@@ -163,26 +164,31 @@ void setMachineMode(enOperationMode newMode)
 
 void startWebserver(void)
 {
-    server.onNotFound([]() {
-        if (!handleFileRead(server.uri()))                    // send it if it exists
-            server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
-    });
-    server.onFileUpload([] {
-        DEBUG_PRINTLN("File Upload");
-        if (server.uri() != "/upload")
-            return;
-        handleFileUpload();
-    });
-    server.on("/", HTTP_GET, []() { 
-                server.sendHeader("Location", "/config.html", true);
-                server.send(302,"text/plane",""); });
+    server.onNotFound([]()
+                      {
+                          if (!handleFileRead(server.uri()))                    // send it if it exists
+                              server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
+                      });
+    server.onFileUpload([]
+                        {
+                            DEBUG_PRINTLN("File Upload");
+                            if (server.uri() != "/upload")
+                                return;
+                            handleFileUpload();
+                        });
+    server.on("/", HTTP_GET, []()
+              {
+                  server.sendHeader("Location", "/config.html", true);
+                  server.send(302, "text/plane", "");
+              });
     server.on("/upload", HTTP_GET, []() {                     // if the client requests the upload page
         if (!handleFileRead("/upload.html"))                  // send it if it exists
             server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
     });
     server.on(
         "/upload", HTTP_POST, // if the client posts to the upload page
-        []() {
+        []()
+        {
             server.send(200);
             DEBUG_PRINTLN("Upload Post");
         }, // Send status 200 (OK) to tell the client we are ready to receive

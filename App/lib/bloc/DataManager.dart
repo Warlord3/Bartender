@@ -177,7 +177,7 @@ class DataManager with ChangeNotifier {
 
   Beverage getBeverageByID(int id) {
     return this.beverages.firstWhere((element) => element.id == id,
-        orElse: () => Beverage.None());
+        orElse: () => Beverage.none());
   }
 
   void removeDrink(Drink drink) {
@@ -254,8 +254,8 @@ class DataManager with ChangeNotifier {
     send(message);
   }
 
-  startPump(int ID, enPumpDirection pumpDirection) {
-    StartPump command = StartPump(pumpID: ID, pumpDirection: pumpDirection);
+  startPump(int id, enPumpDirection pumpDirection) {
+    StartPump command = StartPump(pumpID: id, pumpDirection: pumpDirection);
     send(command.toString());
   }
 
@@ -285,14 +285,6 @@ class DataManager with ChangeNotifier {
 
   sendMilliliter(int index, int ml) {
     send(PumpMilliliter(index, ml).toString());
-  }
-
-  enablePumpInterupt() {
-    send(InteruptActive(true).toString());
-  }
-
-  disablePumpInterupt() {
-    send(InteruptActive(false).toString());
   }
 
   void send(dynamic data) {
@@ -330,11 +322,17 @@ class DataManager with ChangeNotifier {
     } else if (command == "drink_finished") {
       drinkActive = false;
     } else if (command == "progress") {
-      drinkProgress = Progress.fromJson(json).progress;
+      Progress progress = Progress.fromJson(json);
+      drinkProgress = progress.progress;
+      drinkActive = progress.drinkActive;
       notifyListeners();
     } else if (command == "pump_config") {
       print("Read Configuration");
       this.pumpConfiguration = PumpConfiguration.fromJson(json);
     }
+  }
+
+  void testingMode(bool bool) {
+    send(TestingMode(bool).toString());
   }
 }

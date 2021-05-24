@@ -14,6 +14,14 @@ void initPumps()
     {
         DEBUG_PRINTLN("Start I2C");
         Wire.begin();
+        for (int i = 0; i < NUM_CONTROLLERS; i++)
+        {
+            Wire.beginTransmission(addresses[i]);
+            if (Wire.endTransmission() == 0)
+            {
+                DEBUG_PRINTF("Controller found at %i\n", addresses[i]);
+            }
+        }
     }
     pinMode(D3, OUTPUT);
     digitalWrite(D3, HIGH);
@@ -24,15 +32,20 @@ void initPumps()
 }
 void updateProgress()
 {
-    if (drinkRunning)
+    if (getNumberPumpsRunning() > 0)
     {
-
+        drinkRunning = true;
         unsigned long currentMillis = millis();
         if (currentMillis - progressMillis >= 500)
         {
             progressMillis = currentMillis;
             sendData(getProgress());
         }
+    }
+    else if (drinkRunning)
+    {
+        sendDrinkFinished();
+        drinkRunning = false;
     }
 }
 
@@ -89,6 +102,7 @@ void setConfiguration(DynamicJsonDocument &doc)
     {
         setBeverageID(object["beverageID"].as<int>(), index);
         setMlPerMinute(object["mlPerMinute"].as<int>(), index);
+        setMechanicalDirection((enMechanicalDirection)object["mlPerMinute"].as<int>(), index);
         index++;
     }
 
@@ -110,7 +124,11 @@ void setRemainingMl(float remainingMl, uint8_t pumpID)
     DEBUG_PRINTF("Set Remaining ml: %f for Pump: %i\n", remainingMl, pumpID);
     pumps[pumpID].remainingMl = remainingMl;
 }
-
+void setMechanicalDirection(enMechanicalDirection direction, uint8_t pumpID)
+{
+    DEBUG_PRINTF("Set Mechanical direction: %i for Pump: %i\n", (int)direction, pumpID);
+    pumps[pumpID].mechanicalDirection = direction;
+}
 //Status
 bool pumpsAreRunning(void)
 {
@@ -125,7 +143,7 @@ bool pumpsAreRunning(void)
 }
 bool pumpIsRunning(uint8_t pumpID)
 {
-    return pumps[pumpID].direction != enPumpDirection::stop;
+    return pumps[pumpID].runningDirection != enPumpRunningDirection::stop;
 }
 void status(void);
 int progress()
@@ -137,20 +155,33 @@ int progress()
     return (currentDrink.amount[currentBiggestIngredient] - pumps[currentBiggestIngredient].remainingMl) / currentDrink.amount[currentBiggestIngredient] * 100;
 }
 
-uint8_t getDirection(enPumpDirection direction)
+uint8_t getDirection(enPumpRunningDirection direction, enMechanicalDirection mechanicalDirection)
 {
     switch (direction)
     {
-    case enPumpDirection::stop:
+    case enPumpRunningDirection::stop:
         return 0;
         break;
-    case enPumpDirection::forward:
-        return 1;
+    case enPumpRunningDirection::forward:
+        if (mechanicalDirection == enMechanicalDirection::forward)
+        {
+            return 1;
+        }
+        else
+        {
+            return 1 << 1;
+        }
         break;
-    case enPumpDirection::backward:
-        return 1 << 1;
+    case enPumpRunningDirection::backward:
+        if (mechanicalDirection == enMechanicalDirection::forward)
+        {
+            return 1 << 1;
+        }
+        else
+        {
+            return 1;
+        }
         break;
-
     default:
         return 0;
         break;
@@ -164,53 +195,41 @@ void stopCleaning(void)
 {
 }
 
-void startPump(enPumpDirection direction, uint8_t pumpID)
+void startPump(enPumpRunningDirection direction, uint8_t pumpID)
 {
-    if (direction == enPumpDirection::stop)
+    if (direction == enPumpRunningDirection::stop)
     {
         stopPump(pumpID);
         return;
     }
-    numberPumpsRunning += 1;
-    if (numberPumpsRunning > NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS)
-    {
-        numberPumpsRunning = NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS;
-    }
     DEBUG_PRINTF("Start Pump %i \n", pumpID);
 
-    if (pumps[pumpID].direction != direction)
+    if (pumps[pumpID].runningDirection != direction)
     {
-        pumps[pumpID].direction = direction;
+        pumps[pumpID].runningDirection = direction;
     }
 }
 void stopPump(uint8_t pumpID)
 {
-    numberPumpsRunning -= 1;
-    if (numberPumpsRunning < 0)
-    {
-        numberPumpsRunning = 0;
-    }
     DEBUG_PRINTF("Stop Pump %i \n", pumpID);
-    pumps[pumpID].direction = enPumpDirection::stop;
+    pumps[pumpID].runningDirection = enPumpRunningDirection::stop;
 }
 
-void startAllPumps(enPumpDirection direction)
+void startAllPumps(enPumpRunningDirection direction)
 {
-    numberPumpsRunning = NUM_PUMPS_PER_CONTROLLER;
     DEBUG_PRINTLN("Start All Pumps");
 
     for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER; i++)
     {
-        pumps[i].direction = direction;
+        pumps[i].runningDirection = direction;
     }
 }
 void stopAllPumps(bool force = false)
 {
-    numberPumpsRunning = 0;
     DEBUG_PRINTLN("Stop All Pumps");
     for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER; i++)
     {
-        pumps[i].direction = enPumpDirection::stop;
+        pumps[i].runningDirection = enPumpRunningDirection::stop;
     }
     if (force)
     {
@@ -219,11 +238,11 @@ void stopAllPumps(bool force = false)
 }
 void forward(uint8_t pumpID)
 {
-    startPump(enPumpDirection::forward, pumpID);
+    startPump(enPumpRunningDirection::forward, pumpID);
 }
 void backward(uint8_t pumpID)
 {
-    startPump(enPumpDirection::backward, pumpID);
+    startPump(enPumpRunningDirection::backward, pumpID);
 }
 
 ///Start Pumps With Current set Drink
@@ -233,7 +252,7 @@ void startPumpsWithCurrentDrink(void)
     {
         if (pumps[i].remainingMl > 0)
         {
-            startPump(enPumpDirection::forward, i);
+            startPump(enPumpRunningDirection::forward, i);
         }
     }
 }
@@ -241,39 +260,37 @@ void startPumpsWithCurrentDrink(void)
 //Update
 void ICACHE_RAM_ATTR updatePumps(void)
 {
-    if (!interuptActive || numberPumpsRunning == 0)
+    if (drinkRunning)
     {
-        drinkRunning = false;
-        return;
-    }
-    for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
-    {
+        for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
+        {
 
-        if (pumps[i].direction == enPumpDirection::stop)
-        {
-            continue;
-        }
-        if (pumps[i].remainingMl <= 0 || pumps[i].mlPerMinute <= 0)
-        {
-            pumps[i].remainingMl = 0;
-            stopPump(i);
-        }
-        else
-        {
-            pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
+            if (pumps[i].runningDirection == enPumpRunningDirection::stop or pumps[i].testingMode)
+            {
+                continue;
+            }
+            if (pumps[i].remainingMl <= 0 || pumps[i].mlPerMinute <= 0)
+            {
+                pumps[i].remainingMl = 0;
+                stopPump(i);
+            }
+            else
+            {
+                pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
+            }
         }
     }
     updateRegister();
 }
 
-void updateRegister(void)
+void ICACHE_RAM_ATTR updateRegister(void)
 {
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         pumpDataRegister[i] = 0;
         for (int j = 0; j < NUM_PUMPS_PER_CONTROLLER; j++)
         {
-            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].direction) << j * 2;
+            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].runningDirection) << j * 2;
         }
     }
 
@@ -282,7 +299,7 @@ void updateRegister(void)
 
         Wire.beginTransmission(addresses[i]);
         Wire.write((uint8_t)pumpDataRegister[i]);
-        Wire.write((uint8_t)pumpDataRegister[i] >> 8);
+        Wire.write((uint8_t)(pumpDataRegister[i] >> 8));
         Wire.endTransmission();
     }
 }
@@ -366,7 +383,7 @@ String getPumpStatus()
 {
     DynamicJsonDocument doc(2500);
     doc["command"] = "status";
-    doc["numberPumpsRunning"] = numberPumpsRunning;
+    doc["numberPumpsRunning"] = getNumberPumpsRunning();
     doc["currentDrinkID"] = currentDrink.ID;
     doc["progress"] = progress();
     JsonArray array = doc.createNestedArray("pumps");
@@ -394,12 +411,25 @@ String getProgress()
 {
     DynamicJsonDocument doc(300);
     doc["command"] = "progress";
+    doc["drink_activ"] = drinkRunning;
     doc["progress"] = progress();
     String result;
     serializeJson(doc, result);
     return result;
 }
+uint8_t getNumberPumpsRunning()
+{
+    uint8_t number = 0;
+    for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
+    {
+        if (pumps[i].runningDirection != enPumpRunningDirection::stop)
+        {
+            number++;
+        }
+    }
+    return number;
+}
 void sendDrinkFinished(void)
 {
-    sendData("{'command':'drink_finished'}");
+    sendData("{\"command\":\"drink_finished\"}");
 }

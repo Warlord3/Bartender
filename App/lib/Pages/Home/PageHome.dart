@@ -1,5 +1,6 @@
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
+import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/ThemeManager.dart';
@@ -12,12 +13,13 @@ class HomePage extends StatefulWidget {
 class _HOmePageState extends State<HomePage> {
   ThemeManager themeChangeProvider;
   LanguageManager languageManager;
+  DataManager dataManager;
 
   @override
   Widget build(BuildContext context) {
     themeChangeProvider = Provider.of<ThemeManager>(context);
     languageManager = Provider.of<LanguageManager>(context);
-
+    dataManager = Provider.of<DataManager>(context);
     return Container(
       color: Theme.of(context).backgroundColor,
       child: SingleChildScrollView(
@@ -25,36 +27,6 @@ class _HOmePageState extends State<HomePage> {
           child: Center(
             child: Column(
               children: [
-                /*
-                  Recent Drinks
-                */
-                Card(
-                  elevation: 3,
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(
-                          Icons.history_outlined,
-                        ),
-                        title: Text(
-                          languageManager.getData("recent_drinks"),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          child: Column(
-                            children: [
-                              Text("Recent Drink 1"),
-                              Text("Recent Drink 2"),
-                              Text("Recent Drink 2"),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 /*
                   Controller Info
                 */
@@ -131,11 +103,58 @@ class _HOmePageState extends State<HomePage> {
                     ],
                   ),
                 ),
+                /*
+                  Recent Drinks
+                */
+                Card(
+                  elevation: 3,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(
+                          Icons.history_outlined,
+                        ),
+                        title: Text(
+                          languageManager.getData("recent_drinks"),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                            child: dataManager.recentlyCreatedDrinks.length > 0
+                                ? ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: dataManager
+                                        .recentlyCreatedDrinks.length,
+                                    itemBuilder: (buildcontext, index) {
+                                      return RecentlyDrinkItem(
+                                          dataManager
+                                              .recentlyCreatedDrinks[index],
+                                          index);
+                                    })
+                                : Text("None Recently Drinks")),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class RecentlyDrinkItem extends StatelessWidget {
+  final Drink recentlyCreatedDrink;
+  final int index;
+  RecentlyDrinkItem(this.recentlyCreatedDrink, this.index);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Text(recentlyCreatedDrink.name),
     );
   }
 }

@@ -1,8 +1,13 @@
 #pragma once
 
-enum class enPumpDirection
+enum class enPumpRunningDirection
 {
     stop,
+    forward,
+    backward
+};
+enum class enMechanicalDirection
+{
     forward,
     backward
 };

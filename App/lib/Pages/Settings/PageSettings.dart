@@ -222,6 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             return;
                           }
                           AppStateManager.pushedPage = true;
+                          dataManager.testingMode(true);
                           AppStateManager.keyNavigator.currentState.push(
                             PageRouteBuilder(
                               pageBuilder:

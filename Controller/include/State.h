@@ -17,10 +17,9 @@ extern String macAddress;
 extern bool newDrinkPossible;
 extern stDrink currentDrink;
 
-extern uint numberPumpsRunning;
 extern bool drinkFinished;
 extern bool drinkRunning;
-extern volatile bool interuptActive;
+extern bool testingMode;
 
 extern bool WiFiConncted;
 

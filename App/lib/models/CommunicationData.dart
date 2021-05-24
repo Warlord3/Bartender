@@ -71,12 +71,13 @@ class PumpStatus extends CommandBase {
 
 class Progress extends CommandBase {
   int progress;
-  Progress({
-    this.progress,
-  });
+  bool drinkActive;
+  Progress({this.progress, this.drinkActive});
 
   factory Progress.fromJson(Map<String, dynamic> parsedJson) => Progress(
         progress: parsedJson['progress'] == null ? 0 : parsedJson['progress'],
+        drinkActive:
+            parsedJson['drinkActiv'] == null ? false : parsedJson['drinkActiv'],
       );
 }
 
@@ -186,7 +187,7 @@ class StopPump extends CommandBase {
   StopPump({this.pumpID});
   @override
   Map<String, dynamic> toJson() => {
-        'command': "start_pump",
+        'command': "stop_pump",
         'ID': pumpID,
       };
 }
@@ -196,14 +197,6 @@ class StopPumpAll extends CommandBase {
   Map<String, dynamic> toJson() => {
         'command': "stop_pump_all",
       };
-}
-
-class InteruptActive extends CommandBase {
-  final active;
-  InteruptActive(this.active);
-  @override
-  Map<String, dynamic> toJson() =>
-      {'command': "interrupt_enable", "active": this.active};
 }
 
 class PumpMilliliter extends CommandBase {
@@ -245,4 +238,13 @@ class NewDrinkResponse extends CommandBase {
         accepted:
             parsedJson['accepted'] == null ? false : parsedJson['accepted'],
       );
+}
+
+class TestingMode extends CommandBase {
+  final bool enable;
+  TestingMode(this.enable);
+
+  @override
+  Map<String, dynamic> toJson() =>
+      {"command": "testing_mode", "enable": enable == null ? false : enable};
 }
