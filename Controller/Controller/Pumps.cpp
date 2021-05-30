@@ -216,6 +216,7 @@ void stopPump(uint8_t pumpID)
 {
     DEBUG_PRINTF("Stop Pump %i \n", pumpID);
     pumps[pumpID].runningDirection = enPumpRunningDirection::stop;
+    dataChanged = true;
 }
 
 void startAllPumps(enPumpRunningDirection direction)
@@ -320,7 +321,6 @@ void ICACHE_RAM_ATTR updateRegister(void)
 //Commands
 void start(DynamicJsonDocument &doc)
 {
-    dataChanged = true;
     for (JsonVariant value : doc["IDs"].as<JsonArray>())
     {
         forward(value.as<int>());
