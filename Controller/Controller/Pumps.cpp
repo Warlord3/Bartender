@@ -47,7 +47,6 @@ void updateProgress()
     else if (drinkRunning)
     {
         sendDrinkFinished();
-        drinkRunning = false;
     }
 }
 
@@ -305,7 +304,7 @@ void IRAM_ATTR updateRegister(void)
         pumpDataRegister[i] = 0;
         for (int j = 0; j < NUM_PUMPS_PER_CONTROLLER; j++)
         {
-            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].runningDirection,pumps[j + i * NUM_PUMPS_PER_CONTROLLER].mechanicalDirection) << j * 2;
+            pumpDataRegister[i] |= getDirection(pumps[j + i * NUM_PUMPS_PER_CONTROLLER].runningDirection, pumps[j + i * NUM_PUMPS_PER_CONTROLLER].mechanicalDirection) << j * 2;
         }
     }
 
@@ -332,7 +331,8 @@ void stop(uint8_t pumpID)
 int8_t setDrink(DynamicJsonDocument &doc)
 {
     currentBiggestIngredient = 0;
-
+    DEBUG_PRINT("New Drink possible ");
+    DEBUG_PRINTLN(newDrinkPossible);
     if (newDrinkPossible)
     {
         newDrinkPossible = false;
@@ -445,5 +445,7 @@ uint8_t getNumberPumpsRunning()
 }
 void sendDrinkFinished(void)
 {
+    drinkRunning = false;
+    newDrinkPossible = true;
     sendData("{\"command\":\"drink_finished\"}");
 }
