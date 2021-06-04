@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
-import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +25,8 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   List<TextEditingController> _controllers;
   TextEditingController _nameController;
   LanguageManager languageManager;
+
+  String _DrinkNameErrorText = null;
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
     languageManager = Provider.of<LanguageManager>(context);
 
     return Material(
-      color: Colors.transparent,
+      color: Theme.of(context).backgroundColor,
       // First GestureDetector is used to check for pop of Material widget which takes up the whole page
       // For more information read second comment below
       child: GestureDetector(
@@ -71,171 +73,181 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
             },
             child: Container(
               color: Colors.transparent,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    TextField(
                       controller: _nameController,
                       style: TextStyle(fontSize: 30),
                       decoration: InputDecoration(
+                        errorText: _DrinkNameErrorText,
                         fillColor: Colors.transparent,
-                        hintText: languageManager.getData("drinkname"),
+                        labelText: languageManager.getData("drinkname"),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                    color: Colors.transparent,
-                    child: Column(
-                      children: [
-                        Text(
-                          languageManager.getData("ingredients"),
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Column(
-                          children: widget.newDrink.ingredients
-                              .asMap()
-                              .map(
-                                (index, element) => MapEntry(
-                                  index,
-                                  IngredientsEditor(
-                                    ingredient: element,
-                                    index: index,
-                                    controller: _controllers[index],
-                                    refresh: update,
-                                    delete: deleteIngredient,
-                                  ),
-                                ),
-                              )
-                              .values
-                              .toList(),
-                        ),
-                        Container(
-                          color: Colors.transparent,
-                          child: Tooltip(
-                            message: languageManager
-                                .getData("add_ingredient_to_drink"),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  widget.newDrink.ingredients
-                                      .add(Ingredient.empty());
-                                  _controllers
-                                      .add(TextEditingController(text: "0"));
-                                });
-                              },
-                              child: Text(
-                                  languageManager.getData("add_ingredient")),
-                            ),
-                          ),
-                        ),
-                      ],
+                    SizedBox(
+                      height: 15,
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                    color: Colors.transparent,
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        DrinkInfoText(
-                          infoText: languageManager.getData("ingredients"),
-                          value: widget.newDrink.ingredients.length
-                              .toStringAsFixed(0),
-                        ),
-                        DrinkInfoText(
-                          infoText: "ml",
-                          value: widget.newDrink.amount.toStringAsFixed(0),
-                        ),
-                        DrinkInfoText(
-                          infoText: "%",
-                          value: widget.newDrink.percent.toStringAsFixed(1),
-                        ),
-                        DrinkInfoText(
-                          infoText: "Kcal",
-                          value: widget.newDrink.kcal.toStringAsFixed(1),
-                        )
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Container(
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                       color: Colors.transparent,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Column(
                         children: [
-                          RawMaterialButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            disabledElevation: 1,
-                            shape: CircleBorder(),
-                            elevation: 0,
-                            padding: EdgeInsets.all(10.0),
-                            onPressed: () {
-                              update();
-                              if (widget.newDrink.valid()) {
-                                widget.mainData.saveDrink(widget.newDrink);
-                                setState(() {
-                                  widget.newDrink = Drink.newDrink();
-                                  clearPage();
-                                });
-
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop();
-                                AppStateManager.showOverlayEntry("Saved",
-                                    AppStateManager.keyNavigator.currentState);
-                              } else {
-                                AppStateManager.showOverlayEntry(
-                                    "The is something Missing",
-                                    Navigator.of(context));
-                              }
-                            },
-                            fillColor: Colors.green.withOpacity(0.3),
-                            child: SizedBox(
-                              child: Icon(
-                                Icons.save_outlined,
-                                color: Colors.green[700],
-                                size: 40,
-                              ),
-                            ),
+                          Text(
+                            languageManager.getData("ingredients"),
+                            style: Theme.of(context).textTheme.bodyText1,
                           ),
-                          RawMaterialButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            disabledElevation: 1,
-                            shape: CircleBorder(),
-                            elevation: 0,
-                            padding: EdgeInsets.all(10.0),
-                            onPressed: () {
-                              Navigator.of(context, rootNavigator: true).pop();
-                            },
-                            fillColor: Colors.red.withOpacity(0.3),
-                            child: Icon(
-                              Icons.clear_outlined,
-                              color: Colors.red,
-                              size: 40,
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Column(
+                            children: widget.newDrink.ingredients
+                                .asMap()
+                                .map(
+                                  (index, element) => MapEntry(
+                                    index,
+                                    IngredientsEditor(
+                                      ingredient: element,
+                                      index: index,
+                                      controller: _controllers[index],
+                                      refresh: update,
+                                      delete: deleteIngredient,
+                                    ),
+                                  ),
+                                )
+                                .values
+                                .toList(),
+                          ),
+                          Container(
+                            color: Colors.transparent,
+                            child: Tooltip(
+                              message: languageManager
+                                  .getData("add_ingredient_to_drink"),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    widget.newDrink.ingredients
+                                        .add(Ingredient.empty());
+                                    _controllers
+                                        .add(TextEditingController(text: "0"));
+                                  });
+                                },
+                                child: Text(
+                                    languageManager.getData("add_ingredient")),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  )
-                ],
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                      color: Colors.transparent,
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          DrinkInfoText(
+                            infoText: languageManager.getData("ingredients"),
+                            value: widget.newDrink.ingredients.length
+                                .toStringAsFixed(0),
+                          ),
+                          DrinkInfoText(
+                            infoText: "ml",
+                            value: widget.newDrink.amount.toStringAsFixed(0),
+                          ),
+                          DrinkInfoText(
+                            infoText: "%",
+                            value: widget.newDrink.percent.toStringAsFixed(1),
+                          ),
+                          DrinkInfoText(
+                            infoText: "Kcal",
+                            value: widget.newDrink.kcal.toStringAsFixed(1),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      color: Colors.transparent,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.save_outlined,
+                                    size: 30,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    languageManager.getData("save"),
+                                  ),
+                                ],
+                              ),
+                              onPressed: () {
+                                update();
+                                if (widget.newDrink.valid()) {
+                                  widget.mainData.saveDrink(widget.newDrink);
+                                  setState(() {
+                                    widget.newDrink = Drink.newDrink();
+                                    clearPage();
+                                  });
+
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop(true);
+                                  AppStateManager.showOverlayEntry(
+                                      "Saved",
+                                      AppStateManager
+                                          .keyNavigator.currentState);
+                                } else {
+                                  AppStateManager.showOverlayEntry(
+                                      "The is something Missing",
+                                      Navigator.of(context));
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: ElevatedButton(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.clear_outlined,
+                                    color: Colors.red,
+                                    size: 30,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    languageManager.getData("cancel"),
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                              onPressed: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -257,7 +269,12 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   }
 
   void update() {
-    widget.newDrink.name = _nameController.text;
+    if (_nameController.text != "") {
+      widget.newDrink.name = _nameController.text;
+      _DrinkNameErrorText = null;
+    } else {
+      _DrinkNameErrorText = "Drink name can't be empty";
+    }
     for (int i = 0; i < _controllers.length; i++) {
       widget.newDrink.ingredients[i].amount = int.parse(_controllers[i].text);
     }
@@ -304,63 +321,54 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
     beverages = Provider.of<DataManager>(context, listen: false).beverages;
     return Column(
       children: [
-        RichText(
-          text: TextSpan(
-            style: new TextStyle(
-              fontSize: 18.0,
-              color: Colors.black,
-            ),
-            children: [
-              TextSpan(
-                  text: "${widget.index + 1}. ",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              TextSpan(
-                  text: widget.ingredient.beverage.name == ""
-                      ? languageManager.getData("choose_beverage")
-                      : widget.ingredient.beverage.name),
-            ],
-          ),
-        ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
+            mainAxisSize: MainAxisSize.max,
             children: [
-              Flexible(
-                flex: 10,
-                fit: FlexFit.tight,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).accentColor,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
-                    ),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () async {
-                        var result =
-                            await chooseBeverageDialog(context, beverages);
-                        if (result != null) {
-                          setState(() {
-                            widget.ingredient.beverage.update(result);
-                            widget.refresh();
-                          });
-                        }
+              widget.ingredient.beverage.valid()
+                  ? IconButton(
+                      onPressed: () async {
+                        await chooseBeverageDialog(context, beverages);
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          widget.ingredient.beverage.name == ""
-                              ? languageManager.getData("select_beverage")
-                              : languageManager.getData("change_beverage"),
-                          textAlign: TextAlign.center,
+                      icon: Icon(Icons.mode_edit_outline),
+                      splashRadius: 25,
+                    )
+                  : Container(),
+              Text(
+                "${widget.index + 1}.",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              !widget.ingredient.beverage.valid()
+                  ? Flexible(
+                      flex: 10,
+                      fit: FlexFit.tight,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await chooseBeverageDialog(context, beverages);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text(
+                            widget.ingredient.beverage.name == ""
+                                ? languageManager.getData("select_beverage")
+                                : languageManager.getData("change_beverage"),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
+                    )
+                  : Flexible(
+                      flex: 10,
+                      fit: FlexFit.tight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(widget.ingredient.beverage.name),
+                      ),
                     ),
-                  ),
-                ),
-              ),
               SizedBox(
                 width: 20,
               ),
@@ -376,12 +384,6 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                     labelStyle: TextStyle(
                       fontSize: 17,
                     ),
-                    enabledBorder: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red),
-                    ),
-                    border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.all(12),
                   ),
                   inputFormatters: <TextInputFormatter>[
@@ -400,6 +402,7 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                 flex: 2,
                 fit: FlexFit.tight,
                 child: Material(
+                  color: Colors.transparent,
                   child: IconButton(
                     icon: Icon(
                       Icons.delete_outline,
@@ -421,9 +424,10 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
     );
   }
 
-  Future chooseBeverageDialog(BuildContext context, List<Beverage> beverages) {
+  Future chooseBeverageDialog(
+      BuildContext context, List<Beverage> beverages) async {
     List<Beverage> _searchResult = [];
-    return showDialog(
+    var result = await showDialog(
       context: context,
       builder: (dynamic) {
         onSearchTextChanged(String text) async {
@@ -480,6 +484,12 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
         );
       },
     );
+    if (result != null) {
+      setState(() {
+        widget.ingredient.beverage.update(result);
+        widget.refresh();
+      });
+    }
   }
 }
 

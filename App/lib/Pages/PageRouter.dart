@@ -1,17 +1,15 @@
-import 'dart:ui';
 import 'package:bartender/Pages/Drinks/PageDrinks.dart';
 import 'package:bartender/Pages/Favorite/PageFavorite.dart';
 import 'package:bartender/Pages/Beverage/PageBeverage.dart';
 import 'package:bartender/Pages/Settings/PageSettings.dart';
 import 'package:bartender/Pages/Home/PageHome.dart';
 import 'package:bartender/bloc/DataManager.dart';
-import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:bartender/bloc/ThemeManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 
-import 'Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'Start/PageStart.dart';
 
 class PageRouter extends StatefulWidget {
@@ -127,7 +125,6 @@ class _PageRouterState extends State<PageRouter> {
         type: BottomNavigationBarType.shifting,
         selectedLabelStyle: TextStyle(fontSize: 15),
       ),
-      floatingActionButton: showFloatingButton(),
     );
   }
 
@@ -154,52 +151,6 @@ class _PageRouterState extends State<PageRouter> {
       }
       AppStateManager.lastPageIndex = value;
     });
-  }
-
-  /*
-    We only show the Floating action button on the following pages:
-      - Drinks
-      - Beverages
-  */
-  Widget showFloatingButton() {
-    Widget widget;
-    switch (AppStateManager.lastPageIndex) {
-      case 2:
-        widget = DrinkConfiguration();
-        break;
-      default:
-        return null;
-    }
-    return FloatingActionButton(
-      elevation: 10,
-      shape: CircleBorder(),
-      heroTag: "FloatingButton$AppStateManager.lastPageIndex",
-      onPressed: () {
-        showGeneralDialog(
-          barrierDismissible: true,
-          barrierLabel: '',
-          barrierColor: Colors.black38,
-          transitionDuration: Duration(milliseconds: 200),
-          pageBuilder: (ctx, anim1, anim2) => widget,
-          transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: anim1.value * 3,
-              sigmaY: anim1.value * 3,
-            ),
-            child: FadeTransition(
-              child: child,
-              opacity: anim1,
-            ),
-          ),
-          context: context,
-        );
-      },
-      child: Icon(
-        Icons.add_outlined,
-        color: Colors.white,
-        size: 30,
-      ),
-    );
   }
 
   String getAppBarTitle() {
