@@ -335,7 +335,6 @@ int8_t setDrink(DynamicJsonDocument &doc)
     DEBUG_PRINTLN(newDrinkPossible);
     if (newDrinkPossible)
     {
-        newDrinkPossible = false;
         DEBUG_PRINTLN("Set new Drink");
         stDrink drink = stDrink();
         drink.ID = doc["ID"].as<uint>();
@@ -369,6 +368,7 @@ int8_t setDrink(DynamicJsonDocument &doc)
         startPumpsWithCurrentDrink();
         drinkRunning = true;
         machineState = enMachineState::running;
+        newDrinkPossible = false;
         return true;
     }
     DEBUG_PRINTLN("New Drink was declined");
