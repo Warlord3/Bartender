@@ -77,9 +77,9 @@ void loadConfig(void)
     wifiSSID = (const char *)doc["WiFiSSID"];
     wifiPassword = (const char *)doc["WiFiPassword"];
     DEBUG_PRINTLN("Loaded Config:");
-    DEBUG_PRINTF("\t OperationMode: %i\n",(int)operationMode);
-    DEBUG_PRINTF("\t WiFi SSID: %s\n",wifiSSID.c_str());
-    DEBUG_PRINTF("\t WiFi Password: %s\n",wifiPassword.c_str());
+    DEBUG_PRINTF("\t OperationMode: %i\n", (int)operationMode);
+    DEBUG_PRINTF("\t WiFi SSID: %s\n", wifiSSID.c_str());
+    DEBUG_PRINTF("\t WiFi Password: %s\n", wifiPassword.c_str());
 
     f.close();
 }
@@ -123,7 +123,7 @@ bool loadPumpConfig()
         return false;
     }
     //Dont Use StaticJsonDocument if size is greater than 1k
-    DynamicJsonDocument doc(1500);
+    DynamicJsonDocument doc(2000);
     DeserializationError err = deserializeJson(doc, f);
     if (err)
     {
@@ -156,7 +156,7 @@ bool savePumpConfig()
 
     DEBUG_PRINTLN("File opened");
     //Dont Use StaticJsonDocument if size is greater than 1k
-    DynamicJsonDocument doc(1500);
+    DynamicJsonDocument doc(2000);
     JsonArray newArray = doc.to<JsonArray>();
     DEBUG_PRINTLN("Create Array");
 
