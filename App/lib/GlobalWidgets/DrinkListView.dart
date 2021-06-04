@@ -1,5 +1,5 @@
 import 'package:bartender/GlobalWidgets/MixDrinkWidget.dart';
-import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
+import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkHelper.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/gestures.dart';
@@ -108,15 +108,8 @@ class _ListTileState extends State<ListTile> {
               );
             },
             onLongPress: () {
-              showDialog(
-                context: context,
-                builder: (context) => Dialog(
-                  insetPadding: EdgeInsets.all(15),
-                  child: DrinkConfiguration(
-                    newDrink: widget.drink,
-                  ),
-                ),
-              );
+              drinkEditDialog(context,widget.drink);
+        
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),

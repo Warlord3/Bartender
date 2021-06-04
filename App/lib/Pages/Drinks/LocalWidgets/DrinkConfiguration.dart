@@ -53,26 +53,22 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
     widget.mainData = Provider.of<DataManager>(context);
     languageManager = Provider.of<LanguageManager>(context);
 
-    return Material(
-      color: Theme.of(context).backgroundColor,
-      // First GestureDetector is used to check for pop of Material widget which takes up the whole page
-      // For more information read second comment below
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(context, rootNavigator: true).pop();
-        },
-        child: SingleChildScrollView(
-          // Second GestureDetector is to disable pop of dialog when pressing sub components of first GestureDetector
-          // This is needed to repilcate the normal feel of a dialog because we need to use a Material root widget in
-          // order to use the TextField component
-          // ? mayebe add more gesture detector for better feeling when trying to close dialog
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(new FocusNode());
-              update();
-            },
-            child: Container(
-              color: Colors.transparent,
+    return Container(
+      decoration: BoxDecoration(
+          color: Theme.of(context).backgroundColor,
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      child: Material(
+        color: Colors.transparent,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          },
+          child: SingleChildScrollView(
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                update();
+              },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
