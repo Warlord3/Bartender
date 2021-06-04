@@ -134,6 +134,7 @@ class DataManager with ChangeNotifier {
     try {
       response = await request.send();
     } catch (error) {
+      print(error);
       return false;
     }
     if (response.statusCode != 200) {
@@ -186,6 +187,7 @@ class DataManager with ChangeNotifier {
     this.favoriteDrinks.removeWhere((element) => element.id == drink.id);
     this.recentlyCreatedDrinks.removeWhere((element) => element.id == drink.id);
     notifyListeners();
+    dataChanged = true;
     save();
   }
 
@@ -215,6 +217,7 @@ class DataManager with ChangeNotifier {
       oldDrink.percent = newDrink.percent;
       oldDrink.ingredients = newDrink.ingredients;
     }
+    dataChanged = true;
     save();
   }
 
@@ -235,6 +238,7 @@ class DataManager with ChangeNotifier {
       oldBeverage.percent = newBeverage.percent;
     }
     notifyListeners();
+    dataChanged = true;
     save();
   }
 
@@ -322,6 +326,9 @@ class DataManager with ChangeNotifier {
       }
     } else if (command == "drink_finished") {
       drinkActive = false;
+      drinkProgress = 100;
+      notifyListeners();
+      AppStateManager.showOverlayEntry("Drink finnished");
     } else if (command == "progress") {
       Progress progress = Progress.fromJson(json);
       drinkProgress = progress.progress;
