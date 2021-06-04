@@ -151,10 +151,11 @@ class Themes {
       ),
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(
-          color: Colors.cyan[400],
+          color: Colors.red,
         ),
       ),
-      enabledBorder: OutlineInputBorder(),
+      enabledBorder:
+          OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
       focusedBorder: OutlineInputBorder(),
       border: OutlineInputBorder(),
       contentPadding: EdgeInsets.all(12),
@@ -180,6 +181,7 @@ class Themes {
         fontWeight: FontWeight.normal,
       ),
     ),
+
     // == Slider
     sliderTheme: SliderThemeData(
       trackShape: RoundedRectSliderTrackShape(),
