@@ -264,7 +264,7 @@ void startPumpsWithCurrentDrink(void)
 }
 
 //Update
-void ICACHE_RAM_ATTR updatePumps(void)
+void IRAM_ATTR updatePumps(void)
 {
     if (drinkRunning)
     {
@@ -293,7 +293,7 @@ void ICACHE_RAM_ATTR updatePumps(void)
     updateRegister();
 }
 
-void ICACHE_RAM_ATTR updateRegister(void)
+void IRAM_ATTR updateRegister(void)
 {
     if (!dataChanged)
     {
