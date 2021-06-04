@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import 'Pages/PageRouter.dart';
 import 'bloc/DataManager.dart';
-import 'bloc/PageStateManager.dart';
+import 'bloc/AppStateManager.dart';
 import 'bloc/ThemeManager.dart';
 
 void main() => runApp(MultiProvider(

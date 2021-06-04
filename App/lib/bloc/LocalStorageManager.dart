@@ -1,4 +1,4 @@
-import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorageManager {

@@ -4,7 +4,7 @@ import 'package:bartender/Pages/PageRouter.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/bloc/LocalStorageManager.dart';
-import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

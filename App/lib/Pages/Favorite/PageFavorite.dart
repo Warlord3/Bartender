@@ -1,6 +1,6 @@
 import 'package:bartender/GlobalWidgets/DrinkListView.dart';
 import 'package:bartender/bloc/DataManager.dart';
-import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
