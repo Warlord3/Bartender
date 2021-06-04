@@ -96,8 +96,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
                 doc["message"] = "drink_not_possible";
                 serializeJson(doc, response);
                 webSocket.sendTXT(num, response);
-                response_msg = getConfiguration();
-                webSocket.sendTXT(num, response_msg);
             }
         }
         else if (strcmp(command, "pump_config") == 0)
