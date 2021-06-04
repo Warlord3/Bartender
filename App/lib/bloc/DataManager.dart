@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:bartender/bloc/PageStateManager.dart';
+import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:bartender/models/CommunicationData.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:bartender/models/Websocket.dart';
@@ -96,7 +96,6 @@ class DataManager with ChangeNotifier {
   }
 
   save([bool force = false]) async {
-    dataChanged = true;
     saveTimer?.cancel();
 
     if (force && dataChanged) {
@@ -107,6 +106,8 @@ class DataManager with ChangeNotifier {
   }
 
   Future<bool> syncData() async {
+    if (this.beverages.isEmpty && this.allDrinks.isEmpty)
+      return false; // Skip save if no Data is available
     DrinkSaveData saveData = DrinkSaveData(
         beverages: this.beverages,
         drinks: this.allDrinks,
