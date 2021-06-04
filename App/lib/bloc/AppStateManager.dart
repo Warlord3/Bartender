@@ -16,6 +16,8 @@ class AppStateManager {
   static bool initStorage = false;
   static List<bool> showMoreInfo;
 
+  static OverlayEntry settingsOverlayEntry;
+
   static void showOverlayEntry(String text, [NavigatorState navigator]) {
     OverlayEntry entry = OverlayEntry(builder: (BuildContext context) {
       return FunkyNotification(text);
