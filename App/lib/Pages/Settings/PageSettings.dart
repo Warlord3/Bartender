@@ -72,196 +72,132 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-              Table(
-                columnWidths: {
-                  0: FlexColumnWidth(4),
-                  1: FlexColumnWidth(2),
-                },
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  /*
-                    Language
-                  */
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Center(
-                          child: Text(languageManager.getData("langauge")),
-                        ),
-                        verticalAlignment: TableCellVerticalAlignment.middle,
-                      ),
-                      TableCell(
-                        child: Center(
-                            child: Row(
-                          children: [
-                            IconButton(
-                              splashRadius: 25,
-                              icon: Image.asset('icons/flags/png/de.png',
-                                  package: 'country_icons'),
-                              onPressed: () {
-                                languageManager.changeLanguage(Language.German);
-                              },
-                              tooltip: "German",
-                            ),
-                            IconButton(
-                              splashRadius: 25,
-                              icon: Image.asset('icons/flags/png/gb.png',
-                                  package: 'country_icons'),
-                              onPressed: () {
-                                languageManager
-                                    .changeLanguage(Language.English);
-                              },
-                              tooltip: "English",
-                            )
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                  /*
-                    Controller Confgiuration
-                  */
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Center(
-                          child: Text(
-                            languageManager.getData("controller_configuration"),
-                          ),
-                        ),
-                        verticalAlignment: TableCellVerticalAlignment.middle,
-                      ),
-                      TableCell(
-                        child: Center(
-                          child: IconButton(
-                            splashRadius: 25,
-                            icon: Icon(Icons.construction),
-                            onPressed: () async {
-                              if (!dataManager.controllerConnected) {
-                                AppStateManager.showOverlayEntry(
-                                    "Not Connected");
-                                return;
-                              }
-                              await showGeneralDialog(
-                                barrierDismissible: true,
-                                barrierLabel: '',
-                                barrierColor: Colors.black38,
-                                transitionDuration: Duration(milliseconds: 200),
-                                pageBuilder: (ctx, anim1, anim2) =>
-                                    ControllerConfiguration(),
-                                transitionBuilder: (ctx, anim1, anim2, child) =>
-                                    BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: anim1.value * 3,
-                                    sigmaY: anim1.value * 3,
-                                  ),
-                                  child: FadeTransition(
-                                    child: child,
-                                    opacity: anim1,
-                                  ),
-                                ),
-                                context: context,
-                              );
-                              dataManager.sendConfiguration();
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  /*
-                  Pump PumpTesting
-                  */
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Center(
-                          child: Text(
-                            languageManager.getData("pump_testing"),
-                          ),
-                        ),
-                        verticalAlignment: TableCellVerticalAlignment.middle,
-                      ),
-                      TableCell(
-                        child: Center(
-                          child: IconButton(
-                            splashRadius: 25,
-                            icon: Icon(Icons.local_gas_station),
-                            onPressed: () {
-                              if (!dataManager.controllerConnected) {
-                                AppStateManager.showOverlayEntry(
-                                    "Not Connected");
-                                return;
-                              }
-                              if (dataManager.drinkActive) {
-                                AppStateManager.showOverlayEntry(
-                                    "Drink in progress");
-                                return;
-                              }
-                              AppStateManager.pushedPage = true;
-                              dataManager.testingMode(true);
-                              AppStateManager.keyNavigator.currentState.push(
-                                PageRouteBuilder(
-                                  pageBuilder: (context, animation,
-                                          secondaryAnimation) =>
-                                      PumpTestPage(),
-                                  transitionsBuilder: (context, animation,
-                                      secondaryAnimation, child) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: child,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  /*
-                    Beverage Configuration
-                  */
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Center(
-                          child: Text(
-                            languageManager.getData("beverage_configuration"),
-                          ),
-                        ),
-                        verticalAlignment: TableCellVerticalAlignment.middle,
-                      ),
-                      TableCell(
-                        child: Center(
-                          child: IconButton(
-                            splashRadius: 25,
-                            icon: Icon(Icons.local_gas_station),
-                            onPressed: () {
-                              AppStateManager.pushedPage = true;
 
-                              AppStateManager.keyNavigator.currentState.push(
-                                PageRouteBuilder(
-                                  pageBuilder: (context, animation,
-                                          secondaryAnimation) =>
-                                      BeverageConfiguration(),
-                                  transitionsBuilder: (context, animation,
-                                      secondaryAnimation, child) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: child,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
+              /*
+                Language
+              */
+
+              Center(
+                child: Text(languageManager.getData("langauge")),
+              ),
+              Center(
+                  child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    splashRadius: 25,
+                    icon: Image.asset('icons/flags/png/de.png',
+                        package: 'country_icons'),
+                    onPressed: () {
+                      languageManager.changeLanguage(Language.German);
+                    },
+                    tooltip: "German",
                   ),
+                  IconButton(
+                    splashRadius: 25,
+                    icon: Image.asset('icons/flags/png/gb.png',
+                        package: 'country_icons'),
+                    onPressed: () {
+                      languageManager.changeLanguage(Language.English);
+                    },
+                    tooltip: "English",
+                  )
                 ],
+              )),
+
+              /*
+                Controller Confgiuration
+              */
+              RowSetting(
+                languageManager,
+                "controller_configuration",
+                Icons.construction,
+                () async {
+                  if (!dataManager.controllerConnected) {
+                    AppStateManager.showOverlayEntry("Not Connected");
+                    return;
+                  }
+                  await showGeneralDialog(
+                    barrierDismissible: true,
+                    barrierLabel: '',
+                    barrierColor: Colors.black38,
+                    transitionDuration: Duration(milliseconds: 200),
+                    pageBuilder: (ctx, anim1, anim2) =>
+                        ControllerConfiguration(),
+                    transitionBuilder: (ctx, anim1, anim2, child) =>
+                        BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: anim1.value * 3,
+                        sigmaY: anim1.value * 3,
+                      ),
+                      child: FadeTransition(
+                        child: child,
+                        opacity: anim1,
+                      ),
+                    ),
+                    context: context,
+                  );
+                  dataManager.sendConfiguration();
+                },
+              ),
+              /*
+              Pump PumpTesting
+              */
+              RowSetting(
+                languageManager,
+                "pump_testing",
+                Icons.local_gas_station,
+                () {
+                  if (!dataManager.controllerConnected) {
+                    AppStateManager.showOverlayEntry("Not Connected");
+                    return;
+                  }
+                  if (dataManager.drinkActive) {
+                    AppStateManager.showOverlayEntry("Drink in progress");
+                    return;
+                  }
+                  AppStateManager.pushedPage = true;
+                  dataManager.testingMode(true);
+                  AppStateManager.keyNavigator.currentState.push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          PumpTestPage(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+
+              /*
+                Beverage Configuration
+              */
+              RowSetting(
+                languageManager,
+                "beverage_configuration",
+                Icons.local_gas_station,
+                () {
+                  AppStateManager.pushedPage = true;
+                  AppStateManager.keyNavigator.currentState.push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          BeverageConfiguration(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
               Spacer(),
               ElevatedButton(
@@ -376,6 +312,72 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class RowSetting extends StatelessWidget {
+  final IconData iconData;
+  final String textData;
+  final Function onPressed;
+  final LanguageManager languageManager;
+  RowSetting(
+      this.languageManager, this.textData, this.iconData, this.onPressed);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        SizedBox(
+          width: 50,
+        ),
+        Flexible(
+          flex: 8,
+          fit: FlexFit.loose,
+          child: Container(
+            width: double.infinity,
+            child: Text(
+              languageManager.getData(textData),
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 4,
+          fit: FlexFit.tight,
+          child: IconButton(
+            splashRadius: 25,
+            icon: Icon(this.iconData),
+            onPressed: this.onPressed,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ControllerConfig extends StatelessWidget {
+  final LanguageManager languageManager;
+  final DataManager dataManager;
+  ControllerConfig(this.languageManager, this.dataManager);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Center(
+          child: Text(
+            languageManager.getData("controller_configuration"),
+          ),
+        ),
+        Center(
+          child: IconButton(
+            splashRadius: 25,
+            icon: Icon(Icons.construction),
+            onPressed: () async {},
+          ),
+        ),
+      ],
     );
   }
 }
