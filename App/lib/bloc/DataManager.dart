@@ -202,6 +202,8 @@ class DataManager with ChangeNotifier {
             this.allDrinks.indexWhere((element) => element.id == drink.id)]
         .favorite = !drink.favorite;
     notifyListeners();
+    dataChanged = true;
+    save();
   }
 
   void saveDrink(Drink newDrink) {
@@ -219,6 +221,11 @@ class DataManager with ChangeNotifier {
     }
     dataChanged = true;
     save();
+  }
+
+  void updateRecently(Drink drink) {
+    recentlyCreatedDrinks.remove(drink);
+    recentlyCreatedDrinks.insert(0, drink);
   }
 
   int _getNewDrinkID() {
@@ -278,6 +285,7 @@ class DataManager with ChangeNotifier {
     NewDrink command =
         NewDrink(drink: scalling == 1.0 ? drink : drink.scaleldCopy(scalling));
     send(command.toString());
+    updateRecently(drink);
   }
 
   requestConfiguration() {
