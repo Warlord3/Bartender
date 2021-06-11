@@ -116,11 +116,53 @@ class BeverageItem extends StatelessWidget {
       onDismissed: (direction) {
         dataManager.beverages.remove(beverage);
       },
-      confirmDismiss: (direction) {
-        if (!dataManager.beverageDeleteable(beverage)) {
-          //TODO create Dialog
-          //Bassed on result delete Beverage
-          return Future.value(true);
+      confirmDismiss: (direction) async {
+        if (dataManager.beverageInUse(beverage)) {
+          await showGeneralDialog(
+            barrierDismissible: true,
+            barrierLabel: '',
+            barrierColor: Colors.black38,
+            transitionDuration: Duration(milliseconds: 200),
+            pageBuilder: (ctx, anim1, anim2) => Center(
+              child: Material(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                          "Beverage is in use. Do you really want to delete it?"),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              return Future.value(true);
+                            },
+                            child: Text("delte"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+
+                              return Future.value(false);
+                            },
+                            child: Text("cancel"),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            transitionBuilder: (ctx, anim1, anim2, child) => FadeTransition(
+              child: child,
+              opacity: anim1,
+            ),
+            context: context,
+          );
         }
         return Future.value(true);
       },
