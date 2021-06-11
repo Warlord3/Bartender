@@ -225,7 +225,10 @@ class DataManager with ChangeNotifier {
   }
 
   void updateRecently(Drink drink) {
-    recentlyCreatedDrinks.remove(drink);
+    if (recentlyCreatedDrinks.remove(drink)) {
+    } else if (recentlyCreatedDrinks.length >= MAX_RECENTLY) {
+      recentlyCreatedDrinks.removeLast();
+    }
     recentlyCreatedDrinks.insert(0, drink);
   }
 
