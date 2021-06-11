@@ -13,6 +13,7 @@ class DataManager with ChangeNotifier {
   List<Drink> allDrinks = [];
   List<Drink> favoriteDrinks = [];
   List<Drink> recentlyCreatedDrinks = [];
+  static const int MAX_RECENTLY = 5;
   List<Beverage> beverages = [];
 
   PumpConfiguration pumpConfiguration;
@@ -135,7 +136,7 @@ class DataManager with ChangeNotifier {
         new http.MultipartRequest('POST', Uri.parse("http://$ip/upload"));
     request.files.add(
       http.MultipartFile.fromBytes(
-        'userData',
+        'file',
         utf8.encode(json),
         filename: filename,
         contentType: MediaType(
@@ -155,6 +156,7 @@ class DataManager with ChangeNotifier {
     if (response.statusCode != 200) {
       return false;
     }
+
     return true;
   }
 
