@@ -44,8 +44,9 @@ class Drink {
   double kcal = 0.0;
   List<Ingredient> ingredients;
   bool favorite = false;
+  bool possible = true;
 
-  Drink({this.name, this.id, this.favorite, this.ingredients}) {
+  Drink({this.name, this.id, this.favorite, this.ingredients, this.possible}) {
     updateStats();
   }
   void updateStats() {
@@ -66,11 +67,13 @@ class Drink {
     this.id = -1;
     this.ingredients = [];
     this.ingredients.add(Ingredient.empty());
+    this.possible = false;
   }
   factory Drink.fromJson(Map<String, dynamic> json) => Drink(
         name: json["name"] == null ? "" : json["name"],
         id: json["id"] == null ? -1 : json["id"],
         favorite: json["favorite"] == null ? false : json["favorite"],
+        possible: json["possible"] == null ? false : json["possible"],
         ingredients: json["ingredients"] == null
             ? []
             : (json['ingredients'] as List)
@@ -82,6 +85,7 @@ class Drink {
         "name": name == null ? "" : name,
         "id": id == null ? -1 : id,
         "favorite": favorite == null ? false : favorite,
+        "possible": possible == null ? false : possible,
         "ingredients": ingredients == null ? [] : ingredients,
       };
 
@@ -132,6 +136,15 @@ class Drink {
   ///get the scalling of the drink with the new Amount
   double scalling(double newAmount) {
     return newAmount / this.amount;
+  }
+
+  bool containsBeverage(Beverage beverage) {
+    for (Ingredient ingredient in this.ingredients) {
+      if (ingredient.beverage.id == beverage.id) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
