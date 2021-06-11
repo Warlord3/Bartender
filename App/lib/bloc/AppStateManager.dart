@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'ThemeManager.dart';
-
 class AppStateManager {
   static GlobalKey<NavigatorState> keyNavigator = GlobalKey<NavigatorState>();
   static GlobalKey<AnimatedListState> favoriteListKey =

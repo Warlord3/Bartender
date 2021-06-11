@@ -26,7 +26,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   TextEditingController _nameController;
   LanguageManager languageManager;
 
-  String _DrinkNameErrorText = null;
+  String _drinkNameErrorText;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                       controller: _nameController,
                       style: TextStyle(fontSize: 30),
                       decoration: InputDecoration(
-                        errorText: _DrinkNameErrorText,
+                        errorText: _drinkNameErrorText,
                         fillColor: Colors.transparent,
                         labelText: languageManager.getData("drinkname"),
                       ),
@@ -267,9 +267,9 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
   void update() {
     if (_nameController.text != "") {
       widget.newDrink.name = _nameController.text;
-      _DrinkNameErrorText = null;
+      _drinkNameErrorText = null;
     } else {
-      _DrinkNameErrorText = "Drink name can't be empty";
+      _drinkNameErrorText = "Drink name can't be empty";
     }
     for (int i = 0; i < _controllers.length; i++) {
       widget.newDrink.ingredients[i].amount = int.parse(_controllers[i].text);
