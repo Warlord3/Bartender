@@ -39,6 +39,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         DEBUG_PRINTF("[%u] Disconnected!\n", num);
         clientConnected = false;
         cliendID = -1;
+        if (testingMode)
+        {
+            stopAllPumps(true);
+        }
         break;
     case WStype_CONNECTED:
     {
