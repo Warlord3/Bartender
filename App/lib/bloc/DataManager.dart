@@ -362,8 +362,12 @@ class DataManager with ChangeNotifier {
       drinkProgress = 100;
       notifyListeners();
       AppStateManager.showOverlayEntry("Drink finnished");
+      AppStateManager.removeProgressOverlay();
     } else if (command == "progress") {
       Progress progress = Progress.fromJson(json);
+      if (progress.progress < 100 && progress.drinkActive) {
+        AppStateManager.showProgressOverlay();
+      }
       drinkProgress = progress.progress;
       drinkActive = progress.drinkActive;
       notifyListeners();
