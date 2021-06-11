@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
@@ -5,6 +7,7 @@ import 'package:bartender/GlobalWidgets/DrinkListView.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'LocalWidgets/DrinkConfiguration.dart';
 import 'LocalWidgets/DrinkHelper.dart';
 
 class DrinksPage extends StatelessWidget {
@@ -35,7 +38,7 @@ class DrinksPage extends StatelessWidget {
               child: FloatingActionButton(
                 onPressed: () async {
                   var result = await drinkEditDialog(context);
-                  if (result != null && result) {
+                  if (result!=null&&result) {
                     AppStateManager.drinkListKey.currentState
                         .insertItem(dataManager.allDrinks.length - 1);
                   }

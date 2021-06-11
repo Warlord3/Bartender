@@ -10,30 +10,20 @@ import 'bloc/DataManager.dart';
 import 'bloc/AppStateManager.dart';
 import 'bloc/ThemeManager.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await LocalStorageManager.init();
-
-  ThemeMode themeMode = ThemeMode.dark;
-  if (LocalStorageManager.storage.containsKey("themeMode")) {
-    themeMode =
-        ThemeMode.values[LocalStorageManager.storage.getInt("themeMode")];
-  }
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider<ThemeManager>(
-        create: (context) => ThemeManager(themeMode),
-      ),
-      ChangeNotifierProvider<DataManager>(
-        create: (context) => DataManager(),
-      ),
-      ChangeNotifierProvider<LanguageManager>(
-        create: (context) => LanguageManager(),
-      ),
-    ],
-    child: MainPage(),
-  ));
-}
+void main() => runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeManager>(
+          create: (context) => ThemeManager(),
+        ),
+        ChangeNotifierProvider<DataManager>(
+          create: (context) => DataManager(),
+        ),
+        ChangeNotifierProvider<LanguageManager>(
+          create: (context) => LanguageManager(),
+        ),
+      ],
+      child: MainPage(),
+    ));
 
 class MainPage extends StatefulWidget {
   @override
@@ -90,26 +80,21 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
 
   Widget getPage() {
-    if (!AppStateManager.initIP) {
+    if (!AppStateManager.initStorage) {
       return FutureBuilder(
-        future: init(context),
-        builder: (buidContext, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data) {
-              return PageRouter();
-            } else {
-              return ConnectionPage();
-            }
-          }
-          return StartPage();
-        },
-      );
+          future: init(context),
+          builder: (buidContext, snapshot) {
+            return StartPage();
+          });
+    } else if (!AppStateManager.initIP) {
+      return ConnectionPage();
     } else {
       return PageRouter();
     }
   }
 
   Future<bool> init(BuildContext context) async {
+    await LocalStorageManager.init();
     if (LocalStorageManager.storage.containsKey("controllerIP")) {
       String controllerIp =
           LocalStorageManager.storage.getString("controllerIP");
@@ -117,8 +102,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
       AppStateManager.initIP = true;
       await Provider.of<DataManager>(context, listen: false).init();
-      return true;
     }
-    return false;
+    setState(() {});
+    return true;
   }
 }

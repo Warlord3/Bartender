@@ -1,4 +1,3 @@
-import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkHelper.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
 import 'package:bartender/models/Drinks.dart';
@@ -154,41 +153,8 @@ class RecentlyDrinkItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              border: Border.all(
-                color: Colors.grey,
-              )),
-          child: Center(
-              child: Column(
-            children: [
-              Text(
-                recentlyCreatedDrink.name,
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(recentlyCreatedDrink.amount.toStringAsFixed(2)),
-                    Text(recentlyCreatedDrink.kcal.toStringAsFixed(2)),
-                    Text(recentlyCreatedDrink.percent.toStringAsFixed(2)),
-                  ],
-                ),
-              )
-            ],
-          )),
-        ),
-        onTap: () async {
-          await drinkSelectDialog(context, recentlyCreatedDrink);
-          print("drink from Recentlist");
-        },
-      ),
+    return Container(
+      child: Text(recentlyCreatedDrink.name),
     );
   }
 }
