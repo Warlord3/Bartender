@@ -1,14 +1,18 @@
+import 'package:bartender/bloc/LocalStorageManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ThemeManager with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
-
-  ThemeManager();
+  ThemeManager(ThemeMode themeMode) {
+    this._themeMode = themeMode;
+  }
   getTheme() => _themeMode;
   setTheme(ThemeMode themeMode) {
     if (themeMode != this._themeMode) {
       _themeMode = themeMode;
+      LocalStorageManager.storage.setInt("themeMode", themeMode.index);
+
       notifyListeners();
     }
   }
