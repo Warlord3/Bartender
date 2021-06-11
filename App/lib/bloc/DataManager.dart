@@ -96,6 +96,20 @@ class DataManager with ChangeNotifier {
     this.recentlyCreatedDrinks = getRecentlyDrinks(data.recently);
   }
 
+  void checkAndSortDrinks() {
+    for (Drink drink in this.allDrinks) {
+      drink.possible = !drink.ingredients.any((element) => !this
+          .pumpConfiguration
+          .configs
+          .map((e) => e.beverageID)
+          .contains(element.beverage.id));
+    }
+    allDrinks.sort((a, b) {
+      if (b.possible) return 1;
+      return -1;
+    });
+  }
+
   save([bool force = false]) async {
     saveTimer?.cancel();
 
@@ -303,6 +317,7 @@ class DataManager with ChangeNotifier {
   }
 
   sendConfiguration() {
+    checkAndSortDrinks();
     send(this.pumpConfiguration.toString());
   }
 
@@ -355,6 +370,7 @@ class DataManager with ChangeNotifier {
     } else if (command == "pump_config") {
       print("Read Configuration");
       this.pumpConfiguration = PumpConfiguration.fromJson(json);
+      checkAndSortDrinks();
     }
   }
 
