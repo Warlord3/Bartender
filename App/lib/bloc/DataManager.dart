@@ -257,8 +257,14 @@ class DataManager with ChangeNotifier {
     return this.pumpConfiguration.configurated;
   }
 
-  bool beverageDeleteable(Beverage beverage) {
-    return true;
+  void removeBeverage(Beverage beverage) {
+    this.beverages.removeWhere((element) => element.id == beverage.id);
+    dataChanged = true;
+    save();
+  }
+
+  bool beverageInUse(Beverage beverage) {
+    return allDrinks.any((drink) => drink.containsBeverage(beverage));
   }
 
   resetController() {
