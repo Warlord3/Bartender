@@ -25,6 +25,7 @@ class _PageRouterState extends State<PageRouter> {
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
+    AppStateManager.screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text(getAppBarTitle()),
@@ -48,23 +49,23 @@ class _PageRouterState extends State<PageRouter> {
         child: SafeArea(
           child: Navigator(
             key: AppStateManager.keyNavigator,
-            initialRoute: "/Home",
+            initialRoute: "Home",
             onGenerateRoute: (RouteSettings settings) {
               Widget page = Container();
               switch (settings.name) {
-                case "/Home":
+                case "Home":
                   page = HomePage();
                   break;
-                case "/Favorite":
+                case "Favorite":
                   page = FavoritePage();
                   break;
-                case "/Drinks":
+                case "Drinks":
                   page = DrinksPage();
                   break;
-                case "/Beverages":
+                case "Beverages":
                   page = BeveragePage();
                   break;
-                case "/Settings":
+                case "Settings":
                   page = SettingsPage();
                   break;
                 default:
@@ -133,19 +134,19 @@ class _PageRouterState extends State<PageRouter> {
       if (AppStateManager.lastPageIndex != value) {
         switch (value) {
           case 0:
-            AppStateManager.keyNavigator.currentState.pushNamed("/Home");
+            AppStateManager.keyNavigator.currentState.pushNamed("Home");
             break;
           case 1:
-            AppStateManager.keyNavigator.currentState.pushNamed("/Favorite");
+            AppStateManager.keyNavigator.currentState.pushNamed("Favorite");
             break;
           case 2:
-            AppStateManager.keyNavigator.currentState.pushNamed("/Drinks");
+            AppStateManager.keyNavigator.currentState.pushNamed("Drinks");
             break;
           case 3:
-            AppStateManager.keyNavigator.currentState.pushNamed("/Settings");
+            AppStateManager.keyNavigator.currentState.pushNamed("Settings");
             break;
           default:
-            AppStateManager.keyNavigator.currentState.pushNamed("/Home");
+            AppStateManager.keyNavigator.currentState.pushNamed("Home");
             break;
         }
       }
