@@ -18,40 +18,57 @@ class _ConnectionPageState extends State<ConnectionPage> {
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context, listen: false);
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
-          child: FutureBuilder(
-            future: searchForWebsockets(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<String> data = snapshot.data;
-                if (data.length == 0) {
-                  return Text("No Bartenders found");
-                } else if (data.length == 1) {
-                  Future.delayed(Duration(seconds: 5), () {
-                    finish(data.first);
-                  });
-                  return Text("Found one Bartender with ip: ${data.first}");
+    return MaterialApp(
+      home: SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: FutureBuilder(
+              future: searchForWebsockets(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<String> data = snapshot.data;
+                  if (data.length == 0) {
+                    return Text("No Bartenders found");
+                  } else if (data.length == 1) {
+                    Future.delayed(Duration(seconds: 5), () {
+                      finish(data.first);
+                    });
+                    return Text("Found one Bartender with ip: ${data.first}");
+                  } else {
+                    return Column(
+                      children: [
+                        Text("found ${data.length} Bartenders"),
+                        ListView.builder(
+                          itemBuilder: (buildContext, id) {
+                            return ElevatedButton(
+                              onPressed: () {
+                                finish(data[id]);
+                              },
+                              child: Text("${data[id]}"),
+                            );
+                          },
+                          shrinkWrap: true,
+                          itemCount: data.length,
+                        )
+                      ],
+                    );
+                  }
                 } else {
-                  //TODO list found Bartenders and select one
-                  return Text("found ${data.length} Bartenders");
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        languageManager.getData("search_connection"),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CircularProgressIndicator(),
+                    ],
+                  );
                 }
-              } else {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      languageManager.getData("search_connection"),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    CircularProgressIndicator(),
-                  ],
-                );
-              }
-            },
+              },
+            ),
           ),
         ),
       ),
