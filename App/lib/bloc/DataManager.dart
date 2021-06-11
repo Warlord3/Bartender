@@ -47,10 +47,11 @@ class DataManager with ChangeNotifier {
   }
 
   Future<void> init() async {
+    if (AppStateManager.initConnection) return;
     await connect();
     websocket.connect();
 
-    return;
+    AppStateManager.initConnection = true;
   }
 
   Future<bool> ping(String ip, Duration timeout) async {
