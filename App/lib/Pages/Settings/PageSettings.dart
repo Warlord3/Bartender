@@ -29,7 +29,6 @@ class _SettingsPageState extends State<SettingsPage> {
     languageManager = Provider.of<LanguageManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
     dataManager = Provider.of<DataManager>(context, listen: false);
-    OverlayEntry overlayEntry;
     return GestureDetector(
       onTap: () {
         print("tapped Settings GestureDetector");
