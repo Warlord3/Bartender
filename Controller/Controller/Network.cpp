@@ -248,7 +248,8 @@ void handleFileUpload(void)
             fsUploadFile.close(); // Close the file again
             DEBUG_PRINT("handleFileUpload Size: ");
             DEBUG_PRINTLN(upload.totalSize);
-            server.send(200);
+            server.sendHeader("Location", "/success.html");õ
+            server.send(303);
         }
         else
         {
