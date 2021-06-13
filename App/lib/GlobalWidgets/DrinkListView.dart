@@ -108,8 +108,7 @@ class _ListTileState extends State<ListTile> {
               );
             },
             onLongPress: () {
-              drinkEditDialog(context,widget.drink);
-        
+              drinkEditDialog(context, widget.drink);
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -124,7 +123,7 @@ class _ListTileState extends State<ListTile> {
                         child: Container(
                           child: Text(
                             widget.drink.name,
-                            style: Theme.of(context).textTheme.overline,
+                            style: Theme.of(context).textTheme.headline5,
                           ),
                         ),
                       ),
@@ -176,15 +175,15 @@ class _ListTileState extends State<ListTile> {
                       children: [
                         Text(
                           "${widget.drink.amount.toStringAsFixed(1)}ml",
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Text(
                           "${widget.drink.percent.toStringAsFixed(1)}%",
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Text(
                           "${widget.drink.kcal.toStringAsFixed(1)}kcal",
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.subtitle1,
                         ),
                       ]),
                 ],
