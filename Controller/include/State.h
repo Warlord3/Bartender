@@ -19,6 +19,7 @@ extern stDrink currentDrink;
 
 extern bool drinkFinished;
 extern bool drinkRunning;
+extern bool drinkPaused;
 extern bool testingMode;
 extern volatile bool interuptActive;
 extern volatile bool dataChanged;

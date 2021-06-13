@@ -64,6 +64,7 @@ void setConfiguration(DynamicJsonDocument &doc);
 void start(DynamicJsonDocument &doc);
 void stop(DynamicJsonDocument &doc);
 int8_t setDrink(DynamicJsonDocument &doc);
+void stopDrink(void);
 String getConfiguration(void);
 String getPumpStatus();
 String getProgress();
