@@ -66,7 +66,7 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
           child: SingleChildScrollView(
             child: GestureDetector(
               onTap: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
+                FocusScope.of(context).unfocus();
                 update();
               },
               child: Padding(
@@ -77,7 +77,9 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
                       controller: _nameController,
                       style: TextStyle(fontSize: 30),
                       decoration: InputDecoration(
-                        errorText: _drinkNameErrorText,
+                        errorText: _nameController.text == ""
+                            ? _drinkNameErrorText
+                            : null,
                         fillColor: Colors.transparent,
                         labelText: languageManager.getData("drinkname"),
                       ),
@@ -272,7 +274,12 @@ class _DrinkConfigurationState extends State<DrinkConfiguration> {
       _drinkNameErrorText = "Drink name can't be empty";
     }
     for (int i = 0; i < _controllers.length; i++) {
-      widget.newDrink.ingredients[i].amount = int.parse(_controllers[i].text);
+      if (_controllers[i].text.isNotEmpty) {
+        widget.newDrink.ingredients[i].amount = int.parse(_controllers[i].text);
+      } else {
+        widget.newDrink.ingredients[i].amount = 0;
+        _controllers[i].text = "0";
+      }
     }
     setState(() {
       widget.newDrink.updateStats();
@@ -310,6 +317,8 @@ class IngredientsEditor extends StatefulWidget {
 class _IngredientsEditorState extends State<IngredientsEditor> {
   List<Beverage> beverages;
   LanguageManager languageManager;
+
+  String _errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -374,6 +383,13 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
                   keyboardType: TextInputType.number,
                   controller: widget.controller,
                   decoration: InputDecoration(
+                    errorStyle: TextStyle(
+                      height: 0,
+                    ),
+                    errorText: widget.controller.text == "0" ||
+                            widget.controller.text.isEmpty
+                        ? ""
+                        : null,
                     isDense: true,
                     labelText: "ml",
                     alignLabelWithHint: true,
