@@ -58,6 +58,28 @@
     "command": "stop_pump_all"
 }
 {
+    "command": "pause_drink"
+}
+{
+    "command": "pause_drink_response",
+    "paused": true
+}
+{
+    "command": "continue_drink"
+}
+{
+    "command": "continue_drink_response",
+    "continued": true
+}
+{
+    "command": "stop_drink",
+}
+{
+    "command": "stop_drink_response",
+    "stopped": true
+}
+
+{
     "command": "new_drink",
     "id": 3,
     "ingredients": [
