@@ -28,6 +28,7 @@ class DataManager with ChangeNotifier {
 
   int drinkProgress = 0;
   bool drinkActive = false;
+  bool drinkPause = false;
 
   //Save Process
   bool dataChanged = false;
@@ -307,6 +308,18 @@ class DataManager with ChangeNotifier {
     send(command.toString());
   }
 
+  pauseDrink() {
+    send(PauseDrink().toString());
+  }
+
+  continueDrink() {
+    send(ContinueDrink().toString());
+  }
+
+  stopDrink() {
+    send(StopDrink().toString());
+  }
+
   sendDrink(Drink drink, {double scalling = 1.0}) {
     NewDrink command =
         NewDrink(drink: scalling == 1.0 ? drink : drink.scaleldCopy(scalling));
@@ -356,6 +369,7 @@ class DataManager with ChangeNotifier {
       NewDrinkResponse response = NewDrinkResponse.fromJson(json);
       if (response.accepted) {
         drinkActive = true;
+        this.drinkPause = false;
       } else {
         AppStateManager.showOverlayEntry("There went something wrong");
       }
@@ -377,6 +391,23 @@ class DataManager with ChangeNotifier {
       print("Read Configuration");
       this.pumpConfiguration = PumpConfiguration.fromJson(json);
       checkAndSortDrinks();
+    } else if (command == "pause_drink_response") {
+      PauseDrinkResponse response = PauseDrinkResponse.fromJson(json);
+      if (response.paused) {
+        this.drinkPause = true;
+        notifyListeners();
+      }
+    } else if (command == "continue_drink_response") {
+      ContinueDrinkResponse response = ContinueDrinkResponse.fromJson(json);
+      if (response.continued) {
+        this.drinkPause = false;
+        notifyListeners();
+      }
+    } else if (command == "stop_drink_response") {
+      StopDrinkResponse response = StopDrinkResponse.fromJson(json);
+      if (response.stopped) {
+        //TODO: do something with this information?
+      }
     }
   }
 
