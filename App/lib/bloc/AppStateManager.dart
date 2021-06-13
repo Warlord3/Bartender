@@ -45,29 +45,77 @@ class AppStateManager {
     if (!progressOverlayVisible) {
       progressOverlayVisible = true;
       progressOverlay = OverlayEntry(
-        builder: (buildContext) => Positioned(
-          bottom: 15,
-          left: 15,
-          child: Container(
-            height: 50,
-            width: screenSize.width - 30,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Theme.of(buildContext).backgroundColor),
-            child: Center(
-              child: Selector<DataManager, int>(
-                builder: (context, data, child) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: LinearProgressIndicator(
-                    value: data / 100,
-                  ),
+        builder: (buildContext) {
+          return Positioned(
+            bottom: 15,
+            left: 15,
+            child: Container(
+              constraints: BoxConstraints(minHeight: 100),
+              width: screenSize.width - 30,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Theme.of(buildContext).cardColor),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      flex: 7,
+                      child: Selector<DataManager, int>(
+                        builder: (context, data, child) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: LinearProgressIndicator(
+                            value: data / 100,
+                          ),
+                        ),
+                        selector: (buildContext, dataManager) =>
+                            dataManager.drinkProgress,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Selector<DataManager, bool>(
+                      selector: (buildContext, dataManager) =>
+                          dataManager.drinkPause,
+                      builder: (context, data, child) => data
+                          ? Container(
+                              child: Column(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Provider.of<DataManager>(buildContext,
+                                              listen: false)
+                                          .continueDrink();
+                                    },
+                                    child: Text("Continue"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Provider.of<DataManager>(buildContext,
+                                              listen: false)
+                                          .stopDrink();
+                                    },
+                                    child: Text("Stop"),
+                                  )
+                                ],
+                              ),
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                Provider.of<DataManager>(buildContext,
+                                        listen: false)
+                                    .pauseDrink();
+                              },
+                              child: Text("Pause"),
+                            ),
+                    ),
+                  ],
                 ),
-                selector: (buildContext, dataManager) =>
-                    dataManager.drinkProgress,
               ),
             ),
-          ),
-        ),
+          );
+        },
       );
       if (progressOverlay == null) return;
       keyNavigator.currentState.overlay.insert(progressOverlay);
