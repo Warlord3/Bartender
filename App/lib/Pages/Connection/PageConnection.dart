@@ -28,6 +28,12 @@ class _ConnectionPageState extends State<ConnectionPage> {
                 if (snapshot.hasData) {
                   List<String> data = snapshot.data;
                   if (data.length == 0) {
+                    Future.delayed(Duration(seconds: 5), () {
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (buildContext) {
+                        return PageRouter();
+                      }));
+                    });
                     return Text("No Bartenders found");
                   } else if (data.length == 1) {
                     Future.delayed(Duration(seconds: 5), () {
