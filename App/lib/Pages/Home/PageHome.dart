@@ -23,123 +23,129 @@ class _HOmePageState extends State<HomePage> {
     dataManager = Provider.of<DataManager>(context);
     return Container(
       color: Theme.of(context).backgroundColor,
-      child: SingleChildScrollView(
-        child: Container(
-          child: Center(
-            child: Column(
-              children: [
-                /*
-                  Controller Info
-                */
-                Card(
-                  elevation: 3,
+      child: Container(
+        child: Center(
+          child: Column(
+            children: [
+              /*
+                Controller Info
+              */
+              Card(
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     children: [
-                      ListTile(
-                        leading: Icon(
-                          Icons.leaderboard_outlined,
-                        ),
-                        title: Text(
-                          languageManager.getData("bartender_info"),
-                        ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.leaderboard_outlined,
+                            size: 25,
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            languageManager.getData("bartender_info"),
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          // ? Maybe consider using a table or grid for better displayment
-                          child: Column(
+                      ListBody(
+                        children: [
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Selector<DataManager, bool>(
-                                    selector: (_, connection) =>
-                                        connection.websocket.connected,
-                                    builder: (context, value, child) {
-                                      return Icon(value
-                                          ? Icons.wifi_outlined
-                                          : Icons.wifi_off_outlined);
-                                    },
-                                  ),
-                                  // ToDo add check for connected or not
-                                  // ? Maybe use text instead of icons for better displayment in grid / table
-                                  //Icon(Icons.Icons.clear)
-                                ],
+                              Selector<DataManager, bool>(
+                                selector: (_, connection) =>
+                                    connection.websocket.connected,
+                                builder: (context, value, child) {
+                                  return Icon(value
+                                      ? Icons.wifi_outlined
+                                      : Icons.wifi_off_outlined);
+                                },
                               ),
-                              Row(
-                                children: [
-                                  Text(
-                                    languageManager.getData("status") + ":",
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 5),
-                                    child: Selector<DataManager, int>(
-                                      builder: (context, data, child) {
-                                        return Text(
-                                            '${languageManager.getData("mixing_drink")} : $data%');
-                                      },
-                                      selector: (buildContext, countPro) =>
-                                          countPro.drinkProgress,
-                                    ),
-                                  ),
-                                  // ToDo add bartender status
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    languageManager.getData("problems") + ":",
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 5),
-                                    child:
-                                        Text(languageManager.getData("none")),
-                                  ),
-                                  // ToDo add bartender error
-                                ],
-                              )
                             ],
                           ),
-                        ),
+                          Row(
+                            children: [
+                              Text(
+                                languageManager.getData("status") + ":",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5),
+                                child: Selector<DataManager, int>(
+                                  builder: (context, data, child) {
+                                    return Text(
+                                      '${languageManager.getData("mixing_drink")} : $data%',
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    );
+                                  },
+                                  selector: (buildContext, countPro) =>
+                                      countPro.drinkProgress,
+                                ),
+                              ),
+                              // ToDo add bartender status
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                languageManager.getData("problems") + ":",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 5),
+                                child: Text(
+                                  languageManager.getData("none"),
+                                  style: Theme.of(context).textTheme.bodyText1,
+                                ),
+                              ),
+                              // ToDo add bartender error
+                            ],
+                          )
+                        ],
                       ),
                     ],
                   ),
                 ),
-                /*
-                  Recent Drinks
-                */
-                Card(
-                  elevation: 3,
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(
-                          Icons.history_outlined,
-                        ),
-                        title: Text(
-                          languageManager.getData("recent_drinks"),
-                        ),
+              ),
+              /*
+                Recent Drinks
+              */
+              Card(
+                elevation: 3,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(
+                        Icons.history_outlined,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                            child: dataManager.recentlyCreatedDrinks.length > 0
-                                ? ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: dataManager
-                                        .recentlyCreatedDrinks.length,
-                                    itemBuilder: (buildcontext, index) {
-                                      return RecentlyDrinkItem(
-                                          dataManager
-                                              .recentlyCreatedDrinks[index],
-                                          index);
-                                    })
-                                : Text("None Recently Drinks")),
+                      title: Text(
+                        languageManager.getData("recent_drinks"),
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                          child: dataManager.recentlyCreatedDrinks.length > 0
+                              ? ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount:
+                                      dataManager.recentlyCreatedDrinks.length,
+                                  itemBuilder: (buildcontext, index) {
+                                    return RecentlyDrinkItem(
+                                        dataManager
+                                            .recentlyCreatedDrinks[index],
+                                        index);
+                                  })
+                              : Text("None Recently Drinks")),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
