@@ -76,8 +76,9 @@ class Progress extends CommandBase {
 
   factory Progress.fromJson(Map<String, dynamic> parsedJson) => Progress(
         progress: parsedJson['progress'] == null ? 0 : parsedJson['progress'],
-        drinkActive:
-            parsedJson['drinkActiv'] == null ? false : parsedJson['drinkActiv'],
+        drinkActive: parsedJson['drink_activ'] == null
+            ? false
+            : parsedJson['drink_activ'],
       );
 }
 
@@ -197,6 +198,55 @@ class StopPumpAll extends CommandBase {
   Map<String, dynamic> toJson() => {
         'command': "stop_pump_all",
       };
+}
+
+class PauseDrink extends CommandBase {
+  @override
+  Map<String, dynamic> toJson() => {
+        'command': "pause_drink",
+      };
+}
+
+class PauseDrinkResponse extends CommandBase {
+  bool paused;
+  PauseDrinkResponse({this.paused});
+  factory PauseDrinkResponse.fromJson(Map<String, dynamic> parsedJson) =>
+      PauseDrinkResponse(
+        paused: parsedJson['paused'] == null ? false : parsedJson['paused'],
+      );
+}
+
+class ContinueDrink extends CommandBase {
+  @override
+  Map<String, dynamic> toJson() => {
+        'command': "continue_drink",
+      };
+}
+
+class ContinueDrinkResponse extends CommandBase {
+  bool continued;
+  ContinueDrinkResponse({this.continued});
+  factory ContinueDrinkResponse.fromJson(Map<String, dynamic> parsedJson) =>
+      ContinueDrinkResponse(
+        continued:
+            parsedJson['continued'] == null ? false : parsedJson['continued'],
+      );
+}
+
+class StopDrink extends CommandBase {
+  @override
+  Map<String, dynamic> toJson() => {
+        'command': "stop_drink",
+      };
+}
+
+class StopDrinkResponse extends CommandBase {
+  bool stopped;
+  StopDrinkResponse({this.stopped});
+  factory StopDrinkResponse.fromJson(Map<String, dynamic> parsedJson) =>
+      StopDrinkResponse(
+        stopped: parsedJson['stopped'] == null ? false : parsedJson['stopped'],
+      );
 }
 
 class PumpMilliliter extends CommandBase {
