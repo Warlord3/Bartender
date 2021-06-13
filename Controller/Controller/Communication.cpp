@@ -142,6 +142,41 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
             startAllPumps((enPumpRunningDirection)doc["direction"].as<int>());
             //webSocket.broadcastTXT(response_msg);
         }
+        else if (strcmp(command, "pause_drink") == 0)
+        {
+            interuptActive = false;
+            drinkPaused = true;
+            stopAllPumps(true);
+            doc.clear();
+            doc["command"] = "pause_drink_response";
+            doc["paused"] = true;
+            serializeJson(doc, response);
+            webSocket.sendTXT(num, response);
+        }
+        else if (strcmp(command, "continue_drink") == 0)
+        {
+            if (!drinkPaused)
+                return;
+            interuptActive = true;
+            drinkPaused = false;
+            startPumpsWithCurrentDrink();
+            doc.clear();
+            doc["command"] = "continue_drink_response";
+            doc["continued"] = true;
+            serializeJson(doc, response);
+            webSocket.sendTXT(num, response);
+        }
+        else if (strcmp(command, "stop_drink") == 0)
+        {
+            drinkPaused = false;
+            interuptActive = true;
+            stopDrink();
+            doc.clear();
+            doc["command"] = "stop_drink_response";
+            doc["stopped"] = true;
+            serializeJson(doc, response);
+            webSocket.sendTXT(num, response);
+        }
         else if (strcmp(command, "pump_milliliter") == 0)
         {
             int pumpID = doc["ID"].as<int>();

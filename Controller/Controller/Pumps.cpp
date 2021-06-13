@@ -44,7 +44,7 @@ void updateProgress()
             sendData(getProgress());
         }
     }
-    else if (drinkRunning)
+    else if (drinkRunning && !drinkPaused)
     {
         sendDrinkFinished();
     }
@@ -66,6 +66,7 @@ int getPumpID(uint beverageID)
     }
     return -1;
 }
+
 void startInterupt(void)
 {
     if (!interuptStarted && operationMode != enOperationMode::configMode)
@@ -265,7 +266,7 @@ void startPumpsWithCurrentDrink(void)
 //Update
 void IRAM_ATTR updatePumps(void)
 {
-    if (drinkRunning)
+    if (interuptActive && drinkRunning)
     {
         for (int i = 0; i < NUM_PUMPS_PER_CONTROLLER * NUM_CONTROLLERS; i++)
         {
@@ -284,10 +285,6 @@ void IRAM_ATTR updatePumps(void)
                 pumps[i].remainingMl -= pumps[i].mlPerMinute * 100.0f / (60.0f * 1000.0f);
             }
         }
-    }
-    else
-    {
-        drinkRunning = false;
     }
     updateRegister();
 }
@@ -373,6 +370,18 @@ int8_t setDrink(DynamicJsonDocument &doc)
     }
     DEBUG_PRINTLN("New Drink was declined");
     return false;
+}
+
+void stopDrink(void)
+{
+
+    currentDrink = stDrink();
+    for (int i = 0; i < NUM_CONTROLLERS * NUM_PUMPS_PER_CONTROLLER; i++)
+    {
+        setRemainingMl(0, i);
+    }
+    drinkRunning = false;
+    newDrinkPossible = true;
 }
 String getConfiguration(void)
 {

@@ -15,6 +15,7 @@ volatile bool dataChanged = true;
 
 bool drinkFinished = false;
 bool drinkRunning = false;
+bool drinkPaused = false;
 bool testingMode = false;
 bool WiFiConncted = false;
 
