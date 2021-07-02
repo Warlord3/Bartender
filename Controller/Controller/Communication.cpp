@@ -226,6 +226,7 @@ bool sendData(String data)
 {
     if (clientConnected)
     {
+        DEBUG_PRINTLN(data);
         webSocket.sendTXT(cliendID, data);
         return true;
     }
