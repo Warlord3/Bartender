@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AppStateManager {
+class AppStateManager extends ChangeNotifier {
   static GlobalKey<NavigatorState> keyNavigator = GlobalKey<NavigatorState>();
   static GlobalKey<AnimatedListState> favoriteListKey =
       GlobalKey<AnimatedListState>(debugLabel: "favoriteDrinkKey");
@@ -14,7 +14,6 @@ class AppStateManager {
   static double scrollPositionDrinksPage = 0.0;
 
   static int lastPageIndex = 0;
-  static bool pushedPage = false;
   static bool initIP = false;
   static bool initStorage = false;
   static bool initConnection = false;
@@ -26,6 +25,20 @@ class AppStateManager {
   static bool settingsOverlayVisible = false;
   static OverlayEntry progressOverlay;
   static bool progressOverlayVisible = false;
+
+  bool _pagePushed = false; // Indicate if a page is currently on top
+  bool get pagePushed => _pagePushed;
+  enPushedPage _pushedPage = enPushedPage.NONE; //show wich page is pushed
+  enPushedPage get pushedPage => _pushedPage;
+  set pushedPage(enPushedPage value) {
+    if (value != enPushedPage.NONE) {
+      _pagePushed = true;
+    } else {
+      _pagePushed = false;
+    }
+    _pushedPage = value;
+    notifyListeners();
+  }
 
   static void showOverlayEntry(String text, [NavigatorState navigator]) {
     OverlayEntry entry = OverlayEntry(builder: (BuildContext context) {
@@ -136,8 +149,14 @@ class AppStateManager {
     }
   }
 
-  static void dispose() {
+  static void cleanUp() {
     removeSettingsOverlay();
     removeProgressOverlay();
   }
+}
+
+enum enPushedPage {
+  NONE,
+  CONTROLLER_CONFIG,
+  BEVERAGE_CONFIG,
 }

@@ -86,17 +86,17 @@ class PumpConfiguration extends CommandBase {
   List<PumpConfig> configs = List<PumpConfig>.filled(
       16,
       PumpConfig(
-        beverageID: -1,
-        mlPerMinute: 0,
-      ));
+          beverageID: -1,
+          mlPerMinute: 0,
+          mechanicalDirection: enMechanicalDirection.forward));
   PumpConfiguration({this.configs});
   PumpConfiguration.testData() {
     configs = List<PumpConfig>.generate(
         16,
         (index) => PumpConfig(
-              beverageID: index,
-              mlPerMinute: index * 10,
-            ));
+            beverageID: index,
+            mlPerMinute: index * 10,
+            mechanicalDirection: enMechanicalDirection.forward));
   }
   bool get configurated {
     return !configs
@@ -109,6 +109,10 @@ class PumpConfiguration extends CommandBase {
 
   void setMlPerMinute(int index, int ml) {
     configs[index].mlPerMinute = ml;
+  }
+
+  void setInverted(int index, enMechanicalDirection direction) {
+    configs[index].mechanicalDirection = direction;
   }
 
   factory PumpConfiguration.fromJson(Map<String, dynamic> parsedJson) =>
@@ -126,23 +130,30 @@ class PumpConfiguration extends CommandBase {
       };
 }
 
+enum enMechanicalDirection {
+  forward,
+  backward,
+}
+
 class PumpConfig extends CommandBase {
   int beverageID = -1;
   int mlPerMinute = 0;
-  PumpConfig({
-    this.beverageID,
-    this.mlPerMinute,
-  });
+  enMechanicalDirection mechanicalDirection = enMechanicalDirection.forward;
+  PumpConfig({this.beverageID, this.mlPerMinute, this.mechanicalDirection});
   factory PumpConfig.fromJson(Map<String, dynamic> parsedJson) => PumpConfig(
         beverageID:
             parsedJson['beverageID'] == null ? -1 : parsedJson['beverageID'],
         mlPerMinute:
             parsedJson['mlPerMinute'] == null ? 0 : parsedJson['mlPerMinute'],
+        mechanicalDirection: parsedJson['direction'] == null
+            ? enMechanicalDirection.forward
+            : enMechanicalDirection.values[parsedJson['direction']],
       );
   @override
   Map<String, dynamic> toJson() => {
         "beverageID": beverageID,
         "mlPerMinute": mlPerMinute,
+        "direction": mechanicalDirection.index
       };
 }
 

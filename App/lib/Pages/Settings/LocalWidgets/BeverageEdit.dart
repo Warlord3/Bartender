@@ -20,6 +20,7 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
   TextEditingController _percentController;
   TextEditingController _kcalController;
   Beverage newBeverage;
+  String nameErrorTxt;
   @override
   initState() {
     newBeverage = widget.beverage.copy();
@@ -50,10 +51,24 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
                       node.nextFocus(), // Move focus to next
                   textInputAction: TextInputAction.next, //InputAction arrow
 
-                  decoration: decoration(hintText: "Name"),
+                  decoration: InputDecoration(
+                    fillColor: Theme.of(context).backgroundColor,
+                    filled: true,
+                    focusColor: Colors.green,
+                    labelText: "Name",
+                    hintText: "Name",
+                    errorText: nameErrorTxt,
+                  ),
                   controller: _nameController,
                   onChanged: (value) {
                     newBeverage.name = value;
+                    setState(() {
+                      if (value.isEmpty) {
+                        nameErrorTxt = "Name can't be empty";
+                      } else {
+                        nameErrorTxt = null;
+                      }
+                    });
                   },
                 ),
               ),
@@ -86,6 +101,9 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
 
                   decoration: decoration(hintText: "Percent"),
                   controller: _percentController,
+                  onTap: () => _percentController.selection = TextSelection(
+                      baseOffset: 0,
+                      extentOffset: _percentController.value.text.length),
                   onChanged: (value) {
                     if (value.isNotEmpty) {
                       newBeverage.percent = double.parse(value);
@@ -103,7 +121,13 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
                     ),
                   ],
                   onEditingComplete: () => node.unfocus(), // Finish
-                  decoration: decoration(hintText: "Kcal"),
+                  decoration: decoration(
+                    hintText: "Kcal",
+                  ),
+                  onTap: () => _kcalController.selection = TextSelection(
+                      baseOffset: 0,
+                      extentOffset: _kcalController.value.text.length),
+
                   controller: _kcalController,
                   onChanged: (value) {
                     if (value.isNotEmpty) {
@@ -114,9 +138,16 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    Provider.of<DataManager>(context, listen: false)
-                        .saveBeverage(newBeverage);
-                    Navigator.of(context).pop();
+                    if (_nameController.text.isEmpty) {
+                      setState(() {
+                        nameErrorTxt = "Name can't be empty";
+                      });
+                    } else {
+                      nameErrorTxt = null;
+                      Provider.of<DataManager>(context, listen: false)
+                          .saveBeverage(newBeverage);
+                      Navigator.of(context).pop();
+                    }
                   },
                   child: Text(languageManager.getData("save")))
             ],
@@ -131,6 +162,7 @@ class _BeverageEditDialogState extends State<BeverageEditDialog> {
       fillColor: Theme.of(context).backgroundColor,
       filled: true,
       focusColor: Colors.green,
+      labelText: hintText,
       hintText: hintText,
     );
   }

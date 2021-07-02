@@ -67,11 +67,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
             clientConnected = true;
         }
 
-        DynamicJsonDocument doc(1000);
+        DynamicJsonDocument doc(2000);
         DeserializationError error = deserializeJson(doc, payload);
         if (error)
         {
-            DEBUG_PRINTLN("Error deserialize Message");
+            DEBUG_PRINT("Error deserialize Message Error:");
+            DEBUG_PRINTLN(error.c_str());
             return;
         }
 

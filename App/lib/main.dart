@@ -30,6 +30,9 @@ void main() async {
       ChangeNotifierProvider<LanguageManager>(
         create: (context) => LanguageManager(),
       ),
+      ChangeNotifierProvider<AppStateManager>(
+        create: (context) => AppStateManager(),
+      ),
     ],
     child: MainPage(),
   ));

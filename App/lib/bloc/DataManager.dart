@@ -16,14 +16,14 @@ class DataManager with ChangeNotifier {
   static const int MAX_RECENTLY = 5;
   List<Beverage> beverages = [];
 
-  PumpConfiguration pumpConfiguration;
+  PumpConfiguration pumpConfiguration = PumpConfiguration.testData();
 
   //Connection
   String ip = "192.168.178.74";
   bool get ipValid => ip.isNotEmpty;
-
+  bool get isConnected => _controllerConnected;
   Websocket websocket;
-  bool controllerConnected;
+  bool _controllerConnected = false;
   final String filename = "data.json";
 
   int drinkProgress = 0;
@@ -57,30 +57,30 @@ class DataManager with ChangeNotifier {
   }
 
   Future<bool> ping(String ip, Duration timeout) async {
-    await Socket.connect(ip, 80, timeout: timeout).then((socket) {
-      controllerConnected = true;
+    await Socket.connect(ip, 81, timeout: timeout).then((socket) {
+      _controllerConnected = true;
       socket.destroy();
     }).catchError((error) {
-      controllerConnected = false;
+      _controllerConnected = false;
     });
-    return controllerConnected;
+    return _controllerConnected;
   }
 
   Future<void> connect() async {
-    if (!await ping('192.168.178.74', Duration(seconds: 5))) {
+    if (!await ping('$ip', Duration(seconds: 5))) {
       Future.delayed(Duration(seconds: 10), connect);
       return;
     }
 
-    Uri uri = Uri.http('192.168.178.74', 'data.json');
+    Uri uri = Uri.http('$ip', 'data.json');
     final response = await http.get(uri).timeout(
       Duration(seconds: 2),
       onTimeout: () {
-        controllerConnected = false;
+        _controllerConnected = false;
         return null;
       },
     );
-    if (!controllerConnected) return;
+    if (!_controllerConnected) return;
     if (response?.statusCode == 200) {
       DrinkSaveData saveData =
           DrinkSaveData.fromJson(jsonDecode(response.body));
@@ -99,13 +99,20 @@ class DataManager with ChangeNotifier {
   }
 
   void checkAndSortDrinks() {
+    List<int> ids = [];
     for (Drink drink in this.allDrinks) {
       drink.possible = !drink.ingredients.any((element) => !this
           .pumpConfiguration
           .configs
           .map((e) => e.beverageID)
           .contains(element.beverage.id));
+      if (ids.contains(drink.id)) {
+        drink.id = _getNewDrinkID();
+        save(false);
+      }
+      ids.add(drink.id);
     }
+
     allDrinks.sort((a, b) {
       if (b.possible) return 1;
       return -1;
@@ -157,7 +164,7 @@ class DataManager with ChangeNotifier {
     if (response.statusCode != 200) {
       return false;
     }
-
+    print("File uploaded");
     return true;
   }
 
@@ -276,6 +283,11 @@ class DataManager with ChangeNotifier {
 
   bool pumpsConfigurated() {
     return this.pumpConfiguration.configurated;
+  }
+
+  void setInverted(int index, enMechanicalDirection direction) {
+    this.pumpConfiguration.configs[index].mechanicalDirection = direction;
+    notifyListeners();
   }
 
   void removeBeverage(Beverage beverage) {

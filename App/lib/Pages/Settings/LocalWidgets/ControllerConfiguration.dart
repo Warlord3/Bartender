@@ -1,6 +1,7 @@
 import 'package:bartender/Pages/Drinks/LocalWidgets/DrinkConfiguration.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/LanguageManager.dart';
+import 'package:bartender/models/CommunicationData.dart';
 import 'package:bartender/models/Drinks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,7 +23,6 @@ class _ControllerConfigurationState extends State<ControllerConfiguration> {
     controller = PageController(
       initialPage: currentpage,
       keepPage: false,
-      viewportFraction: 0.5,
     );
   }
 
@@ -34,24 +34,16 @@ class _ControllerConfigurationState extends State<ControllerConfiguration> {
 
   @override
   Widget build(BuildContext context) {
-    dataManager = Provider.of<DataManager>(context, listen: false);
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        color: Theme.of(context).backgroundColor,
-        height: 300,
-        child: PageView.builder(
-          scrollDirection: Axis.horizontal,
-          controller: controller,
-          itemCount: dataManager.pumpConfiguration.configs.length,
-          itemBuilder: (context, index) => GestureDetector(
-            onTap: () => controller.animateToPage(index,
-                duration: Duration(milliseconds: 300), curve: Curves.easeIn),
-            child: PumpConfiguration(
-              pumpIndex: index,
-              dataManager: dataManager,
-            ),
-          ),
+    dataManager = Provider.of<DataManager>(context);
+    return Container(
+      color: Theme.of(context).backgroundColor,
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        controller: controller,
+        itemCount: dataManager.pumpConfiguration.configs.length,
+        itemBuilder: (context, index) => PumpConfiguration(
+          pumpIndex: index,
+          dataManager: dataManager,
         ),
       ),
     );
@@ -74,12 +66,14 @@ class PumpConfiguration extends StatefulWidget {
 }
 
 class _PumpConfigurationState extends State<PumpConfiguration> {
-  TextEditingController controller;
+  TextEditingController _mlPerMinutecontroller;
+  TextEditingController _testDonate;
   String beverageName;
   @override
   void initState() {
     super.initState();
-    controller = TextEditingController();
+    _mlPerMinutecontroller = TextEditingController();
+    _testDonate = TextEditingController();
   }
 
   @override
@@ -90,95 +84,173 @@ class _PumpConfigurationState extends State<PumpConfiguration> {
             .getBeverageByID(widget.dataManager.pumpConfiguration
                 .configs[widget.pumpIndex].beverageID)
             ?.name ??
-        "Select Beverage";
-    controller.text =
+        "None";
+    _mlPerMinutecontroller.text =
         "${widget.dataManager.pumpConfiguration.configs[widget.pumpIndex].mlPerMinute}";
-    return Material(
-      color: Colors.transparent,
-      child: Center(
-        child: Container(
-            margin: EdgeInsets.all(15),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+    _testDonate.text = "100";
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text("Pump: ${widget.pumpIndex + 1}"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Pump: ${widget.pumpIndex}",
-                  style: TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Divider(
-                  color: Colors.blueAccent,
-                ),
-                Text("Choose Beverage"),
-                SizedBox(
-                  height: 15,
-                ),
+                Text("Beverage: $beverageName"),
                 ElevatedButton(
-                  child: Text(beverageName),
-                  onPressed: () async {
-                    Beverage result = await chooseBeverageDialog(context);
-                    if (result != null) {
-                      setState(() {
-                        widget.dataManager.pumpConfiguration
-                            .setBeverageID(widget.pumpIndex, result.id);
-                      });
-                    }
+                  onPressed: () {},
+                  child: Text(beverageName == Beverage.none().name
+                      ? "Select"
+                      : "Change"),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(widget.dataManager.pumpConfiguration
+                            .configs[widget.pumpIndex].mechanicalDirection ==
+                        enMechanicalDirection.backward
+                    ? "Direction: Backward"
+                    : "Direction: Forward"),
+                Switch(
+                  value: widget.dataManager.pumpConfiguration
+                          .configs[widget.pumpIndex].mechanicalDirection ==
+                      enMechanicalDirection.backward,
+                  onChanged: (value) {
+                    widget.dataManager.setInverted(
+                        widget.pumpIndex,
+                        value
+                            ? enMechanicalDirection.backward
+                            : enMechanicalDirection.forward);
                   },
                 ),
-                SizedBox(
-                  height: 15,
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 7,
+                  child: Text("Milliliter per Minute"),
                 ),
-                Divider(
-                  color: Colors.blueAccent,
-                ),
-                Text("Ml per Minute"),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  width: 200,
-                  child: TextField(
-                    autofocus: false,
-                    keyboardType: TextInputType.number,
-                    style: TextStyle(fontSize: 22.0, color: Colors.black),
-                    textAlign: TextAlign.center,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'[0-9]'),
-                      ),
-                    ],
-                    maxLength: 4,
-                    controller: controller,
-                    onChanged: (data) {
-                      if (data.isNotEmpty) {
-                        widget.dataManager.pumpConfiguration
-                            .setMlPerMinute(widget.pumpIndex, int.parse(data));
-                      }
-                    },
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: 'Ml per Minute',
+                Flexible(
+                  flex: 2,
+                  child: Container(
+                    child: TextField(
+                      autofocus: false,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9]'),
+                        ),
+                      ],
+                      maxLength: 4,
+                      controller: _mlPerMinutecontroller,
+                      onChanged: (data) {
+                        if (data.isNotEmpty) {
+                          widget.dataManager.pumpConfiguration.setMlPerMinute(
+                              widget.pumpIndex, int.parse(data));
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'ml per Minute',
+                        labelText: "ml",
+                        labelStyle: TextStyle(height: 0.8),
                         hintStyle: TextStyle(color: Colors.blueAccent),
                         contentPadding: const EdgeInsets.only(
-                            left: 14.0, bottom: 8.0, top: 8.0),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(25.7),
+                          left: 8,
+                          bottom: 0.0,
+                          top: 0.0,
                         ),
-                        enabledBorder: UnderlineInputBorder(
+                        counterText: "",
+                        enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(25.7),
                         ),
-                        counterText: ""),
+                        focusedBorder: OutlineInputBorder(),
+                      ),
+                    ),
                   ),
-                )
+                ),
               ],
-            )),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    widget.dataManager
+                        .startPump(widget.pumpIndex, enPumpDirection.forward);
+                  },
+                  child: Text("Forward"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.dataManager.stopPump(widget.pumpIndex);
+                  },
+                  child: Text("Stop"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.dataManager
+                        .startPump(widget.pumpIndex, enPumpDirection.backward);
+                  },
+                  child: Text("Backward"),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: TextField(
+                    controller: _testDonate,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: 'ml',
+                      labelText: "ml",
+                      labelStyle: TextStyle(height: 0.8),
+                      hintStyle: TextStyle(color: Colors.blueAccent),
+                      contentPadding: const EdgeInsets.only(
+                        left: 8,
+                        bottom: 0.0,
+                        top: 0.0,
+                      ),
+                      counterText: "",
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                Flexible(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      widget.dataManager.sendMilliliter(
+                          widget.pumpIndex, int.parse(_testDonate.text));
+                    },
+                    child: Text("Donate"),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

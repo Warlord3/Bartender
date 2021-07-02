@@ -29,11 +29,13 @@
     "config": [
         {
             "beverageID": 2,
-            "mlPerMinute": 100
+            "mlPerMinute": 100,
+            "direction" : 0
         },
         {
             "beverageID": 5,
-            "mlPerMinute": 200
+            "mlPerMinute": 200,
+            "direction" : 0
         },
     ]
 }

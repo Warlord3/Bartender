@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:bartender/Pages/Settings/LocalWidgets/BeverageConfiguration.dart';
 import 'package:bartender/Pages/Settings/LocalWidgets/ControllerConfiguration.dart';
-import 'package:bartender/Pages/Settings/LocalWidgets/PumpTestPage.dart';
 import 'package:bartender/bloc/DataManager.dart';
 import 'package:bartender/bloc/AppStateManager.dart';
 import 'package:bartender/models/Drinks.dart';
@@ -23,11 +22,13 @@ class _SettingsPageState extends State<SettingsPage> {
   ThemeManager themeChangeProvider;
   LanguageManager languageManager;
   DataManager dataManager;
+  AppStateManager appStateManager;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
+    appStateManager = Provider.of<AppStateManager>(context, listen: false);
     dataManager = Provider.of<DataManager>(context, listen: false);
     return GestureDetector(
       onTap: () {
@@ -113,55 +114,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 "controller_configuration",
                 Icons.construction,
                 () async {
-                  if (!dataManager.controllerConnected) {
+                  if (!dataManager.isConnected) {
                     AppStateManager.showOverlayEntry("Not Connected");
                     return;
                   }
-                  await showGeneralDialog(
-                    barrierDismissible: true,
-                    barrierLabel: '',
-                    barrierColor: Colors.black38,
-                    transitionDuration: Duration(milliseconds: 200),
-                    pageBuilder: (ctx, anim1, anim2) =>
-                        ControllerConfiguration(),
-                    transitionBuilder: (ctx, anim1, anim2, child) =>
-                        BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: anim1.value * 3,
-                        sigmaY: anim1.value * 3,
-                      ),
-                      child: FadeTransition(
-                        child: child,
-                        opacity: anim1,
-                      ),
-                    ),
-                    context: context,
-                  );
-                  dataManager.sendConfiguration();
-                },
-              ),
-              /*
-              Pump PumpTesting
-              */
-              RowSetting(
-                languageManager,
-                "pump_testing",
-                Icons.local_gas_station,
-                () {
-                  if (!dataManager.controllerConnected) {
-                    AppStateManager.showOverlayEntry("Not Connected");
-                    return;
-                  }
-                  if (dataManager.drinkActive) {
-                    AppStateManager.showOverlayEntry("Drink in progress");
-                    return;
-                  }
-                  AppStateManager.pushedPage = true;
+                  appStateManager.pushedPage = enPushedPage.CONTROLLER_CONFIG;
                   dataManager.testingMode(true);
-                  AppStateManager.keyNavigator.currentState.push(
+
+                  Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
-                          PumpTestPage(),
+                          ControllerConfiguration(),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         return FadeTransition(
@@ -173,7 +136,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 },
               ),
-
               /*
                 Beverage Configuration
               */
@@ -182,7 +144,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 "beverage_configuration",
                 Icons.local_gas_station,
                 () {
-                  AppStateManager.pushedPage = true;
+                  appStateManager.pushedPage = enPushedPage.BEVERAGE_CONFIG;
                   AppStateManager.keyNavigator.currentState.push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>

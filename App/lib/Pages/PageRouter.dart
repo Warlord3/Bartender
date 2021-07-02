@@ -20,31 +20,30 @@ class PageRouter extends StatefulWidget {
 class _PageRouterState extends State<PageRouter> {
   LanguageManager languageManager;
   ThemeManager themeChangeProvider;
+  AppStateManager appStateManager;
 
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
     themeChangeProvider = Provider.of<ThemeManager>(context);
+    appStateManager = Provider.of<AppStateManager>(context);
     AppStateManager.screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text(getAppBarTitle()),
+        leading: appStateManager.pagePushed
+            ? IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  checkPushedPage(context);
+                })
+            : null,
       ),
       resizeToAvoidBottomInset: false,
       body: WillPopScope(
         onWillPop: () async {
-          print("pop");
-          if (AppStateManager.keyNavigator.currentState.canPop() &&
-              AppStateManager.pushedPage) {
-            AppStateManager.pushedPage = false;
-            AppStateManager.keyNavigator.currentState.pop();
-            DataManager dataManager =
-                Provider.of<DataManager>(context, listen: false);
-            dataManager.stopAllPumps();
-
-            return Future.value(false);
-          }
-          return Future.value(true);
+          print("pop from return");
+          return Future.value(!checkPushedPage(context));
         },
         child: SafeArea(
           child: Navigator(
@@ -127,6 +126,34 @@ class _PageRouterState extends State<PageRouter> {
         selectedLabelStyle: TextStyle(fontSize: 15),
       ),
     );
+  }
+
+  ///Check if current Page can be pop and sends data based on current pushed Page
+  ///
+  ///return: bool
+  bool checkPushedPage(BuildContext context) {
+    if (AppStateManager.keyNavigator.currentState.canPop() &&
+        appStateManager.pagePushed) {
+      DataManager dataManager =
+          Provider.of<DataManager>(context, listen: false);
+      switch (appStateManager.pushedPage) {
+        case enPushedPage.NONE:
+          break;
+        case enPushedPage.BEVERAGE_CONFIG:
+          dataManager.save(false);
+          break;
+        case enPushedPage.CONTROLLER_CONFIG:
+          dataManager.stopAllPumps();
+          dataManager.sendConfiguration();
+          break;
+        default:
+      }
+      AppStateManager.keyNavigator.currentState.pop();
+
+      appStateManager.pushedPage = enPushedPage.NONE;
+      return true;
+    }
+    return false;
   }
 
   void _pageSelect(int value) {

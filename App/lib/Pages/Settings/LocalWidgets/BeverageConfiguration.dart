@@ -16,23 +16,6 @@ class BeverageConfiguration extends StatelessWidget {
         child: Column(
           children: [
             Flexible(
-              flex: 0,
-              child: Container(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      size: 30,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Flexible(
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

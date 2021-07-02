@@ -104,7 +104,7 @@ void setConfiguration(DynamicJsonDocument &doc)
     {
         setBeverageID(object["beverageID"].as<int>(), index);
         setMlPerMinute(object["mlPerMinute"].as<int>(), index);
-        setMechanicalDirection((enMechanicalDirection)object["mlPerMinute"].as<int>(), index);
+        setMechanicalDirection((enMechanicalDirection)object["direction"].as<int>(), index);
         index++;
     }
 
@@ -327,11 +327,11 @@ void stop(uint8_t pumpID)
 }
 int8_t setDrink(DynamicJsonDocument &doc)
 {
-    currentBiggestIngredient = 0;
     DEBUG_PRINT("New Drink possible ");
     DEBUG_PRINTLN(newDrinkPossible);
     if (newDrinkPossible)
     {
+        currentBiggestIngredient = 0;
         DEBUG_PRINTLN("Set new Drink");
         stDrink drink = stDrink();
         drink.ID = doc["ID"].as<uint>();
@@ -395,6 +395,7 @@ String getConfiguration(void)
         DEBUG_PRINTF("Beverage: %i, Ml: %i\n", pumps[i].beverageID, pumps[i].mlPerMinute);
         object["beverageID"] = pumps[i].beverageID;
         object["mlPerMinute"] = pumps[i].mlPerMinute;
+        object["direction"] = (int)pumps[i].mechanicalDirection;
     }
     String result;
     serializeJson(doc, result);
