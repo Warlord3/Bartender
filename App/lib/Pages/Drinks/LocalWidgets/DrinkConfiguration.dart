@@ -318,8 +318,6 @@ class _IngredientsEditorState extends State<IngredientsEditor> {
   List<Beverage> beverages;
   LanguageManager languageManager;
 
-  String _errorText;
-
   @override
   Widget build(BuildContext context) {
     languageManager = Provider.of<LanguageManager>(context);
