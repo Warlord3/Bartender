@@ -30,12 +30,12 @@
         {
             "beverageID": 2,
             "mlPerMinute": 100,
-            "direction" : 0
+            "direction": 0
         },
         {
             "beverageID": 5,
             "mlPerMinute": 200,
-            "direction" : 0
+            "direction": 0
         },
     ]
 }
@@ -137,4 +137,9 @@
 {
     "command": "testing_mode",
     "enable": true //Enter testing Mode = true / Leave testing Mode = false
+}
+{
+    "command": "direction",
+    "ID": 0,
+    "direction": 0
 }

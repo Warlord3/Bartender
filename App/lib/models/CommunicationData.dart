@@ -309,3 +309,16 @@ class TestingMode extends CommandBase {
   Map<String, dynamic> toJson() =>
       {"command": "testing_mode", "enable": enable == null ? false : enable};
 }
+
+class Direction extends CommandBase {
+  final enMechanicalDirection direction;
+  final int id;
+  Direction(this.direction, this.id);
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "command": "testing_mode",
+        "ID": id == null ? 0 : id,
+        "direction": direction == null ? 0 : direction.index,
+      };
+}

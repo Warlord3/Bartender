@@ -287,6 +287,7 @@ class DataManager with ChangeNotifier {
 
   void setInverted(int index, enMechanicalDirection direction) {
     this.pumpConfiguration.configs[index].mechanicalDirection = direction;
+    setDirection(index, direction);
     notifyListeners();
   }
 
@@ -350,6 +351,10 @@ class DataManager with ChangeNotifier {
 
   sendMilliliter(int index, int ml) {
     send(PumpMilliliter(index, ml).toString());
+  }
+
+  setDirection(int index, enMechanicalDirection direction) {
+    send(Direction(direction, index).toString());
   }
 
   void send(dynamic data) {

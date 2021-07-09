@@ -203,6 +203,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
                 machineState = enMachineState::running;
             }
         }
+
+        else if (strcmp(command, "direction") == 0)
+        {
+            int pumpID = doc["ID"].as<int>();
+            pumps[pumpID].mechanicalDirection = (enMechanicalDirection)doc["direction"].as<int>();
+        }
         else if (strcmp(command, "reset") == 0)
         {
             startAllPumps((enPumpRunningDirection)doc["direction"].as<int>());
